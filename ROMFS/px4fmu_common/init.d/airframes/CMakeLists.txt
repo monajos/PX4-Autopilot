@@ -44,6 +44,7 @@ px4_add_romfs_files(
 	2100_standard_plane
 	2105_maja
 	2106_albatross
+	2109_vitesse_v2
 	2200_mini_talon
 
 	2507_cloudship
