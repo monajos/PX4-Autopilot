@@ -529,6 +529,7 @@ private:
 		(ParamFloat<px4::params::FW_X_SPD_SP>) _param_fw_x_spd_target,
 		(ParamFloat<px4::params::FW_X_REL_HGT_SP>) _param_fw_x_rel_hgt_target,
 		(ParamFloat<px4::params::FW_X_REL_SPD_SP>) _param_fw_x_rel_spd_target,
+
 		(ParamFloat<px4::params::FW_X_RISE_T_HGT>) _param_fw_x_risetime_hgt,
 		(ParamFloat<px4::params::FW_X_RISE_T_SPD>) _param_fw_x_risetime_spd,
 		(ParamInt<px4::params::FW_X_MODE>) _param_fw_x_mode,
@@ -573,6 +574,10 @@ private:
 		(ParamFloat<px4::params::FW_PR_P>) _param_fw_pr_p
 		//(ParamFloat<px4::params::FW_PSP_OFF>) _param_fw_psp_off,
 
+=======
+		(ParamFloat<px4::params::FW_X_RISE_T>) _param_fw_x_risetime,
+		(ParamInt<px4::params::FW_X_CARD_NUM>) _param_fw_x_card_num
+>>>>>>> 77ccf78291... update on parameters for flight implementation
 	)
 
 };

@@ -827,10 +827,12 @@ PARAM_DEFINE_FLOAT(FW_T_CLMB_R_SP, 3.0f);
 PARAM_DEFINE_FLOAT(FW_T_SINK_R_SP, 2.0f);
 
 
+
 /*
  * Maneuver and Controller selection parameters
  *
  */
+
 
 
 /**
@@ -860,6 +862,7 @@ PARAM_DEFINE_FLOAT(FW_X_HGT_SP, 50.0f);
  * @decimal 2
  * @increment 0.01
  * @group FW X MANEUVER
+
  */
 PARAM_DEFINE_FLOAT(FW_X_SPD_SP, 15.0f);
 
@@ -1423,3 +1426,51 @@ PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 2.29f);
  * @group FW PI_X
  */
 PARAM_DEFINE_FLOAT(FW_I_GAIN_H_PI, 0.749f);
+=======
+ * @unit m
+ * @min -5.0
+ * @max 15.0
+ * @decimal 2
+ * @increment 0.01
+ * @group FW TECS
+ */
+PARAM_DEFINE_FLOAT(FW_X_REL_SPD_SP, 5.0f);
+
+/**
+ * Maneuver risetime
+ *
+ *
+ * The risetime for maneuver (Xperimental)
+ *
+ * @unit s
+ * @min 0.0
+ * @max 20.0
+ * @decimal 2
+ * @increment 0.01
+ * @group FW TECS
+ */
+PARAM_DEFINE_FLOAT(FW_X_RISE_T, 0.0f);
+
+/**
+ * Test card number
+ *
+ *
+ * The card number selected for a specific parameter set (Xperimental)
+ *
+ * @min 0
+ * @max 10
+ * @value 0 Testcard 0
+ * @value 1 Testcard 1
+ * @value 2 Testcard 2
+ * @value 3 Testcard 3
+ * @value 4 Testcard 4
+ * @value 5 Testcard 5
+ * @value 6 Testcard 6
+ * @value 7 Testcard 7
+ * @value 8 Testcard 8
+ * @value 9 Testcard 9
+ * @value 10 Testcard 10
+ * @group FW TECS
+ */
+PARAM_DEFINE_INT32(FW_X_CARD_NUM, 0);
+
