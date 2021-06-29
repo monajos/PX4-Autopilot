@@ -350,7 +350,11 @@ private:
 
 	ECL_L1_Pos_Controller	_l1_control;
 	TECS			_tecs;
-	//Flighttest		_flighttest;
+
+	// == FLIGHT TEST IMPLEMENTATIONS ==
+	Testmaneuver		_maneuver;
+	bool			_man_active{false};
+
 
 	TECS_X			_tecs_X;
 	PI_X			_pi_X;
@@ -456,6 +460,11 @@ private:
 					float throttle_min, float throttle_max, float throttle_cruise,
 					bool climbout_mode, float climbout_pitch_min_rad,
 					uint8_t mode = tecs_status_s::TECS_MODE_NORMAL, float hgt_rate_sp = NAN);
+
+	// == FLIGHT TEST METHOD
+
+	// isActive
+	bool man_active();
 
 	DEFINE_PARAMETERS(
 

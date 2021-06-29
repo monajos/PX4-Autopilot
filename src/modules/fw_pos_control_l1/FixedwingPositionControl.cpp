@@ -2480,6 +2480,7 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 }
 
 
+
 bool
 FixedwingPositionControl::man_active(float dt)
 {
@@ -2505,6 +2506,7 @@ FixedwingPositionControl::man_active(float dt)
 	}
 }
 // == SPAWN TASK ===============================================================
+
 
 
 int FixedwingPositionControl::task_spawn(int argc, char *argv[])
