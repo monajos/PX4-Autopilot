@@ -49,16 +49,48 @@ public:
 	Testmaneuver() = default;
 	~Testmaneuver() = default;
 
+	void set_base_spd_sp(float base_spd_sp) { _base_spd_sp = base_spd_sp; }
+	void set_base_hgt_sp(float base_hgt_sp) { _base_hgt_sp = base_hgt_sp; }
+	void set_rel_spd_sp(float rel_spd_sp) { _rel_spd_sp = rel_spd_sp; }
+	void set_rel_hgt_sp(float rel_hgt_sp) { _rel_hgt_sp = rel_hgt_sp; }
+	void set_spd_rise_time(float spd_rise_time) { _spd_rise_time = spd_rise_time; }
+	void set_hgt_rise_time(float hgt_rise_time) { _hgt_rise_time = hgt_rise_time; }
 
 	bool init_trajectory();
-	bool update_trajectory();
+	void update_trajectory(float dt);
 	bool reset_trajectory();
 
-	float get_spd_sp();
-	float get_hgt_sp();
+	float get_test_spd_sp();
+	float get_test_hgt_sp();
+
+
 private:
 	bool _is_active{false};
 	bool _is_init{false};
+
+	float _base_spd_sp{0.0f};
+	float _base_hgt_sp{0.0f};
+
+	float _rel_spd_sp{0.0f};
+	float _rel_hgt_sp{0.0f};
+
+	float _spd_rise_time{0.0f};
+	float _hgt_rise_time{0.0f};
+
+
+	float _spd_sp{0.0f};
+	float _hgt_sp{0.0f};
+
+	float _time{0.0f};
+
+	float _spd_coeff_a{0.0f};
+	float _spd_coeff_b{0.0f};
+
+	float _hgt_coeff_a{0.0f};
+	float _hgt_coeff_b{0.0f};
+
+	float update_spd();
+	float update_hgt();
 };
 
 
