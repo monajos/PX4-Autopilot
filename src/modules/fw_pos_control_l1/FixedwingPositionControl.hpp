@@ -113,7 +113,7 @@
 #include <vtol_att_control/vtol_type.h>
 
 // == INCLUDE FLIGHTTEST CLASS ==
-//#include <lib/flighttest/flighttest.hpp>
+#include <lib/testmaneuver/testmaneuver.hpp>
 
 using namespace launchdetection;
 using namespace runwaytakeoff;
