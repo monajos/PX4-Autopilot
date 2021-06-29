@@ -154,6 +154,17 @@ FixedwingPositionControl::parameters_update()
 	_tecs_X.set_throttle_slewrate(_param_fw_thr_slew_max.get());
 	_tecs_X.set_speed_derivative_time_constant(_param_tas_rate_time_const.get());
 
+	// Maneuver 
+	_maneuver.set_base_spd_sp(_param_fw_x_spd_target.get());
+	_maneuver.set_base_hgt_sp(_param_fw_x_hgt_target.get());
+	_maneuver.set_rel_spd_sp(_param_fw_x_rel_spd_target.get());
+	_maneuver.set_rel_hgt_sp(_param_fw_x_rel_hgt_target.get());
+	_maneuver.set_spd_rise_time(_param_fw_x_risetime_spd.get());
+	_maneuver.set_hgt_rise_time(_param_fw_x_risetime_hgt.get());
+
+	// Mode and Ctrl selection parameters
+	_mode_sel = _param_fw_x_mode.get();
+	_ctrl_sel = _param_fw_x_ctrl_sel.get();
 
 
 	// TECS X parameters
@@ -1105,6 +1116,7 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 {
 	const float dt = math::constrain((now - _control_position_last_called) * 1e-6f, 0.01f, 0.05f);
 	_control_position_last_called = now;
+	_dt = dt;
 
 	_l1_control.set_dt(dt);
 
@@ -1155,10 +1167,12 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 		/* reset integrators */
 		_tecs.reset_state();
 
+
 		// ADD INTEGRATOR TECS
 		_tecs_X.reset_state();
 
 		_pi_X.reset_state();
+
 	}
 
 	if ((_control_mode.flag_control_auto_enabled || _control_mode.flag_control_offboard_enabled) && pos_sp_curr.valid) {
@@ -1557,6 +1571,8 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 		if (_control_mode_current != FW_POSCTRL_MODE_POSITION && _control_mode_current != FW_POSCTRL_MODE_ALTITUDE) {
 			/* Need to init because last loop iteration was in a different mode */
 			_hold_alt = _current_altitude;
+			// ^^^^^^^ -> needs to be changed?
+
 		}
 
 		_control_mode_current = FW_POSCTRL_MODE_ALTITUDE;
@@ -1580,9 +1596,11 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 			throttle_max = 0.0f;
 		}
 
+
 		// ---> TACKLE HERE
 		_altctrl_airspeed = altctrl_airspeed;
 		_position_sp_alt = _hold_alt;
+
 		tecs_update_pitch_throttle(now, _hold_alt,
 					   altctrl_airspeed,
 					   radians(_param_fw_p_lim_min.get()),
@@ -2129,6 +2147,7 @@ FixedwingPositionControl::get_tecs_pitch()
 				return _tecs_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 			}
 			else if(_param_fw_x_ctrl_sel.get() == 2) {
+
 				return _pi_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get()); // PI OUTPUT HERE
 			}
 		}else{
@@ -2139,6 +2158,7 @@ FixedwingPositionControl::get_tecs_pitch()
 			_pi_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get())); //FixedwingPositionControl::get_tecs_pitch()
 			return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 		}
+
 
 	}
 
@@ -2156,12 +2176,14 @@ FixedwingPositionControl::get_tecs_thrust()
 			if(_param_fw_x_ctrl_sel.get() == 1)
 			{
 				return _tecs_X.get_throttle_setpoint();
+				return _tecs_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 			}
 			else if(_param_fw_x_ctrl_sel.get() == 2)
 			{
 				return _pi_X.get_throttle_setpoint(); // PI OUTPUT HERE
+				return 0.0; // PI OUTPUT HERE
 
-			}
+		}
 		}
 		return _tecs.get_throttle_setpoint();
 
@@ -2428,6 +2450,7 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 
 	if (_reinitialize_tecs) {
 		_tecs.reset_state();
+		_tecs_X.reset_state();
 		_reinitialize_tecs = false;
 	}
 
@@ -2511,15 +2534,18 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 bool
 FixedwingPositionControl::man_active(float dt)
 {
+
 	/*This is the first entry of the maneuver setting and executed once.
 	Here the option to reset the experimental controller states is added*/
 	if((_manual_control_setpoint.z > 0.8f) && (_man_active == false))
 	{
 		//_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
+
 		_man_active = true;
 		_maneuver.init_trajectory();
 		return true;
 	}
+
 	else if((_manual_control_setpoint.z > 0.8f) && (_man_active == true))
 	{
 		_maneuver.update_trajectory(dt);
