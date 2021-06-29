@@ -350,6 +350,7 @@ private:
 
 	ECL_L1_Pos_Controller	_l1_control;
 	TECS			_tecs;
+	TECS			_tecs_X;
 
 	// == FLIGHT TEST IMPLEMENTATIONS ==
 	Testmaneuver		_maneuver;
