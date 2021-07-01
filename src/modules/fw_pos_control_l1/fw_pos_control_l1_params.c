@@ -1423,7 +1423,7 @@ PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 2.29f);
  * @group FW PI_X
  */
 PARAM_DEFINE_FLOAT(FW_I_GAIN_H_PI, 0.749f);
-=======
+
  * @unit m
  * @min -5.0
  * @max 15.0

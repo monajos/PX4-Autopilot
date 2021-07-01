@@ -92,6 +92,7 @@ void LoggedTopics::add_default_topics()
 	add_topic("system_power", 500);
 	add_topic("takeoff_status", 1000);
 
+
 	add_topic("testflight_tecs_status_x",200);
 	add_topic("testflight_pi_status_x",200);
 	//added 20210715

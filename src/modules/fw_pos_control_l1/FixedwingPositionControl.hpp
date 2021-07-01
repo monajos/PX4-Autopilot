@@ -79,6 +79,7 @@
 #include <uORB/topics/position_setpoint_triplet.h>
 #include <uORB/topics/tecs_status.h>
 
+
 //#include <uORB/topics/tecs_status_x.h>
 #include <uORB/topics/testflight_tecs_status_x.h>
 #include <uORB/topics/testflight_pi_status_x.h>
@@ -86,6 +87,7 @@
 #include <uORB/topics/vehicle_angular_velocity.h> //take
 #include <uORB/topics/vehicle_attitude.h> //take
 #include <uORB/topics/vehicle_attitude_setpoint.h> //take
+
 #include <uORB/topics/vehicle_command.h>
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_global_position.h> //take
@@ -189,6 +191,7 @@ private:
 	uORB::Publication<position_controller_status_s>		_pos_ctrl_status_pub{ORB_ID(position_controller_status)};			///< navigation capabilities publication
 	//uORB::Publication<position_controller_landing_status_s>	_pos_ctrl_landing_status_pub{ORB_ID(position_controller_landing_status)};	///< landing status publication
 	uORB::Publication<tecs_status_s>			_tecs_status_pub{ORB_ID(tecs_status)};						///< TECS status publication
+	uORB::Publication<tecs_status_x_s>			_tecs_status_x_pub{ORB_ID(tecs_status_x)};
 
 	uORB::Publication<testflight_tecs_status_x_s>		_testflight_tecs_status_x_pub{ORB_ID(testflight_tecs_status_x)};
 	uORB::Publication<testflight_pi_status_x_s>		_testflight_pi_status_x_pub{ORB_ID(testflight_pi_status_x)};
@@ -468,7 +471,7 @@ private:
 	// == FLIGHT TEST METHOD
 
 	// isActive
-	bool man_active();
+	bool man_active(float dt);
 
 	DEFINE_PARAMETERS(
 

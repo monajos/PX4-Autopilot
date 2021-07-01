@@ -42,19 +42,31 @@ Testmaneuver::init_trajectory()
 	_time   = 0.0f;
 
 	// == INITIALISE COEFFICIENTS
-	_spd_coeff_a = -3.0f*_rel_spd_sp/(_spd_rise_time*_spd_rise_time*_spd_rise_time*_spd_rise_time);
-	_spd_coeff_b = 4.0f*_rel_spd_sp/(_spd_rise_time*_spd_rise_time*_spd_rise_time);
+	if(_spd_rise_time < 0.1f) {
+		_spd_coeff_a = 0.0f;
+		_spd_coeff_b = 0.0f;
+	}
+	else {
+		_spd_coeff_a = -3.0f*_rel_spd_sp/(_spd_rise_time*_spd_rise_time*_spd_rise_time*_spd_rise_time);
+		_spd_coeff_b = 4.0f*_rel_spd_sp/(_spd_rise_time*_spd_rise_time*_spd_rise_time);
+	}
 
-	_hgt_coeff_a = -3.0f*_rel_hgt_sp/(_hgt_rise_time*_hgt_rise_time*_hgt_rise_time*_hgt_rise_time);
-	_hgt_coeff_b = 4.0f*_rel_hgt_sp/(_hgt_rise_time*_hgt_rise_time*_hgt_rise_time);
+	if(_hgt_rise_time < 0.1f) {
+		_hgt_coeff_a = 0.0f;
+		_hgt_coeff_b = 0.0f;
+	}
+	else {
+		_hgt_coeff_a = -3.0f*_rel_hgt_sp/(_hgt_rise_time*_hgt_rise_time*_hgt_rise_time*_hgt_rise_time);
+		_hgt_coeff_b = 4.0f*_rel_hgt_sp/(_hgt_rise_time*_hgt_rise_time*_hgt_rise_time);
+	}
 	return true;
 }
 
 void
 Testmaneuver::update_trajectory(float dt)
 {
-	_spd_sp = _base_spd_sp + update_spd();
-	_hgt_sp = _base_hgt_sp + update_hgt();
+	_spd_sp = update_spd();
+	_hgt_sp = update_hgt();
 	_time += dt;
 }
 
@@ -93,8 +105,8 @@ Testmaneuver::get_test_hgt_sp()
 float
 Testmaneuver::update_spd()
 {
-	if(_time > _hgt_rise_time) {
-		return _rel_hgt_sp;
+	if(_time > _spd_rise_time) {
+		return _rel_spd_sp;
 	}
 	else
 	{
