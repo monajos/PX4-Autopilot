@@ -1964,6 +1964,31 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 	tecs_status_publish();
 }
 
+
+bool
+FixedwingPositionControl::man_active(float dt)
+{
+	if((_manual_control_setpoint.z > 0.8f) && (_man_active == false))
+	{
+		_man_active = true;
+		_maneuver.init_trajectory();
+		return true;
+	}
+	else if((_manual_control_setpoint.z > 0.8f) && (_man_active == true))
+	{
+		_maneuver.update_trajectory(dt);
+		return true;
+	}
+	else
+	{
+		_maneuver.reset_trajectory();
+		_man_active = false;
+		return false;
+	}
+}
+// == SPAWN TASK ===============================================================
+
+
 int FixedwingPositionControl::task_spawn(int argc, char *argv[])
 {
 	bool vtol = false;
