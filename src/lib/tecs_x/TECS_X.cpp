@@ -47,7 +47,7 @@ static constexpr float DT_MAX = 1.0f;	///< max value of _dt allowed before a fil
 /**
  * @file TECS_X.cpp
  *
- * @author Paul Riseborough / Henrik Spark
+ * @author Paul Riseborough / Mods by Henrik Spark
  */
 
 /*
@@ -180,24 +180,19 @@ void TECS_X::updateHeightRateSetpoint(float alt_sp_amsl_m, float target_climbrat
 	target_climbrate_m_s = math::min(target_climbrate_m_s, _max_climb_rate);
 	target_sinkrate_m_s = math::min(target_sinkrate_m_s, _max_sink_rate);
 
-	float feedforward_height_rate = 0.0f;
-
 	if (fabsf(alt_sp_amsl_m - _hgt_setpoint) < math::max(target_sinkrate_m_s, target_climbrate_m_s) * _dt) {
 		_hgt_setpoint = alt_sp_amsl_m;
 
 	} else if (alt_sp_amsl_m > _hgt_setpoint) {
 		_hgt_setpoint += target_climbrate_m_s * _dt;
-		feedforward_height_rate = target_climbrate_m_s;
 
 	} else if (alt_sp_amsl_m < _hgt_setpoint) {
 		_hgt_setpoint -= target_sinkrate_m_s * _dt;
-		feedforward_height_rate = -target_sinkrate_m_s;
 	}
 
 	// Use a first order system to calculate a height rate setpoint from the current height error.
 	// Additionally, allow to add feedforward from heigh setpoint change
-	_hgt_rate_setpoint = (_hgt_setpoint - alt_amsl) * _height_error_gain + _height_setpoint_gain_ff *
-			     feedforward_height_rate;
+	_hgt_rate_setpoint = (_hgt_setpoint - alt_amsl) * _height_error_gain;
 	_hgt_rate_setpoint = math::constrain(_hgt_rate_setpoint, -_max_sink_rate, _max_climb_rate);
 }
 
