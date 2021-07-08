@@ -2009,8 +2009,11 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 bool
 FixedwingPositionControl::man_active(float dt)
 {
+	/*This is the first entry of the maneuver setting and executed once.
+	Here the option to reset the experimental controller states is added*/
 	if((_manual_control_setpoint.z > 0.8f) && (_man_active == false))
 	{
+		_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
 		_man_active = true;
 		_maneuver.init_trajectory();
 		return true;
