@@ -46,6 +46,6 @@ px4_add_module(
 		landing_slope
 		runway_takeoff
 		tecs
-		tecs_X
+		tecs_x
 		testmaneuver
 	)

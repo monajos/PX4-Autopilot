@@ -51,7 +51,7 @@ public:
 
 	// no copy, assignment, move, move assignment
 	TECS_X(const TECS_X &) = delete;
-	TECS_X &operator=(const TECS &) = delete;
+	TECS_X &operator=(const TECS_X &) = delete;
 	TECS_X(TECS_X &&) = delete;
 	TECS_X &operator=(TECS_X &&) = delete;
 
