@@ -57,6 +57,7 @@
 #include <lib/ecl/geo/geo.h>
 #include <lib/l1/ECL_L1_Pos_Controller.hpp>
 #include <lib/tecs/TECS.hpp>
+#include <lib/tecs_x/TECS_X.hpp>
 #include <lib/landing_slope/Landingslope.hpp>
 #include <lib/mathlib/mathlib.h>
 #include <lib/perf/perf_counter.h>
@@ -257,6 +258,16 @@ private:
 	ECL_L1_Pos_Controller	_l1_control;
 	TECS			_tecs;
 
+	TECS_X			_tecs_X;
+
+	// == FLIGHT TEST IMPLEMENTATIONS ==
+	Testmaneuver		_maneuver;
+	bool			_man_active{false};
+	uint32_t 		_mode_sel{0};
+	uint32_t 		_ctrl_sel{0};
+	float 			_dt{0.0f};
+
+
 	uint8_t _type{0};
 	enum FW_POSCTRL_MODE {
 		FW_POSCTRL_MODE_AUTO,
@@ -419,10 +430,7 @@ private:
 
 		(ParamFloat<px4::params::NAV_LOITER_RAD>) _param_nav_loiter_rad,
 
-<<<<<<< HEAD
-		(ParamFloat<px4::params::FW_TKO_PITCH_MIN>) _takeoff_pitch_min
 
-=======
 		(ParamFloat<px4::params::FW_TKO_PITCH_MIN>) _takeoff_pitch_min,
 
 		// test parameters
@@ -459,7 +467,6 @@ private:
 		(ParamFloat<px4::params::FW_AIRSPD_ST_X>) _param_fw_x_stall
 
 		// PI X parameters
->>>>>>> 64f13d8b18... MOD: new parameter in QGroundControl: FW_X_INIT_T as initialization time for the experimental controller to get stabilized before the maneuver starts
 	)
 
 };
