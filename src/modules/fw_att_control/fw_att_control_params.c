@@ -73,13 +73,13 @@ PARAM_DEFINE_FLOAT(FW_R_TC, 0.4f);
  * needed.
  *
  * @unit s
- * @min 0.2
+ * @min 0.0
  * @max 1.0
  * @decimal 2
  * @increment 0.05
  * @group FW Attitude Control
  */
-PARAM_DEFINE_FLOAT(FW_P_TC, 0.4f);
+PARAM_DEFINE_FLOAT(FW_P_TC, 0.1f);
 
 /**
  * Pitch rate proportional gain.
@@ -94,7 +94,7 @@ PARAM_DEFINE_FLOAT(FW_P_TC, 0.4f);
  * @increment 0.005
  * @group FW Attitude Control
  */
-PARAM_DEFINE_FLOAT(FW_PR_P, 0.08f);
+PARAM_DEFINE_FLOAT(FW_PR_P, 0.06f);
 
 /**
  * Pitch rate integrator gain.
@@ -103,13 +103,13 @@ PARAM_DEFINE_FLOAT(FW_PR_P, 0.08f);
  * state error. It trims any constant error.
  *
  * @unit %/rad
- * @min 0.005
+ * @min 0.000
  * @max 0.5
  * @decimal 3
  * @increment 0.005
  * @group FW Attitude Control
  */
-PARAM_DEFINE_FLOAT(FW_PR_I, 0.1f);
+PARAM_DEFINE_FLOAT(FW_PR_I, 0.0f);
 
 /**
  * Maximum positive / up pitch rate.
@@ -383,7 +383,7 @@ PARAM_DEFINE_FLOAT(FW_RR_FF, 0.5f);
  * @increment 0.05
  * @group FW Attitude Control
  */
-PARAM_DEFINE_FLOAT(FW_PR_FF, 0.5f);
+PARAM_DEFINE_FLOAT(FW_PR_FF, 0.0f);
 
 /**
  * Yaw rate feed forward
