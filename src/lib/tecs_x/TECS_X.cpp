@@ -263,7 +263,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 	// Calculate the throttle demand
 	if (_underspeed_detected) {
 		// always use full throttle to recover from an underspeed condition
-		throttle_setpoint = _throttle_setpoint_max;
+		// throttle_setpoint = _throttle_setpoint_max;
+		throttle_setpoint = 0.0f;
 
 	} else {
 		// Adjust the demanded total energy rate to compensate for induced drag rise in turns.
@@ -278,15 +279,15 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 		// Specific total energy rate = _STE_rate_max is achieved when throttle is set to _throttle_setpoint_max
 		// Specific total energy rate = 0 at cruise throttle
 		// Specific total energy rate = _STE_rate_min is achieved when throttle is set to _throttle_setpoint_min
-		float throttle_predicted = 0.0f;
+		// float throttle_predicted = 0.0f;
 
 		if (STE_rate_setpoint >= 0) {
 			// throttle is between cruise and maximum
-			throttle_predicted = throttle_cruise + STE_rate_setpoint / _STE_rate_max * (_throttle_setpoint_max - throttle_cruise);
+			// throttle_predicted = throttle_cruise + STE_rate_setpoint / _STE_rate_max * (_throttle_setpoint_max - throttle_cruise);
 
 		} else {
 			// throttle is between cruise and minimum
-			throttle_predicted = throttle_cruise + STE_rate_setpoint / _STE_rate_min * (_throttle_setpoint_min - throttle_cruise);
+			// throttle_predicted = throttle_cruise + STE_rate_setpoint / _STE_rate_min * (_throttle_setpoint_min - throttle_cruise);
 
 		}
 
@@ -294,8 +295,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 		const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
 
 		// Add proportional and derivative control feedback to the predicted throttle and constrain to throttle limits
-		throttle_setpoint = (_STE_rate_error * _throttle_damping_gain) * STE_rate_to_throttle + throttle_predicted;
-		throttle_setpoint = constrain(throttle_setpoint, _throttle_setpoint_min, _throttle_setpoint_max);
+		// Killed this path here.
+		throttle_setpoint = 0.0;
 
 		if (airspeed_sensor_enabled()) {
 			if (_integrator_gain_throttle > 0.0f) {
@@ -335,18 +336,18 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 
 		} else {
 			// when flying without an airspeed sensor, use the predicted throttle only
-			throttle_setpoint = throttle_predicted;
+			throttle_setpoint = 0; /*throttle_predicted;*/
 
 		}
 	}
 
 	// Rate limit the throttle demand
-	if (fabsf(_throttle_slewrate) > 0.01f) {
+	/*if (fabsf(_throttle_slewrate) > 0.01f) {
 		const float throttle_increment_limit = _dt * (_throttle_setpoint_max - _throttle_setpoint_min) * _throttle_slewrate;
 		throttle_setpoint = constrain(throttle_setpoint, _last_throttle_setpoint - throttle_increment_limit,
 					      _last_throttle_setpoint + throttle_increment_limit);
 	}
-
+	*/
 	_last_throttle_setpoint = constrain(throttle_setpoint, _throttle_setpoint_min, _throttle_setpoint_max);
 }
 

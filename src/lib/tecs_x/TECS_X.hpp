@@ -219,7 +219,7 @@ private:
 	float _pitch_speed_weight{1.0f};				///< speed control weighting used by pitch demand calculation
 	float _height_error_gain{0.2f};					///< height error inverse time constant [1/s]
 	float _height_setpoint_gain_ff{0.0f};				///< gain from height demand derivative to demanded climb rate
-	float _airspeed_error_gain{0.1f};				///< airspeed error inverse time constant [1/s]
+	float _airspeed_error_gain{0.2f};				///< airspeed error inverse time constant [1/s]
 	float _equivalent_airspeed_min{3.0f};				///< equivalent airspeed demand lower limit (m/sec)
 	float _equivalent_airspeed_max{30.0f};				///< equivalent airspeed demand upper limit (m/sec)
 	float _equivalent_airspeed_cruise{15.0f};			///< equivalent cruise airspeed for airspeed less mode (m/sec)
