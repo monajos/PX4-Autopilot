@@ -149,6 +149,7 @@ FixedwingPositionControl::parameters_update()
 	_tecs_X.set_ste_rate_time_const(_param_ste_x_rate_time_const.get());
 	_tecs_X.set_seb_rate_ff_gain(_param_seb_x_rate_ff.get());
 
+
 	// Based on basic TECS
 	_tecs_X.set_equivalent_airspeed_cruise(_param_fw_airspd_trim.get());
 	_tecs_X.set_equivalent_airspeed_min(_param_fw_airspd_min.get());
