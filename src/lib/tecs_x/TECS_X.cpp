@@ -231,7 +231,7 @@ void TECS_X::_update_energy_estimates()
 
 	// Calculate the specific energy balance demand which specifies how the available total
 	// energy should be allocated to speed (kinetic energy) and height (potential energy)
-	// Calculate the specific energy balance error
+	// Calculate the sp_STE_errorecific energy balance error
 	_SEB_error = SEB_setpoint() - (_SPE_estimate * _SPE_weighting - _SKE_estimate * _SKE_weighting);
 
 	// Calculate specific energy rate demands in units of (m**2/sec**3)
@@ -261,12 +261,12 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 	float throttle_setpoint;
 
 	// Calculate the throttle demand
-	if (_underspeed_detected) {
+/*	if (_underspeed_detected) {
 		// always use full throttle to recover from an underspeed condition
 		// throttle_setpoint = _throttle_setpoint_max;
 		throttle_setpoint = 0.0f;
 
-	} else {
+	} else {*/
 		// Adjust the demanded total energy rate to compensate for induced drag rise in turns.
 		// Assume induced drag scales linearly with normal load factor.
 		// The additional normal load factor is given by (1/cos(bank angle) - 1)
@@ -292,7 +292,9 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 		}
 
 		// Calculate gain scaler from specific energy rate error to throttle
-		const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
+		// was:  const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
+		// adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654
+		const float STE_rate_to_throttle = 1.0f / (CONSTANTS_ONE_G * _tas_state);
 
 		// Add proportional and derivative control feedback to the predicted throttle and constrain to throttle limits
 		// Killed this path here.
@@ -339,7 +341,7 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 			throttle_setpoint = 0; /*throttle_predicted;*/
 
 		}
-	}
+	/*}*/
 
 	// Rate limit the throttle demand
 	/*if (fabsf(_throttle_slewrate) > 0.01f) {
