@@ -37,7 +37,7 @@
 
 #include <px4_platform_common/defines.h>
 
-#include <dsp.h>
+
 
 using math::constrain;
 using math::max;
@@ -397,7 +397,6 @@ void TECS_X::_update_pitch_setpoint()
 	 * rises above the demanded value, the pitch angle demand is increased by the TECS controller to prevent the vehicle overspeeding.
 	 * The weighting can be adjusted between 0 and 2 depending on speed and height accuracy requirements.
 	*/
-	float _gamme_est_deriv;
 	// Calculate the specific energy balance rate demand
 	/*Deleted the weighting*/
 	const float SEB_rate_setpoint = _SPE_rate_setpoint - _SKE_rate_setpoint;
@@ -414,10 +413,8 @@ void TECS_X::_update_pitch_setpoint()
 		/*According to Dissertation of Lamp, Maxim (ISBN 9783863876654) all pitch commands go through the integrator
 		and the integrator input consists of the SEB rate error and a weighted derivative on Hdot/VTAS to damp the phugoid*/
 		/*calculate derivative of Hdot/VTAS*/
-		_gamme_est_deriv = pid.out;
-		float toBeDerivated;
-		toBeDerivated = (_vert_vel_state / _tas_state);
-		pid_controller(&pid, toBeDerivated);
+		float _gamma_est = (_vert_vel_state / _tas_state);
+		float _gamme_est_deriv = pid_calculate(&_gamma_est_derivator, 0.0f, _gamma_est, 0.0f, _dt);
 		/*add up the input to the integrator*/
 		float pitch_integ_input = _SEB_rate_error * _integrator_gain_pitch - _gamme_est_deriv * _SEB_rate_ff;
 
@@ -482,7 +479,13 @@ void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_a
 		_underspeed_detected = false;
 		_uncommanded_descent_recovery = false;
 		_STE_rate_error = 0.0f;
-		pid = test_pid_controller_init(pid);
+		pid_init(&_gamma_est_derivator, PID_MODE_DERIVATIV_CALC, _dt);
+		pid_set_parameters(&_gamma_est_derivator,
+				   0.0f,
+				   0.0f,
+				   1.0f,
+				   10000.0f,
+				   10000.0f);
 
 
 
@@ -565,7 +568,7 @@ void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_s
 	_update_speed_height_weights();
 
 	// Detect an uncommanded descent caused by an unachievable airspeed demand
-	_detect_uncommanded_descent();
+	/*_detect_uncommanded_descent();*/
 
 	// Calculate the demanded true airspeed
 	_update_speed_setpoint();

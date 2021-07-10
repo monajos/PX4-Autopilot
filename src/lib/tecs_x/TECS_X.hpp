@@ -42,7 +42,7 @@
 #include <mathlib/mathlib.h>
 #include <matrix/math.hpp>
 #include <lib/ecl/AlphaFilter/AlphaFilter.hpp>
-#include <dsp.h>
+#include <lib/pid/pid.h>
 
 
 class TECS_X
@@ -101,6 +101,7 @@ public:
 		ECL_TECS_MODE_CLIMBOUT
 	};
 
+	PID_t _gamma_est_derivator{}; //_speed_ctrl{};
 	void set_detect_underspeed_enabled(bool enabled) { _detect_underspeed_enabled = enabled; }
 
 	// setters for controller parameters
@@ -140,34 +141,6 @@ public:
 	// TECS status
 	uint64_t timestamp() { return _pitch_update_timestamp; }
 	ECL_TECS_MODE tecs_mode() { return _tecs_mode; }
-
-
-	static pid_controller_t test_pid_controller_init(pid_controller_t pid)
-	{
-	//pid_controller_t pid;
-	float max = 1000;
-	float min = -1000;
-	float kp  = 0.0;
-	float ki  = 0.0;
-	float kd  = 1;
-
-	/* Initialize PID controller */
-
-	pid_controller_init(&pid, kp, ki, kd);
-
-
-
-	/* Initialize saturation */
-
-	pid_saturation_set(&pid, min, max);
-
-	/* Initialize to zero */
-	pid_controller(&pid, 0.0f);
-
-	return pid;
-	}
-
-
 
 
 	float hgt_setpoint() { return _hgt_setpoint; }
@@ -265,7 +238,7 @@ private:
 	float _tas_rate_state{0.0f};					///< complimentary filter state - true airspeed first derivative (m/sec**2)
 	float _tas_state{0.0f};						///< complimentary filter state - true airspeed (m/sec)
 	float _tas_innov{0.0f};						///< complimentary filter true airspeed innovation (m/sec)
-	pid_controller_t pid;
+
 
 	// controller states
 	float _throttle_integ_state{0.0f};				///< throttle integrator state
