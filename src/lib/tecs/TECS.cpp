@@ -112,7 +112,7 @@ void TECS::_update_speed_states(float equivalent_airspeed_setpoint, float equiva
 
 	// Convert equivalent airspeed quantities to true airspeed
 	_EAS_setpoint = equivalent_airspeed_setpoint;
-	_TAS_setpoint  = _EAS_setpoint * EAS2TAS;
+	_TAS_setpoint  = _EAS_setpoint * 1; //EAS2TAS;
 	_TAS_max   = _equivalent_airspeed_max * EAS2TAS;
 	_TAS_min   = _equivalent_airspeed_min * EAS2TAS;
 

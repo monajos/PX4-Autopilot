@@ -58,6 +58,7 @@
 #include <lib/l1/ECL_L1_Pos_Controller.hpp>
 #include <lib/tecs/TECS.hpp>
 #include <lib/tecs_x/TECS_X.hpp>
+#include <lib/pi_x/PI_X.hpp>
 #include <lib/landing_slope/Landingslope.hpp>
 #include <lib/mathlib/mathlib.h>
 #include <lib/perf/perf_counter.h>
@@ -259,6 +260,7 @@ private:
 	TECS			_tecs;
 
 	TECS_X			_tecs_X;
+	PI_X			_pi_X;
 
 	// == FLIGHT TEST IMPLEMENTATIONS ==
 	Testmaneuver		_maneuver;

@@ -1704,6 +1704,16 @@ float
 FixedwingPositionControl::get_tecs_pitch()
 {
 	if (_is_tecs_running) {
+
+		if(_man_active)
+		{
+			if(_param_fw_x_ctrl_sel.get() == 1) {
+				return _tecs_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
+			}
+			else if(_param_fw_x_ctrl_sel.get() == 2) {
+				return _pi_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get()); // PI OUTPUT HERE
+			}
+		}
 		return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 	}
 

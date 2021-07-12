@@ -47,5 +47,6 @@ px4_add_module(
 		runway_takeoff
 		tecs
 		tecs_x
+		pi_x
 		testmaneuver
 	)

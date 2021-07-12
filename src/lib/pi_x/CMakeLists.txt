@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2017 PX4 Development Team. All rights reserved.
+#   Copyright (c) 2018-2020 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,45 +31,12 @@
 #
 ############################################################################
 
-px4_add_git_submodule(TARGET git_ecl PATH "ecl")
-px4_add_git_submodule(TARGET git_matrix PATH "matrix")
-px4_add_git_submodule(TARGET git_monocypher PATH "crypto/monocypher")
+px4_add_library(pi_x
+	PI_X.cpp
+	PI_X.hpp
+)
 
-add_subdirectory(airspeed)
-add_subdirectory(airspeed_validator)
-add_subdirectory(avoidance)
-add_subdirectory(battery)
-add_subdirectory(bezier)
-add_subdirectory(cdev)
-add_subdirectory(circuit_breaker)
-add_subdirectory(collision_prevention)
-add_subdirectory(controllib)
-add_subdirectory(component_information)
-add_subdirectory(conversion)
-add_subdirectory(crypto)
-add_subdirectory(drivers)
-add_subdirectory(ecl)
-add_subdirectory(hysteresis)
-add_subdirectory(l1)
-add_subdirectory(landing_slope)
-add_subdirectory(led)
-add_subdirectory(magnetometer_bias_estimator)
-add_subdirectory(mathlib)
-add_subdirectory(mixer)
-add_subdirectory(mixer_module)
-add_subdirectory(motion_planning)
-add_subdirectory(output_limit)
-add_subdirectory(perf)
-add_subdirectory(pid)
-add_subdirectory(pwm)
-add_subdirectory(rc)
-add_subdirectory(sensor_calibration)
-add_subdirectory(slew_rate)
-add_subdirectory(systemlib)
-add_subdirectory(tecs)
-add_subdirectory(tecs_x)
-add_subdirectory(pi_x)
-add_subdirectory(terrain_estimation)
-add_subdirectory(tunes)
-add_subdirectory(version)
-add_subdirectory(weather_vane)
+
+# do these have to be changed?
+add_dependencies(pi_x git_ecl)
+target_link_libraries(pi_x PRIVATE ecl_geo)
