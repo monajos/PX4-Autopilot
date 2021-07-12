@@ -718,7 +718,7 @@ PARAM_DEFINE_FLOAT(FW_T_HRATE_FF, 0.3f);
 /**
  * True airspeed error time constant.
  *
- * @min 2.0
+ * @min 2
  * @decimal 2
  * @increment 0.5
  * @group FW TECS
@@ -1248,8 +1248,9 @@ PARAM_DEFINE_FLOAT(FW_T_PTCH_DAMP_X, 0.1f);
 /**
  * Altitude error time constant.
  *
- * @min 2.0
- * @decimal 2
+ * @min 0.1
+ * @max 10.0
+ * @decimal 3
  * @increment 0.5
  * @group FW X TECS
  */
@@ -1269,8 +1270,9 @@ PARAM_DEFINE_FLOAT(FW_T_HRATE_FF_X, 0.3f);
 /**
  * True airspeed error time constant.
  *
- * @min 2.0
- * @decimal 2
+ * @min 0.1
+ * @max 40
+ * @decimal 3
  * @increment 0.5
  * @group FW X TECS
  */

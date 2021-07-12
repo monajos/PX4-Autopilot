@@ -114,9 +114,10 @@ void TECS_X::_update_speed_states(float equivalent_airspeed_setpoint, float equi
 
 	// Convert equivalent airspeed quantities to true airspeed
 	_EAS_setpoint = equivalent_airspeed_setpoint;
-	_TAS_setpoint  = _EAS_setpoint * EAS2TAS;
-	_TAS_max   = _equivalent_airspeed_max * EAS2TAS;
-	_TAS_min   = _equivalent_airspeed_min * EAS2TAS;
+
+	/*Change made here to directly command TAS*/
+	_TAS_setpoint  = _EAS_setpoint * 1; //EAS2TAS;
+
 
 	// If airspeed measurements are not being used, fix the airspeed estimate to the nominal cruise airspeed
 	if (!PX4_ISFINITE(equivalent_airspeed) || !airspeed_sensor_enabled()) {
@@ -156,95 +157,41 @@ void TECS_X::_update_speed_states(float equivalent_airspeed_setpoint, float equi
 
 void TECS_X::_update_speed_setpoint()
 {
-	// Set the TAS demand to the minimum value if an underspeed or
-	// or a uncontrolled descent condition exists to maximise climb rate
-	if ((_uncommanded_descent_recovery) || (_underspeed_detected)) {
-		_TAS_setpoint = _TAS_min;
-	}
-
-	_TAS_setpoint = constrain(_TAS_setpoint, _TAS_min, _TAS_max);
-
-	// Calculate limits for the demanded rate of change of speed based on physical performance limits
-	// with a 50% margin to allow the total energy controller to correct for errors.
-	/*
-	float velRateMax = 0.5f * _STE_rate_max / _tas_state;
-	float velRateMin = 0.5f * _STE_rate_min / _tas_state;
-	*/
-
-	_TAS_setpoint_adj = constrain(_TAS_setpoint, _TAS_min, _TAS_max);
-
-	// calculate the demanded true airspeed rate of change based on first order response of true airspeed error
-	/*_TAS_rate_setpoint = constrain((_TAS_setpoint_adj - _tas_state) * _airspeed_error_gain, velRateMin, velRateMax);*/
-	_TAS_rate_setpoint = (_TAS_setpoint_adj - _tas_state) * _airspeed_error_gain;
+	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state) * _airspeed_error_gain;
 }
 
 void TECS_X::updateHeightRateSetpoint(float alt_sp_amsl_m, float target_climbrate_m_s, float target_sinkrate_m_s,
 				    float alt_amsl)
 {
-	/*target_climbrate_m_s = math::min(target_climbrate_m_s, _max_climb_rate);
-	target_sinkrate_m_s = math::min(target_sinkrate_m_s, _max_sink_rate);*/
-
-	if (fabsf(alt_sp_amsl_m - _hgt_setpoint) < math::max(target_sinkrate_m_s, target_climbrate_m_s) * _dt) {
-		_hgt_setpoint = alt_sp_amsl_m;
-
-	} else if (alt_sp_amsl_m > _hgt_setpoint) {
-		_hgt_setpoint += target_climbrate_m_s * _dt;
-
-	} else if (alt_sp_amsl_m < _hgt_setpoint) {
-		_hgt_setpoint -= target_sinkrate_m_s * _dt;
-	}
-
+	_hgt_setpoint = alt_sp_amsl_m;
 	// Use a first order system to calculate a height rate setpoint from the current height error.
-	// Additionally, allow to add feedforward from heigh setpoint change
 	_hgt_rate_setpoint = (_hgt_setpoint - alt_amsl) * _height_error_gain;
-	/*_hgt_rate_setpoint = math::constrain(_hgt_rate_setpoint, -_max_sink_rate, _max_climb_rate);*/
+	double double__hgt_setpoint = double(_hgt_setpoint);
+	std::printf("tecsx double__hgt_setpoint:\t %f\n", double__hgt_setpoint);
+	double double_alt_amsl = double(alt_amsl);
+	std::printf("tecsx double_alt_amsl:\t %f\n", double_alt_amsl);
+
 }
 
 void TECS_X::_update_height_rate_setpoint(float hgt_rate_sp)
 {
 	// Limit the rate of change of height demand to respect vehicle performance limits
-	_hgt_rate_setpoint = math::constrain(hgt_rate_sp, -_max_sink_rate, _max_climb_rate);
+	//_hgt_rate_setpoint = math::constrain(hgt_rate_sp, -_max_sink_rate, _max_climb_rate);
 	_hgt_setpoint = _vert_pos_state;
 }
 
 void TECS_X::_detect_underspeed()
 {
-	if (!_detect_underspeed_enabled) {
-		_underspeed_detected = false;
-		return;
-	}
 
-	if (((_tas_state < _TAS_min * 0.9f) && (_last_throttle_setpoint >= _throttle_setpoint_max * 0.95f))
-	    || ((_vert_pos_state < _hgt_setpoint) && _underspeed_detected)) {
-
-		_underspeed_detected = true;
-
-	} else {
-		_underspeed_detected = false;
-	}
 }
 
 void TECS_X::_update_energy_estimates()
 {
-	// Calculate specific energy demands in units of (m**2/sec**2)
-	/*_SPE_setpoint = _hgt_setpoint * CONSTANTS_ONE_G; // potential energy
-	_SKE_setpoint = 0.5f * _TAS_setpoint_adj * _TAS_setpoint_adj; // kinetic energy*/
-
-	// Calculate total energy error
-	/*_STE_error = _SPE_setpoint - _SPE_estimate + _SKE_setpoint - _SKE_estimate;*/
-
-	// Calculate the specific energy balance demand which specifies how the available total
-	// energy should be allocated to speed (kinetic energy) and height (potential energy)
-	// Calculate the sp_STE_errorecific energy balance error
-	/*_SEB_error = SEB_setpoint() - (_SPE_estimate * _SPE_weighting - _SKE_estimate * _SKE_weighting);*/
-
 	// Calculate specific energy rate demands in units of (m**2/sec**3)
 	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state; // potential energy rate of change
 	_SKE_rate_setpoint = _TAS_rate_setpoint / CONSTANTS_ONE_G; // kinetic energy rate of change
-
-	// Calculate specific energies in units of (m**2/sec**2)
-	/*_SPE_estimate = _vert_pos_state * CONSTANTS_ONE_G; // potential energy
-	_SKE_estimate = 0.5f * _tas_state * _tas_state; // kinetic energy*/
+	double double__hgt_rate_setpoint = double(_hgt_rate_setpoint);
+	std::printf("tecsx double__hgt_rate_setpoint:\t %f\n", double__hgt_rate_setpoint);
 
 	// Calculate specific energy rates in units of (m**2/sec**3)
 	_SPE_rate = _vert_vel_state / _tas_state; // potential energy rate of change
@@ -253,48 +200,16 @@ void TECS_X::_update_energy_estimates()
 
 void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 {
-	// Calculate demanded rate of change of total energy, respecting vehicle limits.
-	// We will constrain the value below.
-	/*float STE_rate_setpoint = _SPE_rate_setpoint + _SKE_rate_setpoint;*/
-
 	// Calculate the total energy rate error, applying a first order IIR filter
 	// to reduce the effect of accelerometer noise
 	_STE_rate_error_filter.update(-_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint);
 	_STE_rate_error = _STE_rate_error_filter.getState();
+	double double__STE_rate_error = double(_STE_rate_error);
+	std::printf("tecsx double__STE_rate_error:\t %f\n", double__STE_rate_error);
 
 	float throttle_setpoint;
 
-	// Calculate the throttle demand
-/*	if (_underspeed_detected) {
-		// always use full throttle to recover from an underspeed condition
-		// throttle_setpoint = _throttle_setpoint_max;
-		throttle_setpoint = 0.0f;
 
-	} else {*/
-		// Adjust the demanded total energy rate to compensate for induced drag rise in turns.
-		// Assume induced drag scales linearly with normal load factor.
-		// The additional normal load factor is given by (1/cos(bank angle) - 1)
-		/*STE_rate_setpoint = STE_rate_setpoint + _load_factor_correction * (_load_factor - 1.f);*/
-
-		/*STE_rate_setpoint = constrain(STE_rate_setpoint, _STE_rate_min, _STE_rate_max);*/
-
-		// Calculate a predicted throttle from the demanded rate of change of energy, using the cruise throttle
-		// as the starting point. Assume:
-		// Specific total energy rate = _STE_rate_max is achieved when throttle is set to _throttle_setpoint_max
-		// Specific total energy rate = 0 at cruise throttle
-		// Specific total energy rate = _STE_rate_min is achieved when throttle is set to _throttle_setpoint_min
-		// float throttle_predicted = 0.0f;
-
-		/*if (STE_rate_setpoint >= 0) {
-			// throttle is between cruise and maximum
-			// throttle_predicted = throttle_cruise + STE_rate_setpoint / _STE_rate_max * (_throttle_setpoint_max - throttle_cruise);
-
-		} else {
-			// throttle is between cruise and minimum
-			// throttle_predicted = throttle_cruise + STE_rate_setpoint / _STE_rate_min * (_throttle_setpoint_min - throttle_cruise);
-
-		}
-		*/
 		// Calculate gain scaler from specific energy rate error to throttle
 		// was:  const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
 		// adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654
@@ -306,11 +221,12 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 
 		if (airspeed_sensor_enabled()) {
 			if (_integrator_gain_throttle > 0.0f) {
-				float integ_state_max = _throttle_setpoint_max - throttle_setpoint;
-				float integ_state_min = _throttle_setpoint_min - throttle_setpoint;
+				float integ_state_max = 6000.0f / (_mass * CONSTANTS_ONE_G) -( _STE_rate_error + throttle_cruise ); //_throttle_setpoint_max - throttle_setpoint;
+				float integ_state_min = 0.0f / (_mass * CONSTANTS_ONE_G) -( _STE_rate_error + throttle_cruise ) ; //_throttle_setpoint_min - throttle_setpoint;
 
 				float throttle_integ_input = (_STE_rate_error * _integrator_gain_throttle) * _dt *
 							     STE_rate_to_throttle;
+
 
 				// only allow integrator propagation into direction which unsaturates throttle
 				if (_throttle_integ_state > integ_state_max) {
@@ -319,16 +235,12 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 				} else if (_throttle_integ_state < integ_state_min) {
 					throttle_integ_input = math::max(0.f, throttle_integ_input);
 				}
-
 				// Calculate a throttle demand from the integrated total energy rate error
 				// This will be added to the total throttle demand to compensate for steady state errors
 				_throttle_integ_state = _throttle_integ_state + throttle_integ_input;
+				double double__throttle_integ_state = double(_throttle_integ_state);
+				std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
 
-				if (_climbout_mode_active) {
-					// During climbout, set the integrator to maximum throttle to prevent transient throttle drop
-					// at end of climbout when we transition to closed loop throttle control
-					_throttle_integ_state = integ_state_max;
-				}
 
 			} else {
 				_throttle_integ_state = 0.0f;
@@ -338,67 +250,27 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 
 		if (airspeed_sensor_enabled()) {
 			// Add the integrator feedback during closed loop operation with an airspeed sensor
-			throttle_setpoint += _throttle_integ_state;
+			/* adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654:
+			The integrator is multiplied by mass and velocity to command an unspecific thrust force*/
+			throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G + throttle_cruise;
 
 		} else {
 			// when flying without an airspeed sensor, use the predicted throttle only
 			throttle_setpoint = 0; /*throttle_predicted;*/
 
 		}
-	/*}*/
 
-	// Rate limit the throttle demand
-	/*if (fabsf(_throttle_slewrate) > 0.01f) {
-		const float throttle_increment_limit = _dt * (_throttle_setpoint_max - _throttle_setpoint_min) * _throttle_slewrate;
-		throttle_setpoint = constrain(throttle_setpoint, _last_throttle_setpoint - throttle_increment_limit,
-					      _last_throttle_setpoint + throttle_increment_limit);
-	}
-	*/
-	_last_throttle_setpoint = constrain(throttle_setpoint, _throttle_setpoint_min, _throttle_setpoint_max);
+	_last_throttle_setpoint = throttle_setpoint;
+	//double double_last_throttle_setpoint = double(_last_throttle_setpoint);
+	//std::printf("tecsx commanded throttle setpoint:\t %f\n", double_last_throttle_setpoint);
 }
 
-/*void TECS_X::_detect_uncommanded_descent()
-{
 
-	 * This function detects a condition that can occur when the demanded airspeed is greater than the
-	 * aircraft can achieve in level flight. When this occurs, the vehicle will continue to reduce height
-	 * while attempting to maintain speed.
-
-
-	// Calculate rate of change of total specific energy
-	const float STE_rate = _SPE_rate + _SKE_rate;
-
-	// If total energy is very low and reducing, throttle is high, and we are not in an underspeed condition, then enter uncommanded descent recovery mode
-	const bool enter_mode = !_uncommanded_descent_recovery && !_underspeed_detected && (_STE_error > 200.0f)
-				&& (STE_rate < 0.0f)
-				&& (_last_throttle_setpoint >= _throttle_setpoint_max * 0.9f);
-
-	// If we enter an underspeed condition or recover the required total energy, then exit uncommanded descent recovery mode
-	const bool exit_mode = _uncommanded_descent_recovery && (_underspeed_detected || (_STE_error < 0.0f));
-
-	if (enter_mode) {
-		_uncommanded_descent_recovery = true;
-
-	} else if (exit_mode) {
-		_uncommanded_descent_recovery = false;
-
-	}
-}
-*/
 void TECS_X::_update_pitch_setpoint()
 {
-	/*
-	 * The SKE_weighting variable controls how speed and height control are prioritised by the pitch demand calculation.
-	 * A weighting of 1 givea equal speed and height priority
-	 * A weighting of 0 gives 100% priority to height control and must be used when no airspeed measurement is available.
-	 * A weighting of 2 provides 100% priority to speed control and is used when:
-	 * a) an underspeed condition is detected.
-	 * b) during climbout where a minimum pitch angle has been set to ensure height is gained. If the airspeed
-	 * rises above the demanded value, the pitch angle demand is increased by the TECS controller to prevent the vehicle overspeeding.
-	 * The weighting can be adjusted between 0 and 2 depending on speed and height accuracy requirements.
-	*/
+
 	// Calculate the specific energy balance rate demand
-	/*Deleted the weighting*/
+	/*Deleted the weighting, altitude rate and speed rate are equally weighted*/
 	const float SEB_rate_setpoint = _SPE_rate_setpoint - _SKE_rate_setpoint;
 
 	// Calculate the specific energy balance rate error
@@ -414,17 +286,12 @@ void TECS_X::_update_pitch_setpoint()
 		and the integrator input consists of the SEB rate error and a weighted derivative on Hdot/VTAS to damp the phugoid*/
 		/*calculate derivative of Hdot/VTAS*/
 		float _gamma_est = (_vert_vel_state / _tas_state);
+		//float pid_calculate(PID_t *pid, float sp, float val, float val_dot, float dt);
+		/*PID-D-error is negative, so the D-Part is negative, too*/
 		float _gamme_est_deriv = pid_calculate(&_gamma_est_derivator, 0.0f, _gamma_est, 0.0f, _dt);
-		/*add up the input to the integrator*/
-		float pitch_integ_input = _SEB_rate_error * _integrator_gain_pitch - _gamme_est_deriv * _SEB_rate_ff;
+		/*add up the input to the integrator, take a plus here to add the neagtive D-Part*/
+		float pitch_integ_input = _SEB_rate_error * _integrator_gain_pitch + _gamme_est_deriv * _SEB_rate_ff;
 
-		// Prevent the integrator changing in a direction that will increase pitch demand saturation
-		if (_pitch_setpoint_unc > _pitch_setpoint_max) {
-			pitch_integ_input = min(pitch_integ_input, 0.f);
-
-		} else if (_pitch_setpoint_unc < _pitch_setpoint_min) {
-			pitch_integ_input = max(pitch_integ_input, 0.f);
-		}
 
 		// Update the pitch integrator state.
 		_pitch_integ_state = _pitch_integ_state + pitch_integ_input * _dt;
@@ -433,15 +300,6 @@ void TECS_X::_update_pitch_setpoint()
 		_pitch_integ_state = 0.0f;
 	}
 
-	/*float SEB_rate_correction = _SEB_rate_error * _pitch_damping_gain + _pitch_integ_state + _SEB_rate_ff *
-				    SEB_rate_setpoint;
-	*/
-	// During climbout, bias the demanded pitch angle so that a zero speed error produces a pitch angle
-	// demand equal to the minimum pitch angle set by the mission plan. This prevents the integrator
-	// having to catch up before the nose can be raised to reduce excess speed during climbout.
-	/*if (_climbout_mode_active) {
-		SEB_rate_correction += _pitch_setpoint_min * climb_angle_to_SEB_rate;
-	}*/
 
 	// Convert the specific energy balance rate correction to a target pitch angle. This calculation assumes:
 	// a) The climb angle follows pitch angle with a lag that is small enough not to destabilise the control loop.
@@ -470,7 +328,11 @@ void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_a
 		_tas_state = _EAS * EAS2TAS;
 		_throttle_integ_state =  0.0f;
 		_pitch_integ_state = 0.0f;
-		_last_throttle_setpoint = (_in_air ? throttle_cruise : 0.0f);;
+		//char [16] str;
+		_last_throttle_setpoint = (_in_air ? throttle_cruise : 0.0f);
+		double doublethrottle_cruise = double(throttle_cruise);
+		std::printf("last throttle setpoint:\t %f\n", doublethrottle_cruise);
+		//snprintf(str, sizeof(str), "%.2f", throttle_cruise);
 		_last_pitch_setpoint = constrain(pitch, _pitch_setpoint_min, _pitch_setpoint_max);
 		_pitch_setpoint_unc = _last_pitch_setpoint;
 		_hgt_setpoint = baro_altitude;
@@ -493,25 +355,8 @@ void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_a
 			_dt = DT_DEFAULT;
 		}
 
-	} else if (_climbout_mode_active) {
-		// During climbout use the lower pitch angle limit specified by the
-		// calling controller
-		_pitch_setpoint_min	   = pitch_min_climbout;
 
-		// throttle lower limit is set to a value that prevents throttle reduction
-		_throttle_setpoint_min  = _throttle_setpoint_max - 0.01f;
-
-		// airspeed demand states are set to track the measured airspeed
-		_TAS_setpoint_last      = _EAS * EAS2TAS;
-		_TAS_setpoint_adj       = _EAS * EAS2TAS;
-
-		_hgt_setpoint = baro_altitude;
-
-		// disable speed and decent error condition checks
-		_underspeed_detected = false;
-		_uncommanded_descent_recovery = false;
 	}
-
 	// filter specific energy rate error using first order filter with 0.5 second time constant
 	_STE_rate_error_filter.setParameters(DT_DEFAULT, _STE_rate_time_const);
 	_STE_rate_error_filter.reset(0.0f);
@@ -525,11 +370,7 @@ void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_a
 
 void TECS_X::_update_STE_rate_lim()
 {
-	// Calculate the specific total energy upper rate limits from the max throttle climb rate
-	/*_STE_rate_max = _max_climb_rate * CONSTANTS_ONE_G;
 
-	// Calculate the specific total energy lower rate limits from the min throttle sink rate
-	_STE_rate_min = - _min_sink_rate * CONSTANTS_ONE_G;*/
 }
 
 void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_setpoint,
@@ -567,8 +408,6 @@ void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_s
 
 	_update_speed_height_weights();
 
-	// Detect an uncommanded descent caused by an unachievable airspeed demand
-	/*_detect_uncommanded_descent();*/
 
 	// Calculate the demanded true airspeed
 	_update_speed_setpoint();
@@ -596,13 +435,13 @@ void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_s
 
 	// Set TECS mode for next frame
 	if (_underspeed_detected) {
-		_tecs_mode = ECL_TECS_MODE_UNDERSPEED;
+		_tecs_mode = ECL_TECS_MODE_NORMAL; //ECL_TECS_MODE_UNDERSPEED;
 
 	} else if (_uncommanded_descent_recovery) {
-		_tecs_mode = ECL_TECS_MODE_BAD_DESCENT;
+		_tecs_mode = ECL_TECS_MODE_NORMAL; //ECL_TECS_MODE_BAD_DESCENT;
 
 	} else if (_climbout_mode_active) {
-		_tecs_mode = ECL_TECS_MODE_CLIMBOUT;
+		_tecs_mode = ECL_TECS_MODE_NORMAL;//ECL_TECS_MODE_CLIMBOUT;
 
 	} else {
 		// This is the default operation mode
@@ -613,18 +452,8 @@ void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_s
 
 void TECS_X::_update_speed_height_weights()
 {
-	// Calculate the weight applied to control of specific kinetic energy error
-	_SKE_weighting = constrain(_pitch_speed_weight, 0.0f, 2.0f);
-
-	if ((_underspeed_detected || _climbout_mode_active) && airspeed_sensor_enabled()) {
-		_SKE_weighting = 2.0f;
-
-	} else if (!airspeed_sensor_enabled()) {
-		_SKE_weighting = 0.0f;
-	}
-
-	// don't allow any weight to be larger than one, as it has the same effect as reducing the control
+		// don't allow any weight to be larger than one, as it has the same effect as reducing the control
 	// loop time constant and therefore can lead to a destabilization of that control loop
-	_SPE_weighting = constrain(2.0f - _SKE_weighting, 0.f, 1.f);
-	_SKE_weighting = constrain(_SKE_weighting, 0.f, 1.f);
+	_SPE_weighting = 1.0f;
+	_SKE_weighting = 1.0f;
 }

@@ -128,8 +128,7 @@ FixedwingPositionControl::parameters_update()
 	_tecs.set_speed_derivative_time_constant(_param_tas_rate_time_const.get());
 	_tecs.set_seb_rate_ff_gain(_param_seb_rate_ff.get());
 
-<<<<<<< HEAD
-=======
+
 	// TECS X parameters
 
 	_tecs_X.set_max_climb_rate(_param_fw_tx_clmb_max.get());
@@ -169,7 +168,6 @@ FixedwingPositionControl::parameters_update()
 	_mode_sel = _param_fw_x_mode.get();
 	_ctrl_sel = _param_fw_x_ctrl_sel.get();
 
->>>>>>> 64f13d8b18... MOD: new parameter in QGroundControl: FW_X_INIT_T as initialization time for the experimental controller to get stabilized before the maneuver starts
 
 	// Landing slope
 	/* check if negative value for 2/3 of flare altitude is set for throttle cut */
@@ -466,6 +464,29 @@ FixedwingPositionControl::tecs_status_publish()
 	t.pitch_sp_rad = _tecs.get_pitch_setpoint();
 
 	t.timestamp = hrt_absolute_time();
+
+	_tecs_status_pub.publish(t);
+
+	switch (_tecs_X.tecs_mode()) {
+	case TECS::ECL_TECS_MODE_NORMAL:
+		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;
+		break;
+
+	case TECS::ECL_TECS_MODE_UNDERSPEED:
+		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_UNDERSPEED_X;
+		break;
+
+	case TECS::ECL_TECS_MODE_BAD_DESCENT:
+		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_BAD_DESCENT_X;
+		break;
+
+	case TECS::ECL_TECS_MODE_CLIMBOUT:
+		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_CLIMBOUT_X;
+		break;
+	}
+
+	tx.altitude_sp_x = _tecs_X.hgt_setpoint();
+	tx.altitude_filtered_x = _tecs_X.vert_pos_state();
 
 	_tecs_status_pub.publish(t);
 }
@@ -2003,6 +2024,16 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 				    pitch_max_rad - radians(_param_fw_psp_off.get()),
 				    _param_climbrate_target.get(), _param_sinkrate_target.get(), hgt_rate_sp);
 
+
+	_tecs_X.update_pitch_throttle(_pitch - radians(_param_fw_psp_off.get()),
+				    _current_altitude, alt_sp,
+				    airspeed_sp, _airspeed, _eas2tas,
+				    climbout_mode,
+				    climbout_pitch_min_rad - radians(_param_fw_psp_off.get()),
+				    throttle_min, throttle_max, _tecs.get_throttle_setpoint(),
+				    pitch_min_rad - radians(_param_fw_psp_off.get()),
+				    pitch_max_rad - radians(_param_fw_psp_off.get()),
+				    _param_climbrate_x_target.get(), _param_sinkrate_x_target.get(), hgt_rate_sp);
 	tecs_status_publish();
 }
 
@@ -2014,7 +2045,7 @@ FixedwingPositionControl::man_active(float dt)
 	Here the option to reset the experimental controller states is added*/
 	if((_manual_control_setpoint.z > 0.8f) && (_man_active == false))
 	{
-		_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
+		//_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
 		_man_active = true;
 		_maneuver.init_trajectory();
 		return true;

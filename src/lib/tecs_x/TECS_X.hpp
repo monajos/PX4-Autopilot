@@ -209,6 +209,7 @@ private:
 	uint64_t _pitch_update_timestamp{0};				///< last timestamp of the pitch function call
 
 	// controller parameters
+	float _mass{3.1f}; 						///< overall ac system mass
 	float _tas_estimate_freq{0.0f};					///< cross-over frequency of the true airspeed complementary filter (rad/sec)
 	float _max_climb_rate{2.0f};					///< climb rate produced by max allowed throttle (m/sec)
 	float _min_sink_rate{1.0f};					///< sink rate produced by min allowed throttle (m/sec)
