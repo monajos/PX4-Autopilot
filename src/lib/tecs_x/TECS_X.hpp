@@ -43,7 +43,7 @@
 #include <matrix/math.hpp>
 #include <lib/ecl/AlphaFilter/AlphaFilter.hpp>
 #include <lib/pid/pid.h>
-
+using math::radians;
 
 class TECS_X
 {

@@ -233,23 +233,30 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 
 		if (airspeed_sensor_enabled()) {
 			if (_integrator_gain_throttle > 0.0f) {
-				float integ_state_max = 6000.0f / (_mass * CONSTANTS_ONE_G) -( _STE_rate_error + throttle_cruise ); //_throttle_setpoint_max - throttle_setpoint;
-				float integ_state_min = 0.0f / (_mass * CONSTANTS_ONE_G) -( _STE_rate_error + throttle_cruise ) ; //_throttle_setpoint_min - throttle_setpoint;
 
 				float throttle_integ_input = (_STE_rate_error * _integrator_gain_throttle) * _dt *
 							     STE_rate_to_throttle;
 
 
-				// only allow integrator propagation into direction which unsaturates throttle
-				if (_throttle_integ_state > integ_state_max) {
-					throttle_integ_input = math::min(0.f, throttle_integ_input);
 
-				} else if (_throttle_integ_state < integ_state_min) {
-					throttle_integ_input = math::max(0.f, throttle_integ_input);
-				}
 				// Calculate a throttle demand from the integrated total energy rate error
 				// This will be added to the total throttle demand to compensate for steady state errors
-				_throttle_integ_state = _throttle_integ_state + throttle_integ_input;
+				// Only allow itegration action which unsaturates the throttle
+				// -> later throttle_setpoint = throttle_cruise;
+				// 	    throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+				// throttle in range [0 - 1]
+				// so
+				float _throttle_integ_state_min = -throttle_cruise / ( _mass * CONSTANTS_ONE_G);  //and
+				float _throttle_integ_state_max = (1 - throttle_cruise) / ( _mass * CONSTANTS_ONE_G);
+				float throttle_integ_input_limited = throttle_integ_input;
+				// only allow integrator propagation into direction which unsaturates throttle
+				if (_throttle_integ_state > _throttle_integ_state_max) {
+					throttle_integ_input_limited = math::min(0.f, throttle_integ_input);
+
+				} else if (_throttle_integ_state < _throttle_integ_state_min) {
+					throttle_integ_input_limited = math::max(0.f, throttle_integ_input);
+				}
+				_throttle_integ_state = _throttle_integ_state + throttle_integ_input_limited;
 				double double__throttle_integ_state = double(_throttle_integ_state);
 				std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
 
@@ -264,7 +271,11 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 			// Add the integrator feedback during closed loop operation with an airspeed sensor
 			/* adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654:
 			The integrator is multiplied by mass and velocity to command an unspecific thrust force*/
-			throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G + throttle_cruise;
+
+			throttle_setpoint = throttle_cruise;
+			throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+			double double_throttle_setpoint = double(throttle_setpoint);
+			std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
 
 		} else {
 			// when flying without an airspeed sensor, use the predicted throttle only
@@ -291,7 +302,8 @@ void TECS_X::_update_pitch_setpoint()
 
 	// Calculate derivative from change in climb angle to rate of change of specific energy balance
 	/*const float climb_angle_to_SEB_rate = _tas_state * CONSTANTS_ONE_G;*/
-
+	float _pitch_max_rad = radians(15.0);
+	float _pitch_min_rad = radians(-10.0);
 	if (_integrator_gain_pitch > 0.0f) {
 		// Calculate pitch integrator input term
 		/*According to Dissertation of Lamp, Maxim (ISBN 9783863876654) all pitch commands go through the integrator
@@ -306,6 +318,17 @@ void TECS_X::_update_pitch_setpoint()
 
 
 		// Update the pitch integrator state.
+		// Only allow integration action which unsaturates the pitch demand, if the pitch demand is saturated
+		// Ignore the mavlink / QGround settings and hardcode [-10 , 15] deg instead of _pitch_setpoint_max/min
+		//if (pitch_integ_input)
+
+		// only allow integrator propagation into direction which unsaturates pitch demand
+		// total pitch demand below is: _pitch_setpoint_unc = _pitch_integ_state;
+		if (_pitch_integ_state > _pitch_max_rad) {
+			pitch_integ_input = math::min(0.f, pitch_integ_input);
+		} else if (_pitch_integ_state < _pitch_min_rad) {
+			pitch_integ_input = math::max(0.f, pitch_integ_input);
+		}
 		_pitch_integ_state = _pitch_integ_state + pitch_integ_input * _dt;
 
 	} else {
@@ -320,7 +343,7 @@ void TECS_X::_update_pitch_setpoint()
 	/*According to Dissertation of Lamp, Maxim (ISBN 9783863876654) all pitch commands go through the integrator*/
 	_pitch_setpoint_unc = _pitch_integ_state;  /*/ climb_angle_to_SEB_rate;*/
 
-	float pitch_setpoint = constrain(_pitch_setpoint_unc, _pitch_setpoint_min, _pitch_setpoint_max);
+	float pitch_setpoint = constrain(_pitch_setpoint_unc, _pitch_min_rad, _pitch_max_rad);
 
 	// Comply with the specified vertical acceleration limit by applying a pitch rate limit
 	const float ptchRateIncr = _dt * _vert_accel_limit / _tas_state;
