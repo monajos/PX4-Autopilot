@@ -225,7 +225,9 @@ void PI_X::_update_throttle_setpoint(const float throttle_cruise)
 					}
 				}
 				float _throttle_setpoint = _throttle_setpoint_pid;*/
-				_throttle_setpoint += constrain( pid_calculate(&_speed_controller,  _TAS_setpoint, _tas_state, 0.0f, _dt), 0.0f, 1.0f );
+
+				//use overloaded calc method of pid which has no derivative input -> it has lower and upper limit check
+				_throttle_setpoint += pid_calculate_upper_lower(&_speed_controller,  _TAS_setpoint, _tas_state, _dt);
 
 
 
@@ -253,8 +255,7 @@ void PI_X::_update_pitch_setpoint()
 
 	// Calculate derivative from change in climb angle to rate of change of specific energy balance
 	/*const float climb_angle_to_SEB_rate = _tas_state * CONSTANTS_ONE_G;*/
-	float _pitch_max_rad = radians(15.0);
-	float _pitch_min_rad = radians(-10.0);
+
 
 	// Update the pitch integrator state.
 		// Only allow integration action which unsaturates the pitch demand, if the pitch demand is saturated
@@ -275,7 +276,8 @@ void PI_X::_update_pitch_setpoint()
 				_altitude_controller.ki = 0.0f;
 			}
 		}*/
-	float _pitch_setpoint = constrain(radians(pid_calculate(&_altitude_controller, _hgt_setpoint, _hgt_actual, 0.0f, _dt)), _pitch_min_rad, _pitch_max_rad);
+	//use overloaded calc method of pid which has no derivative input -> it has lower and upper limit check
+	float _pitch_setpoint = radians(pid_calculate_upper_lower(&_altitude_controller, _hgt_setpoint, _hgt_actual, _dt));
 
 
 	//set the integrator gain to zero if in limit
@@ -328,22 +330,26 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 		//_STE_rate_error = 0.0f;
 
 		pid_init(&_speed_controller, PID_MODE_DERIVATIV_CALC, _dt);
-		pid_set_parameters(&_speed_controller,
+		//use the overloaded set method which has lower and upper output limit
+		pid_set_parameters_upper_lower(&_speed_controller,
 				   _airspeed_error_gain_pi_x,
 				   _integrator_gain_throttle_pi_x,
-				   0.0f,
-				   100, //set limits myself see top
-				   100);
+				   0.0f, //d gain
+				   10000.0f,  //integral limit -> not used
+				   0.0f, //output limit low
+				   1.0f); //output limit high
 		double double__airspeed_error_gain_pi_x = double(_airspeed_error_gain_pi_x);
 		std::printf("pi_x double__airspeed_error_gain_pi_x:\t %f\n", double__airspeed_error_gain_pi_x);
 
 		pid_init(&_altitude_controller, PID_MODE_DERIVATIV_CALC, _dt);
-		pid_set_parameters(&_altitude_controller,
+		//use the overloaded set method which has lower and upper output limit
+		pid_set_parameters_upper_lower(&_altitude_controller,
 				   _height_error_gain_pi_x,
 				   _integrator_gain_pitch_pi_x,
-				   0.0f,
-				   100, //set limits myself see top
-				   100);
+				   0.0f, //d gain
+				   10000.0f,  //integral limit -> not used
+				   -10.0f, //output limit low
+				   15.0f); //output limit high
 
 
 

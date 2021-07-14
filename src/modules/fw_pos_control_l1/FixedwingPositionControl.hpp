@@ -473,7 +473,8 @@ private:
 		(ParamFloat<px4::params::FW_I_GAIN_SPD_PI>) _param_fw_pi_x_tas_I_gain,
 		(ParamFloat<px4::params::FW_GAIN_H_PI>) _param_fw_pi_x_h_gain,
 		(ParamFloat<px4::params::FW_I_GAIN_H_PI>) _param_fw_pi_x_h_I_gain
-		)
+
+	)
 
 };
 
