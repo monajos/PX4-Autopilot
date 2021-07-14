@@ -184,6 +184,7 @@ void PI_X::_detect_underspeed()
 
 }
 
+//MAYBE REPORT ENERGY ESTIMATES TO COMPARE TO OTHER METHOD
 void PI_X::_update_energy_estimates()
 {
 	/*// Calculate specific energy rate demands in units of (m**2/sec**3)
@@ -196,109 +197,28 @@ void PI_X::_update_energy_estimates()
 	_SPE_rate = _vert_vel_state / _tas_state; // potential energy rate of change
 	_SKE_rate = _tas_rate_filtered / CONSTANTS_ONE_G;// kinetic energy rate of change
 	*/
+
 }
 
 void PI_X::_update_throttle_setpoint(const float throttle_cruise)
 {
+	float _throttle_setpoint = throttle_cruise;
 
+	if (airspeed_sensor_enabled()) {
 
+		_throttle_setpoint += pid_calculate_upper_lower(&_speed_controller,  _TAS_setpoint, _tas_state, _dt);
 
-
-		// Add proportional and derivative control feedback to the predicted throttle and constrain to throttle limits
-		// Killed this path here.
-		float _throttle_setpoint = throttle_cruise;
-
-		if (airspeed_sensor_enabled()) {
-
-
-				/*float _throttle_setpoint_pid = pid_calculate(&_speed_controller, _TAS_setpoint, _tas_state, 0.0f, _dt) + throttle_cruise;
-				_speed_controller.ki = _integrator_gain_throttle;
-				if (_speed_controller.last_output > 1.0f ) {
-					_throttle_setpoint_pid = math::min(0.f, _throttle_setpoint_pid);
-				if (_throttle_setpoint_pid > 0) { //No integration over maximum pitch
-					_speed_controller.ki = 0.0f;
-				}
-				} else if (_speed_controller.last_output  < 0.0f ) {
-					_throttle_setpoint_pid = math::max(0.f, _throttle_setpoint_pid);
-				if (_throttle_setpoint_pid < 0) { //No integration under minimum pitch
-				_speed_controller.ki = 0.0f;
-					}
-				}
-				float _throttle_setpoint = _throttle_setpoint_pid;*/
-
-				//use overloaded calc method of pid which has no derivative input -> it has lower and upper limit check
-				_throttle_setpoint += pid_calculate_upper_lower(&_speed_controller,  _TAS_setpoint, _tas_state, _dt);
-
-
-
-				double double__throttle_setpoint = double(_throttle_setpoint);
-				std::printf("pi_x double__throttle_setpoint:\t %f\n", double__throttle_setpoint);
-
-				_last_throttle_setpoint = _throttle_setpoint;
-
-
-		}
+		_last_throttle_setpoint = _throttle_setpoint;
+	}
 
 
 }
 
 void PI_X::_update_pitch_setpoint()
 {
-
-	// Calculate the specific energy balance rate demand
-	/*Deleted the weighting, altitude rate and speed rate are equally weighted*/
-	//const float SEB_rate_setpoint = _SPE_rate_setpoint - _SKE_rate_setpoint;
-
-	// Calculate the specific energy balance rate error
-	/*Deleted the weighting*/
-	//_SEB_rate_error = SEB_rate_setpoint - (_SPE_rate - _SKE_rate);
-
-	// Calculate derivative from change in climb angle to rate of change of specific energy balance
-	/*const float climb_angle_to_SEB_rate = _tas_state * CONSTANTS_ONE_G;*/
-
-
-	// Update the pitch integrator state.
-		// Only allow integration action which unsaturates the pitch demand, if the pitch demand is saturated
-		// Ignore the mavlink / QGround settings and hardcode [-10 , 15] deg instead of _pitch_setpoint_max/min
-		//if (pitch_integ_input)
-
-		// only allow integrator propagation into direction which unsaturates pitch demand
-		// total pitch demand is: _altitude_controller.last_output ;
-		/*_altitude_controller.ki = _integrator_gain_pitch_pi_x;
-		if (radians(_altitude_controller.last_output) > _pitch_max_rad) {
-			_pitch_setpoint = math::min(0.f, _pitch_setpoint);
-			if (_pitch_setpoint > 0) { //No integration over maximum pitch
-				_altitude_controller.ki = 0.0f;
-			}
-		} else if (radians(_altitude_controller.last_output)  < _pitch_min_rad) {
-			_pitch_setpoint = math::max(0.f, _pitch_setpoint);
-			if (_pitch_setpoint < 0) { //No integration under minimum pitch
-				_altitude_controller.ki = 0.0f;
-			}
-		}*/
-	//use overloaded calc method of pid which has no derivative input -> it has lower and upper limit check
 	float _pitch_setpoint = radians(pid_calculate_upper_lower(&_altitude_controller, _hgt_setpoint, _hgt_actual, _dt));
 
-
-	//set the integrator gain to zero if in limit
-	//pid_set_parameters(_altitude_controller, _height_error_gain_pi_x, 0.0f, 0.0f, radians(15), radians(15))
-
-	//pid_set_parameters(_altitude_controller, _height_error_gain_pi_x, _integrator_gain_pitch_pi_x, 0.0f, radians(15), radians(15))
-
-
-
-
-	// Convert the specific energy balance rate correction to a target pitch angle. This calculation assumes:
-	// a) The climb angle follows pitch angle with a lag that is small enough not to destabilise the control loop.
-	// b) The offset between climb angle and pitch angle (angle of attack) is constant, excluding the effect of
-	// pitch transients due to control action or turbulence.
-
-	_pitch_setpoint_unc = _pitch_setpoint;  /*/ climb_angle_to_SEB_rate;*/
-
-	float pitch_setpoint = constrain(_pitch_setpoint_unc, _pitch_setpoint_min, _pitch_setpoint_max);
-
-
-	_last_pitch_setpoint = pitch_setpoint;
+	_last_pitch_setpoint = _pitch_setpoint;
 
 	double double_last_pitch_setpoint = double(_last_pitch_setpoint);
 		std::printf("pi_x_double_last_pitch_setpoint:\t %f\n", double_last_pitch_setpoint);
@@ -308,15 +228,13 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 			      float EAS2TAS)
 {
 	if (_pitch_update_timestamp == 0 || _dt > DT_MAX || !_in_air || !_states_initialized) {
-		// On first time through or when not using TECS of if there has been a large time slip,
-		// states must be reset to allow filters to a clean start
+
 		_vert_vel_state = 0.0f;
 		_vert_pos_state = baro_altitude;
 		_tas_rate_state = 0.0f;
 		_tas_state = _EAS * EAS2TAS;
 		_throttle_integ_state =  0.0f;
 		_pitch_integ_state = 0.0f;
-		//char [16] str;
 		_last_throttle_setpoint = (_in_air ? throttle_cruise : 0.0f);
 		double doublethrottle_cruise = double(throttle_cruise);
 		std::printf("last throttle setpoint:\t %f\n", doublethrottle_cruise);
@@ -327,10 +245,9 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 		_TAS_setpoint_adj = _TAS_setpoint_last;
 		_underspeed_detected = false;
 		_uncommanded_descent_recovery = false;
-		//_STE_rate_error = 0.0f;
+
 
 		pid_init(&_speed_controller, PID_MODE_DERIVATIV_CALC, _dt);
-		//use the overloaded set method which has lower and upper output limit
 		pid_set_parameters_upper_lower(&_speed_controller,
 				   _airspeed_error_gain_pi_x,
 				   _integrator_gain_throttle_pi_x,
@@ -359,13 +276,7 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 
 
 	}
-	/*// filter specific energy rate error using first order filter with 0.5 second time constant
-	_STE_rate_error_filter.setParameters(DT_DEFAULT, _STE_rate_time_const);
-	_STE_rate_error_filter.reset(0.0f);
 
-	// filter true airspeed rate using first order filter with 0.5 second time constant
-	_TAS_rate_filter.setParameters(DT_DEFAULT, _speed_derivative_time_const);
-	_TAS_rate_filter.reset(0.0f);*/
 
 	_states_initialized = true;
 }
@@ -441,8 +352,5 @@ void PI_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_set
 
 void PI_X::_update_speed_height_weights()
 {
-		// don't allow any weight to be larger than one, as it has the same effect as reducing the control
-	// loop time constant and therefore can lead to a destabilization of that control loop
-	/*_SPE_weighting = 1.0f;
-	_SKE_weighting = 1.0f;*/
+
 }

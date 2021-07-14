@@ -282,14 +282,14 @@ __EXPORT float pid_calculate_upper_lower(PID_t *pid, float sp, float val, float 
 
 	/* limit output */
 	if (PX4_ISFINITE(output)) {
-		if (pid->output_limit > SIGMA) {
-			if (output > pid->output_limit) {
-				output = pid->output_limit;
 
-			} else if (output < -pid->output_limit) {
-				output = -pid->output_limit;
-			}
+		if (output > pid->output_limit_high) {
+			output = pid->output_limit_high;
+
+		} else if (output < -pid->output_limit_low) {
+			output = pid->output_limit_low;
 		}
+
 
 		pid->last_output = output;
 	}
