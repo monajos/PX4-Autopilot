@@ -100,8 +100,14 @@ public:
 	void set_detect_underspeed_enabled(bool enabled) { _detect_underspeed_enabled = enabled; }
 
 	// setters for controller parameters
-	void set_integrator_gain_throttle(float gain) { _integrator_gain_throttle = gain; }
-	void set_integrator_gain_pitch(float gain) { _integrator_gain_pitch = gain; }
+	//void set_integrator_gain_throttle(float gain) { _integrator_gain_throttle = gain; }
+	//void set_integrator_gain_pitch(float gain) { _integrator_gain_pitch = gain; }
+
+	void set_error_gain_throttle(float gain) { _airspeed_error_gain_pi_x = gain; }
+	void set_integrator_gain_throttle(float gain) { _integrator_gain_throttle_pi_x = gain; }
+
+	void set_error_gain_pitch(float gain) { _height_error_gain_pi_x = gain; }
+	void set_integrator_gain_pitch(float gain) { _integrator_gain_pitch_pi_x = gain; }
 
 	void set_min_sink_rate(float rate) { _min_sink_rate = rate; }
 	void set_max_sink_rate(float sink_rate) { _max_sink_rate = sink_rate; }
@@ -212,9 +218,16 @@ private:
 	//float _throttle_damping_gain{0.0f};				///< damping gain of the throttle demand calculation (sec)
 	float _integrator_gain_throttle{0.0f};				///< integrator gain used by the throttle demand calculation
 	float _integrator_gain_pitch{0.0f};				///< integrator gain used by the pitch demand calculation
+	float _airspeed_error_gain_pi_x{0.0f};
+	float _integrator_gain_throttle_pi_x{0.0f};
+
+	float _height_error_gain_pi_x{0.0f};
+	float _integrator_gain_pitch_pi_x{0.0f};
+
 	float _vert_accel_limit{0.0f};					///< magnitude of the maximum vertical acceleration allowed (m/sec**2)
 	float _load_factor{0.0f};					///< additional normal load factor
-	float _load_factor_correction{0.0f};				///< gain from normal load factor increase to total energy rate demand (m**2/sec**3)
+	float _load_factor_correction{0.0f};
+	float _hgt_actual{0.0f}	;			///< gain from normal load factor increase to total energy rate demand (m**2/sec**3)
 	//float _pitch_speed_weight{1.0f};				///< speed control weighting used by pitch demand calculation
 	float _height_error_gain{0.2f};					///< height error inverse time constant [1/s]
 	//float _height_setpoint_gain_ff{0.0f};				///< gain from height demand derivative to demanded climb rate

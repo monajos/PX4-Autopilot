@@ -1373,23 +1373,53 @@ PARAM_DEFINE_FLOAT(FW_T_SINK_R_SPX, 2.0f);
  *
  */
 
-<<<<<<< HEAD
-=======
+
 
 /**
- * Minimum Airspeed (CAS)
+ * Proportional Speed Gain in Experimental PI
  *
- * The minimal airspeed (calibrated airspeed) the user is able to command.
- * Further, if the airspeed falls below this value, the TECS controller will try to
- * increase airspeed more aggressively.
  *
- * @unit m/s
- * @min 0.5
- * @max 40
- * @decimal 1
- * @increment 0.5
- * @group FW X PI
+ * @min 0.0
+ * @max 10
+ * @decimal 2
+ * @increment 0.01
+ * @group FW PI_X
  */
-/*PARAM_DEFINE_FLOAT(FW_AIRSPD_MIN, 10.0f); */
+PARAM_DEFINE_FLOAT(FW_GAIN_SPD_PI, 0.2f);
 
->>>>>>> 64f13d8b18... MOD: new parameter in QGroundControl: FW_X_INIT_T as initialization time for the experimental controller to get stabilized before the maneuver starts
+
+/**
+ * Integral Speed Gain in Experimental PI
+ *
+ *
+ * @min 0.0
+ * @max 10
+ * @decimal 2
+ * @increment 0.01
+ * @group FW PI_X
+ */
+PARAM_DEFINE_FLOAT(FW_I_GAIN_SPD_PI, 0.2f);
+
+/**
+ * Proportional Altitude Gain in Experimental PI
+ *
+ *
+ * @min 0.0
+ * @max 10
+ * @decimal 2
+ * @increment 0.01
+ * @group FW PI_X
+ */
+PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 0.2f);
+
+/**
+ * Integral Altitude Gain in Experimental PI
+ *
+ *
+ * @min 0.0
+ * @max 10
+ * @decimal 2
+ * @increment 0.01
+ * @group FW PI_X
+ */
+PARAM_DEFINE_FLOAT(FW_I_GAIN_H_PI, 0.2f);
