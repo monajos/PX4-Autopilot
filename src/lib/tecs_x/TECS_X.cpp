@@ -210,22 +210,10 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 
 	float throttle_setpoint;
 
-/*		float throttle_predicted = 0.0f;
-		float STE_rate_setpoint = _SPE_rate_setpoint + _SKE_rate_setpoint;
 
-		if (STE_rate_setpoint >= 0) {
-			// throttle is between cruise and maximum
-			throttle_predicted = throttle_cruise + STE_rate_setpoint * (100.0f - throttle_cruise);
-
-		} else {
-			// throttle is between cruise and minimum
-			throttle_predicted = throttle_cruise + STE_rate_setpoint * (0.0f - throttle_cruise);
-
-		}*/
-		// Calculate gain scaler from specific energy rate error to throttle
 		// was:  const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
 		// adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654
-		const float STE_rate_to_throttle = 1.0f / (CONSTANTS_ONE_G * _tas_state);
+		//const float STE_rate_to_throttle = 1.0f / (CONSTANTS_ONE_G * _tas_state);
 
 		// Add proportional and derivative control feedback to the predicted throttle and constrain to throttle limits
 		// Killed this path here.
@@ -234,31 +222,31 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 		if (airspeed_sensor_enabled()) {
 			if (_integrator_gain_throttle > 0.0f) {
 
-				float throttle_integ_input = (_STE_rate_error * _integrator_gain_throttle) * _dt *
-							     STE_rate_to_throttle;
+				float throttle_integ_input = (_STE_rate_error * _integrator_gain_throttle) * _dt * 1;
+							     //STE_rate_to_throttle;
 
 
 
 				// Calculate a throttle demand from the integrated total energy rate error
 				// This will be added to the total throttle demand to compensate for steady state errors
-				// Only allow itegration action which unsaturates the throttle
-				// -> later throttle_setpoint = throttle_cruise;
-				// 	    throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+				// Only allow itegration action which unsaturates the throttle (taken from _last_throttle_setpoint)
+				// 	    throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G * _tas_state / _max_power;
 				// throttle in range [0 - 1]
 				// so
-				float _throttle_integ_state_min = -throttle_cruise / ( _mass * CONSTANTS_ONE_G);  //and
-				float _throttle_integ_state_max = (1 - throttle_cruise) / ( _mass * CONSTANTS_ONE_G);
+				float _max_power = 600;
+				float _throttle_integ_state_min = -_last_throttle_setpoint / ( _mass * CONSTANTS_ONE_G * _tas_state / _max_power);  //and
+				float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / ( _mass * CONSTANTS_ONE_G * _tas_state / _max_power);
 				float throttle_integ_input_limited = throttle_integ_input;
 				// only allow integrator propagation into direction which unsaturates throttle
-				if (_throttle_integ_state > _throttle_integ_state_max) {
+				if (_throttle_integ_state + throttle_integ_input > _throttle_integ_state_max) {
 					throttle_integ_input_limited = math::min(0.f, throttle_integ_input);
 
-				} else if (_throttle_integ_state < _throttle_integ_state_min) {
+				} else if (_throttle_integ_state + throttle_integ_input < _throttle_integ_state_min) {
 					throttle_integ_input_limited = math::max(0.f, throttle_integ_input);
 				}
 				_throttle_integ_state = _throttle_integ_state + throttle_integ_input_limited;
-				//double double__throttle_integ_state = double(_throttle_integ_state);
-				//std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
+				double double__throttle_integ_state = double(_throttle_integ_state);
+				std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
 
 
 			} else {
@@ -272,8 +260,13 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 			/* adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654:
 			The integrator is multiplied by mass and velocity to command an unspecific thrust force*/
 
-			throttle_setpoint = throttle_cruise;
-			throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+			//throttle_setpoint = throttle_cruise;
+			//This throttle setpoint is the force command
+			throttle_setpoint = _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+			//-> shape to range [0 1] needed : force * velocity = power
+			float _max_power = 600;
+			throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
+
 			//double double_throttle_setpoint = double(throttle_setpoint);
 			//std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
 

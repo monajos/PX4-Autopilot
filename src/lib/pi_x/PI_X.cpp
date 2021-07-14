@@ -201,8 +201,8 @@ void PI_X::_update_energy_estimates()
 }
 
 void PI_X::_update_throttle_setpoint(const float throttle_cruise)
-{
-	float _throttle_setpoint = throttle_cruise;
+{	//instead off adding up throttle cruise here, set to zero
+	float _throttle_setpoint = 0;
 
 	if (airspeed_sensor_enabled()) {
 
