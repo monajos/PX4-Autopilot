@@ -166,10 +166,10 @@ void TECS_X::updateHeightRateSetpoint(float alt_sp_amsl_m, float target_climbrat
 	_hgt_setpoint = alt_sp_amsl_m;
 	// Use a first order system to calculate a height rate setpoint from the current height error.
 	_hgt_rate_setpoint = (_hgt_setpoint - alt_amsl) * _height_error_gain;
-	double double__hgt_setpoint = double(_hgt_setpoint);
-	std::printf("tecsx double__hgt_setpoint:\t %f\n", double__hgt_setpoint);
-	double double_alt_amsl = double(alt_amsl);
-	std::printf("tecsx double_alt_amsl:\t %f\n", double_alt_amsl);
+	//double double__hgt_setpoint = double(_hgt_setpoint);
+	//std::printf("tecsx double__hgt_setpoint:\t %f\n", double__hgt_setpoint);
+	//double double_alt_amsl = double(alt_amsl);
+	//std::printf("tecsx double_alt_amsl:\t %f\n", double_alt_amsl);
 
 }
 
@@ -190,8 +190,8 @@ void TECS_X::_update_energy_estimates()
 	// Calculate specific energy rate demands in units of (m**2/sec**3)
 	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state; // potential energy rate of change
 	_SKE_rate_setpoint = _TAS_rate_setpoint / CONSTANTS_ONE_G; // kinetic energy rate of change
-	double double__hgt_rate_setpoint = double(_hgt_rate_setpoint);
-	std::printf("tecsx double__hgt_rate_setpoint:\t %f\n", double__hgt_rate_setpoint);
+	//double double__hgt_rate_setpoint = double(_hgt_rate_setpoint);
+	//printstd::printf("tecsx double__hgt_rate_setpoint:\t %f\n", double__hgt_rate_setpoint);
 
 	// Calculate specific energy rates in units of (m**2/sec**3)
 	_SPE_rate = _vert_vel_state / _tas_state; // potential energy rate of change
@@ -205,8 +205,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 	// to reduce the effect of accelerometer noise
 	_STE_rate_error_filter.update(-_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint);
 	_STE_rate_error = _STE_rate_error_filter.getState();
-	double double__STE_rate_error = double(_STE_rate_error);
-	std::printf("tecsx double__STE_rate_error:\t %f\n", double__STE_rate_error);
+	//double double__STE_rate_error = double(_STE_rate_error);
+	//std::printf("tecsx double__STE_rate_error:\t %f\n", double__STE_rate_error);
 
 	float throttle_setpoint;
 
@@ -257,8 +257,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 					throttle_integ_input_limited = math::max(0.f, throttle_integ_input);
 				}
 				_throttle_integ_state = _throttle_integ_state + throttle_integ_input_limited;
-				double double__throttle_integ_state = double(_throttle_integ_state);
-				std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
+				//double double__throttle_integ_state = double(_throttle_integ_state);
+				//std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
 
 
 			} else {
@@ -274,8 +274,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 
 			throttle_setpoint = throttle_cruise;
 			throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G;
-			double double_throttle_setpoint = double(throttle_setpoint);
-			std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
+			//double double_throttle_setpoint = double(throttle_setpoint);
+			//std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
 
 		} else {
 			// when flying without an airspeed sensor, use the predicted throttle only
@@ -365,8 +365,8 @@ void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_a
 		_pitch_integ_state = 0.0f;
 		//char [16] str;
 		_last_throttle_setpoint = (_in_air ? throttle_cruise : 0.0f);
-		double doublethrottle_cruise = double(throttle_cruise);
-		std::printf("last throttle setpoint:\t %f\n", doublethrottle_cruise);
+		//double doublethrottle_cruise = double(throttle_cruise);
+		//std::printf("last throttle setpoint:\t %f\n", doublethrottle_cruise);
 		//snprintf(str, sizeof(str), "%.2f", throttle_cruise);
 		_last_pitch_setpoint = constrain(pitch, _pitch_setpoint_min, _pitch_setpoint_max);
 		_pitch_setpoint_unc = _last_pitch_setpoint;

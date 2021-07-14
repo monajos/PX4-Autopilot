@@ -175,8 +175,8 @@ FixedwingPositionControl::parameters_update()
 	//_pi_X.set_ste_rate_time_const(_param_ste_x_rate_time_const.get());
 	//_pi_X.set_seb_rate_ff_gain(_param_seb_x_rate_ff.get());
 	_pi_X.set_error_gain_throttle( _param_fw_pi_x_tas_gain.get());
-	double double_param_fw_pi_x_tas_gain = double(_param_fw_pi_x_tas_gain.get());
-	std::printf("FixedWing: double_param_fw_pi_x_tas_gain:\t %f\n", double_param_fw_pi_x_tas_gain);
+	//double double_param_fw_pi_x_tas_gain = double(_param_fw_pi_x_tas_gain.get());
+	//std::printf("FixedWing: double_param_fw_pi_x_tas_gain:\t %f\n", double_param_fw_pi_x_tas_gain);
 
 	_pi_X.set_integrator_gain_throttle( _param_fw_pi_x_tas_I_gain.get());
 	_pi_X.set_error_gain_pitch( _param_fw_pi_x_h_gain.get());

@@ -220,8 +220,8 @@ void PI_X::_update_pitch_setpoint()
 
 	_last_pitch_setpoint = _pitch_setpoint;
 
-	double double_last_pitch_setpoint = double(_last_pitch_setpoint);
-		std::printf("pi_x_double_last_pitch_setpoint:\t %f\n", double_last_pitch_setpoint);
+	//double double_last_pitch_setpoint = double(_last_pitch_setpoint);
+	//	std::printf("pi_x_double_last_pitch_setpoint:\t %f\n", double_last_pitch_setpoint);
 }
 
 void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_altitude, float pitch_min_climbout,
@@ -236,8 +236,8 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 		_throttle_integ_state =  0.0f;
 		_pitch_integ_state = 0.0f;
 		_last_throttle_setpoint = (_in_air ? throttle_cruise : 0.0f);
-		double doublethrottle_cruise = double(throttle_cruise);
-		std::printf("last throttle setpoint:\t %f\n", doublethrottle_cruise);
+		//double doublethrottle_cruise = double(throttle_cruise);
+		//std::printf("last throttle setpoint:\t %f\n", doublethrottle_cruise);
 		_last_pitch_setpoint = constrain(pitch, _pitch_setpoint_min, _pitch_setpoint_max);
 		_pitch_setpoint_unc = _last_pitch_setpoint;
 		_hgt_setpoint = baro_altitude;
@@ -255,8 +255,8 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 				   10000.0f,  //integral limit -> not used
 				   0.0f, //output limit low
 				   1.0f); //output limit high
-		double double__airspeed_error_gain_pi_x = double(_airspeed_error_gain_pi_x);
-		std::printf("pi_x double__airspeed_error_gain_pi_x:\t %f\n", double__airspeed_error_gain_pi_x);
+		//double double__airspeed_error_gain_pi_x = double(_airspeed_error_gain_pi_x);
+		//std::printf("pi_x double__airspeed_error_gain_pi_x:\t %f\n", double__airspeed_error_gain_pi_x);
 
 		pid_init(&_altitude_controller, PID_MODE_DERIVATIV_CALC, _dt);
 		//use the overloaded set method which has lower and upper output limit
