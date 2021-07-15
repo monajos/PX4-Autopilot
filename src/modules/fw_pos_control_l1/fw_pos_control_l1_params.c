@@ -1343,7 +1343,7 @@ PARAM_DEFINE_FLOAT(FW_T_SEB_R_FF_X, 1.0f);
  *
  *
  * @unit m/s
- * @min 0.5
+ * @min 0.0
  * @max 15
  * @decimal 2
  * @increment 0.01

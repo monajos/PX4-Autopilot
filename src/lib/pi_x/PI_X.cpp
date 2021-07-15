@@ -53,6 +53,18 @@ static constexpr float DT_MAX = 1.0f;	///< max value of _dt allowed before a fil
  * @author Henrik Spark
  */
 
+
+void PI_X::init_integrator_throttle(float current_throttle){
+
+	_speed_controller.integral = current_throttle / _speed_controller.ki ;
+
+};
+
+void PI_X::init_integrator_pitch(float current_pitch){
+
+	_altitude_controller.integral = current_pitch / (_altitude_controller.ki) ;
+
+};
 /*
  * This function implements a complementary filter to estimate the climb rate when
  * inertial nav data is not available. It also calculates a true airspeed derivative

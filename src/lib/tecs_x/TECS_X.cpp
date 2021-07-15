@@ -52,6 +52,22 @@ static constexpr float DT_MAX = 1.0f;	///< max value of _dt allowed before a fil
  * @author Paul Riseborough / Mods by Henrik Spark
  */
 
+void TECS_X::init_integrator_throttle(float current_throttle){
+	//throttle_setpoint = _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+			//-> shape to range [0 1] needed : force * velocity = power
+			float _max_power = 600;
+	//		throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
+
+	_throttle_integ_state = current_throttle / (_tas_state * _mass * CONSTANTS_ONE_G / _max_power)  ;
+
+};
+
+void TECS_X::init_integrator_pitch(float current_pitch){
+
+	_pitch_integ_state = current_pitch;
+
+};
+
 /*
  * This function implements a complementary filter to estimate the climb rate when
  * inertial nav data is not available. It also calculates a true airspeed derivative

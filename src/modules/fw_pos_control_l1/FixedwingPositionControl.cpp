@@ -160,24 +160,14 @@ FixedwingPositionControl::parameters_update()
 
 	_pi_X.set_max_climb_rate(_param_fw_tx_clmb_max.get());
 	_pi_X.set_max_sink_rate(_param_fw_tx_sink_max.get());
-	//_pi_X.set_speed_weight(_param_fw_tx_spdweight.get());
 	_pi_X.set_min_sink_rate(_param_fw_tx_sink_min.get());
-	//_pi_X.set_throttle_damp(_param_fw_tx_thr_damp.get());
 	_pi_X.set_integrator_gain_throttle(_param_fw_tx_I_gain_thr.get());
 	_pi_X.set_integrator_gain_pitch(_param_fw_tx_I_gain_pit.get());
 	_pi_X.set_vertical_accel_limit(_param_fw_tx_vert_acc.get());
 	_pi_X.set_speed_comp_filter_omega(_param_fw_tx_spd_omega.get());
 	_pi_X.set_roll_throttle_compensation(_param_fw_tx_rll2thr.get());
-	//_pi_X.set_pitch_damping(_param_fw_tx_ptch_damp.get());
 	_pi_X.set_height_error_time_constant(_param_fw_tx_h_error_tc.get());
-	//_pi_X.set_heightrate_ff(_param_fw_tx_hrate_ff.get());
-	//_pi_X.set_airspeed_error_time_constant(_param_fw_tx_tas_error_tc.get());
-	//_pi_X.set_ste_rate_time_const(_param_ste_x_rate_time_const.get());
-	//_pi_X.set_seb_rate_ff_gain(_param_seb_x_rate_ff.get());
 	_pi_X.set_error_gain_throttle( _param_fw_pi_x_tas_gain.get());
-	//double double_param_fw_pi_x_tas_gain = double(_param_fw_pi_x_tas_gain.get());
-	//std::printf("FixedWing: double_param_fw_pi_x_tas_gain:\t %f\n", double_param_fw_pi_x_tas_gain);
-
 	_pi_X.set_integrator_gain_throttle( _param_fw_pi_x_tas_I_gain.get());
 	_pi_X.set_error_gain_pitch( _param_fw_pi_x_h_gain.get());
 	_pi_X.set_integrator_gain_pitch( _param_fw_pi_x_h_I_gain.get());
@@ -190,7 +180,7 @@ FixedwingPositionControl::parameters_update()
 	_pi_X.set_equivalent_airspeed_min(_param_fw_airspd_min.get());
 	_pi_X.set_equivalent_airspeed_max(_param_fw_airspd_max.get());
 	_pi_X.set_throttle_slewrate(_param_fw_thr_slew_max.get());
-	//_pi_X.set_speed_derivative_time_constant(_param_tas_rate_time_const.get());
+
 
 	// Maneuver
 	_maneuver.set_base_spd_sp(_param_fw_x_spd_target.get());
@@ -1758,8 +1748,15 @@ FixedwingPositionControl::get_tecs_pitch()
 			else if(_param_fw_x_ctrl_sel.get() == 2) {
 				return _pi_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get()); // PI OUTPUT HERE
 			}
+		}else{
+			//reset the integrators to the last output
+			_tecs_X.init_integrator_throttle(_tecs.get_throttle_setpoint());
+			_tecs_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get()));
+			_pi_X.init_integrator_throttle(_tecs.get_throttle_setpoint()); //FixedwingPositionControl::get_tecs_thrust()
+			_pi_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get())); //FixedwingPositionControl::get_tecs_pitch()
+			return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 		}
-		return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
+
 	}
 
 	// return level flight pitch offset to prevent stale tecs state when it's not running
@@ -2108,7 +2105,7 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 				    airspeed_sp, _airspeed, _eas2tas,
 				    climbout_mode,
 				    climbout_pitch_min_rad - radians(_param_fw_psp_off.get()),
-				    throttle_min, throttle_max, _tecs.get_throttle_setpoint(),
+				    throttle_min, throttle_max, throttle_cruise,
 				    pitch_min_rad - radians(_param_fw_psp_off.get()),
 				    pitch_max_rad - radians(_param_fw_psp_off.get()),
 				    _param_climbrate_x_target.get(), _param_sinkrate_x_target.get(), hgt_rate_sp);
@@ -2118,7 +2115,7 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 				    airspeed_sp, _airspeed, _eas2tas,
 				    climbout_mode,
 				    climbout_pitch_min_rad - radians(_param_fw_psp_off.get()),
-				    throttle_min, throttle_max, _tecs.get_throttle_setpoint(),
+				    throttle_min, throttle_max, throttle_cruise,
 				    pitch_min_rad - radians(_param_fw_psp_off.get()),
 				    pitch_max_rad - radians(_param_fw_psp_off.get()),
 				    _param_climbrate_x_target.get(), _param_sinkrate_x_target.get(), hgt_rate_sp);

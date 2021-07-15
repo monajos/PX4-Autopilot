@@ -69,6 +69,9 @@ public:
 	 */
 	void enable_airspeed(bool enabled) { _airspeed_enabled = enabled; }
 
+	void init_integrator_throttle(float current_throttle) ;
+
+	void init_integrator_pitch(float current_pitch) ;
 	/**
 	 * Updates the following vehicle kineamtic state estimates:
 	 * Vertical position, velocity and acceleration.
