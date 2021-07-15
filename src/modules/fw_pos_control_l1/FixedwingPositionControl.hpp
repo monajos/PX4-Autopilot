@@ -78,17 +78,33 @@
 #include <uORB/topics/position_controller_status.h>
 #include <uORB/topics/position_setpoint_triplet.h>
 #include <uORB/topics/tecs_status.h>
-#include <uORB/topics/vehicle_air_data.h>
-#include <uORB/topics/vehicle_angular_velocity.h>
-#include <uORB/topics/vehicle_attitude.h>
-#include <uORB/topics/vehicle_attitude_setpoint.h>
+
+
+#include <uORB/topics/tecs_status_x.h>
+#include <uORB/topics/vehicle_air_data.h> //take
+#include <uORB/topics/vehicle_angular_velocity.h> //take
+#include <uORB/topics/vehicle_attitude.h> //take
+#include <uORB/topics/vehicle_attitude_setpoint.h> //take
 #include <uORB/topics/vehicle_command.h>
 #include <uORB/topics/vehicle_control_mode.h>
-#include <uORB/topics/vehicle_global_position.h>
+#include <uORB/topics/vehicle_global_position.h> //take
 #include <uORB/topics/vehicle_land_detected.h>
-#include <uORB/topics/vehicle_local_position.h>
+#include <uORB/topics/vehicle_local_position.h> //take
 #include <uORB/topics/vehicle_local_position_setpoint.h>
 #include <uORB/topics/vehicle_status.h>
+//added 20210715
+#include <uORB/topics/testflight_status_x.h>
+#include <uORB/topics/battery_status.h>
+#include <uORB/topics/actuator_outputs.h>
+#include <uORB/topics/actuator_controls.h>
+#include <uORB/topics/pwm_input.h>
+#include <uORB/topics/sensor_gps.h>
+#include <uORB/topics/sensor_gyro.h>
+#include <uORB/topics/uavcan_parameter_value.h>
+#include <uORB/topics/vehicle_actuator_setpoint.h>
+#include <uORB/topics/vehicle_odometry.h>
+#include <uORB/topics/vehicle_thrust_setpoint.h>
+//end added 20210715
 #include <uORB/uORB.h>
 #include <vtol_att_control/vtol_type.h>
 
@@ -153,11 +169,19 @@ private:
 	uORB::Subscription _vehicle_command_sub{ORB_ID(vehicle_command)};
 	uORB::Subscription _vehicle_land_detected_sub{ORB_ID(vehicle_land_detected)};
 	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
+	//added 20210715
+	uORB::Subscription _vehicle_global_position_sub{ORB_ID(vehicle_global_position)};
+	//end added 20210721
 
 	uORB::Publication<vehicle_attitude_setpoint_s>		_attitude_sp_pub;
 	uORB::Publication<position_controller_status_s>		_pos_ctrl_status_pub{ORB_ID(position_controller_status)};			///< navigation capabilities publication
 	uORB::Publication<position_controller_landing_status_s>	_pos_ctrl_landing_status_pub{ORB_ID(position_controller_landing_status)};	///< landing status publication
 	uORB::Publication<tecs_status_s>			_tecs_status_pub{ORB_ID(tecs_status)};						///< TECS status publication
+
+	uORB::Publication<tecs_status_x_s>			_tecs_status_x_pub{ORB_ID(tecs_status_x)};
+	//added 20210715
+	uORB::Publication<testflight_status_x_s>		_testflight_status_x_pub{ORB_ID(testflight_status_x)};
+	//end added 20210715
 
 	manual_control_setpoint_s	_manual_control_setpoint {};			///< r/c channel data
 	position_setpoint_triplet_s	_pos_sp_triplet {};		///< triplet of mission items
@@ -169,6 +193,10 @@ private:
 	double _current_latitude{0};
 	double _current_longitude{0};
 	float _current_altitude{0.f};
+	//added 20210715
+	float _current_groundlevel{0.f};
+	//end added 20210715
+
 
 	perf_counter_t	_loop_perf;				///< loop performance counter
 

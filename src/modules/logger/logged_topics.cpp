@@ -91,6 +91,11 @@ void LoggedTopics::add_default_topics()
 	add_topic("sensors_status_imu", 200);
 	add_topic("system_power", 500);
 	add_topic("takeoff_status", 1000);
+
+	add_topic("tecs_status_x",200);
+	//added 20210715
+	add_topic("testflight_status_x",200); //50 Hz I suppose
+	//end added 20210715
 	add_topic("tecs_status", 200);
 	add_topic("test_motor", 500);
 	add_topic("trajectory_setpoint", 200);

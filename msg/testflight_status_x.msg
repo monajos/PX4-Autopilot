@@ -1,0 +1,70 @@
+uint64 timestamp		# time since system start (microseconds)
+float32 terrain_alt				# Reference altitude AMSL, (metres)
+bool man_active
+#TECS Global
+
+#Standart TECS controller values from px4 TECS
+
+float32 std_tecs_param_fw_airspd_max
+float32 std_tecs_param_fw_airspd_min
+float32 std_tecs_fw_airspd_trim
+float32 std_tecs_param_fw_airspd_stall
+float32 std_tecs_aram_fw_clmbout_diff
+float32 std_tecs_param_fw_gnd_spd_min
+float32 std_tecs_param_fw_l1_damping
+float32 std_tecs_param_fw_l1_period
+float32 std_tecs_param_fw_l1_r_slew_max
+float32 std_tecs_param_fw_r_lim
+float32 std_tecs_param_fw_lnd_airspd_sc
+float32 std_tecs_param_fw_lnd_ang
+float32 std_tecs_param_fw_lnd_fl_pmax
+float32 std_tecs_param_fw_lnd_fl_pmin
+float32 std_tecs_param_fw_lnd_flalt
+float32 std_tecs_param_fw_lnd_hhdist
+float32 std_tecs_param_fw_lnd_hvirt
+float32 std_tecs_param_fw_thrtc_sc
+float32 std_tecs_param_fw_lnd_tlalt
+float32 std_tecs_param_fw_lnd_earlycfg
+float32 std_tecs_param_fw_lnd_useter
+float32 std_tecs_param_fw_p_lim_max
+float32 std_param_fw_p_lim_min
+float32 std_tecs_param_fw_t_clmb_max
+float32 std_tecs_param_fw_t_hrate_ff
+float32 std_tecs_param_fw_t_h_error_tc
+float32 std_tecs_param_fw_t_i_gain_thr
+float32 std_tecs_param_fw_t_i_gain_pit
+float32 std_tecs_param_fw_t_ptch_damp
+float32 std_tecs_param_fw_t_rll2thr
+float32 std_tecs_param_fw_t_sink_max
+float32 std_param_fw_t_sink_min
+float32 std_tecs_param_fw_t_spd_omega
+float32 std_tecs_param_fw_t_spdweight
+float32 std_tecs_param_fw_t_tas_error_tc
+float32 std_tecs_param_fw_t_thr_damp
+float32 std_tecs_param_fw_t_vert_acc
+float32 std_tecs_param_ste_rate_time_const
+float32 std_tecs_param_tas_rate_time_const
+float32 std_tecs_param_seb_rate_ff
+float32 std_tecs_param_climbrate_target
+float32 std_tecs_param_sinkrate_target
+float32 std_tecs_param_fw_thr_alt_scl
+float32 std_tecs_param_param_fw_thr_cruise
+float32 std_tecs_param_fw_thr_idle
+float32 std_tecs_param_fw_thr_lnd_max
+float32 std_tecs_param_fw_thr_max
+float32 std_tecs_param_fw_thr_min
+float32 std_tecs_param_fw_thr_slew_max
+float32 std_tecs_param_fw_posctl_inv_st
+float32 std_tecs_param_fw_arsp_mode
+float32 std_tecs_param_fw_psp_off
+float32 std_tecs_param_fw_man_p_max
+float32 std_tecs_param_fw_man_r_max
+float32 std_tecs_param_nav_loiter_rad
+float32 std_tecs_param_takeoff_pitch_min
+
+
+
+#Experimental tecs values -> no absolute energy states are calculated
+float32 pitch_sp_rad_tecs_x
+
+

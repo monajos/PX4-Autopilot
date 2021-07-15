@@ -438,6 +438,9 @@ FixedwingPositionControl::tecs_status_publish()
 {
 	tecs_status_s t{};
 
+	tecs_status_x_s tx{};
+	testflight_status_x_s tfx{};
+
 	switch (_tecs.tecs_mode()) {
 	case TECS::ECL_TECS_MODE_NORMAL:
 		t.mode = tecs_status_s::TECS_MODE_NORMAL;
@@ -518,7 +521,128 @@ FixedwingPositionControl::tecs_status_publish()
 	tx.altitude_sp_x = _tecs_X.hgt_setpoint();
 	tx.altitude_filtered_x = _tecs_X.vert_pos_state();
 
-	_tecs_status_pub.publish(t);
+
+	tx.true_airspeed_sp_x = _tecs_X.TAS_setpoint_adj();
+	tx.true_airspeed_filtered_x = _tecs_X.tas_state();
+
+	tx.height_rate_setpoint_x = _tecs_X.hgt_rate_setpoint();
+	tx.height_rate_x = _tecs_X.vert_vel_state();
+
+	tx.equivalent_airspeed_sp_x = _tecs_X.get_EAS_setpoint();
+	tx.true_airspeed_derivative_sp_x = _tecs_X.TAS_rate_setpoint();
+	tx.true_airspeed_derivative_x = _tecs_X.speed_derivative();
+	tx.true_airspeed_derivative_raw_x = _tecs_X.speed_derivative_raw();
+	tx.true_airspeed_innovation_x = _tecs_X.getTASInnovation();
+
+	tx.total_energy_error_x = _tecs_X.STE_error();
+	tx.total_energy_rate_error_x = _tecs_X.STE_rate_error();
+
+	tx.energy_distribution_error_x = _tecs_X.SEB_error();
+	tx.energy_distribution_rate_error_x = _tecs_X.SEB_rate_error();
+
+	tx.total_energy_x = _tecs_X.STE();
+	tx.total_energy_rate_x = _tecs_X.STE_rate();
+	tx.total_energy_balance_x = _tecs_X.SEB();
+	tx.total_energy_balance_rate_x = _tecs_X.SEB_rate();
+
+	tx.total_energy_sp_x = _tecs_X.STE_setpoint();
+	tx.total_energy_rate_sp_x = _tecs_X.STE_rate_setpoint();
+	tx.total_energy_balance_sp_x = _tecs_X.SEB_setpoint();
+	tx.total_energy_balance_rate_sp_x = _tecs_X.SEB_rate_setpoint();
+
+	tx.throttle_integ_x = _tecs_X.throttle_integ_state();
+	tx.pitch_integ_x = _tecs_X.pitch_integ_state();
+
+	tx.throttle_sp_x = _tecs_X.get_throttle_setpoint();
+	tx.pitch_sp_rad_x = _tecs_X.get_pitch_setpoint();
+
+	tx.timestamp = hrt_absolute_time();
+
+	_tecs_status_x_pub.publish(tx);
+
+	//testflight topic
+	tfx.pitch_sp_rad_tecs_x = _tecs_X.get_pitch_setpoint();
+	tfx.timestamp = hrt_absolute_time();
+	//vehicle_global_position_s vehicle_global_position = {};
+	//_vehicle_global_position_sub gpos;
+	//_global_pos_sub.copy(&gpos);
+	vehicle_global_position_s gpos;
+
+		if (_global_pos_sub.update(&gpos)) {
+			_current_latitude = gpos.lat;
+			_current_longitude = gpos.lon;
+			_current_groundlevel = gpos.terrain_alt;
+		}
+
+	tfx.terrain_alt = _local_pos.ref_alt;
+	tfx.man_active = _man_active;
+	//grab standard tecs parameters
+	tfx.std_tecs_param_fw_airspd_max = _param_fw_airspd_max.get();
+	tfx.std_tecs_param_fw_airspd_min =_param_fw_airspd_min.get();
+	tfx.std_tecs_fw_airspd_trim =_param_fw_airspd_trim.get();
+	tfx.std_tecs_param_fw_airspd_stall =_param_fw_airspd_stall.get();
+	tfx.std_tecs_aram_fw_clmbout_diff =_param_fw_clmbout_diff.get();
+	tfx.std_tecs_param_fw_gnd_spd_min =_param_fw_gnd_spd_min.get();
+	tfx.std_tecs_param_fw_l1_damping =_param_fw_l1_damping.get();
+	tfx.std_tecs_param_fw_l1_period =_param_fw_l1_period.get();
+	tfx.std_tecs_param_fw_l1_r_slew_max =_param_fw_l1_r_slew_max.get();
+	tfx.std_tecs_param_fw_r_lim = _param_fw_r_lim.get();
+	tfx.std_tecs_param_fw_lnd_airspd_sc =_param_fw_lnd_airspd_sc.get();
+	tfx.std_tecs_param_fw_lnd_ang =_param_fw_lnd_ang.get();
+	tfx.std_tecs_param_fw_lnd_fl_pmax =_param_fw_lnd_fl_pmax.get();
+	tfx.std_tecs_param_fw_lnd_fl_pmin = _param_fw_lnd_fl_pmin.get();
+	tfx.std_tecs_param_fw_lnd_flalt = _param_fw_lnd_flalt.get();
+	tfx.std_tecs_param_fw_lnd_hhdist = _param_fw_lnd_hhdist.get();
+	tfx.std_tecs_param_fw_lnd_hvirt =_param_fw_lnd_hvirt.get();
+	tfx.std_tecs_param_fw_thrtc_sc =_param_fw_thrtc_sc.get();
+	tfx.std_tecs_param_fw_lnd_tlalt =_param_fw_lnd_tlalt.get();
+	tfx.std_tecs_param_fw_lnd_earlycfg =_param_fw_lnd_earlycfg.get();
+	tfx.std_tecs_param_fw_lnd_useter =_param_fw_lnd_useter.get();
+	tfx.std_tecs_param_fw_p_lim_max =_param_fw_p_lim_max.get();
+	tfx.std_param_fw_p_lim_min=_param_fw_p_lim_min.get();
+	tfx.std_tecs_param_fw_t_clmb_max =_param_fw_t_clmb_max.get();
+	tfx.std_tecs_param_fw_t_hrate_ff =_param_fw_t_hrate_ff.get();
+	tfx.std_tecs_param_fw_t_h_error_tc = _param_fw_t_h_error_tc.get();
+	tfx.std_tecs_param_fw_t_i_gain_thr = _param_fw_t_I_gain_thr.get();
+	tfx.std_tecs_param_fw_t_i_gain_pit = _param_fw_t_I_gain_pit.get();
+	tfx.std_tecs_param_fw_t_ptch_damp = _param_fw_t_ptch_damp.get();
+	tfx.std_tecs_param_fw_t_rll2thr = _param_fw_t_rll2thr.get();
+	tfx.std_tecs_param_fw_t_sink_max = _param_fw_t_sink_max.get();
+	tfx.std_param_fw_t_sink_min = _param_fw_t_sink_min.get();
+	tfx.std_tecs_param_fw_t_spd_omega = _param_fw_t_spd_omega.get();
+	tfx.std_tecs_param_fw_t_spdweight = _param_fw_t_spdweight.get();
+	tfx.std_tecs_param_fw_t_tas_error_tc = _param_fw_t_tas_error_tc.get();
+	tfx.std_tecs_param_fw_t_thr_damp = _param_fw_t_thr_damp.get();
+	tfx.std_tecs_param_fw_t_vert_acc = _param_fw_t_vert_acc.get();
+	tfx.std_tecs_param_ste_rate_time_const = _param_ste_rate_time_const.get();
+	tfx.std_tecs_param_tas_rate_time_const = _param_tas_rate_time_const.get();
+	tfx.std_tecs_param_seb_rate_ff = _param_seb_rate_ff.get();
+	tfx.std_tecs_param_climbrate_target = _param_climbrate_target.get();
+	tfx.std_tecs_param_sinkrate_target = _param_sinkrate_target.get();
+	tfx.std_tecs_param_fw_thr_alt_scl = _param_fw_thr_alt_scl.get();
+	tfx.std_tecs_param_param_fw_thr_cruise = _param_fw_thr_cruise.get();
+	tfx.std_tecs_param_fw_thr_idle = _param_fw_thr_idle.get();
+	tfx.std_tecs_param_fw_thr_lnd_max= _param_fw_thr_lnd_max.get();
+	tfx.std_tecs_param_fw_thr_max = _param_fw_thr_max.get();
+	tfx.std_tecs_param_fw_thr_min = _param_fw_thr_min.get();
+	tfx.std_tecs_param_fw_thr_slew_max = _param_fw_thr_slew_max.get();
+	tfx.std_tecs_param_fw_posctl_inv_st = _param_fw_posctl_inv_st.get();
+	tfx.std_tecs_param_fw_arsp_mode = _param_fw_arsp_mode.get();
+	tfx.std_tecs_param_fw_psp_off = _param_fw_psp_off.get();
+	tfx.std_tecs_param_fw_man_p_max = _param_fw_man_p_max.get();
+	tfx.std_tecs_param_fw_man_r_max = _param_fw_man_r_max.get();
+	tfx.std_tecs_param_nav_loiter_rad = _param_nav_loiter_rad.get();
+	tfx.std_tecs_param_takeoff_pitch_min = _takeoff_pitch_min.get();
+
+
+
+
+
+
+
+
+
+	_testflight_status_x_pub.publish(tfx);
 }
 
 void

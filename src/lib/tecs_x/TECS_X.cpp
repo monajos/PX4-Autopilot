@@ -174,6 +174,11 @@ void TECS_X::_update_speed_states(float equivalent_airspeed_setpoint, float equi
 void TECS_X::_update_speed_setpoint()
 {
 	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state) * _airspeed_error_gain;
+	//double double__TAS_setpoint = double(_TAS_setpoint);
+	//std::printf("tecsx double__TAS_setpoint:\t %f\n", double__TAS_setpoint);
+
+	//double double__tas_state = double(_tas_state);
+	//std::printf("tecsx double__tas_state:\t %f\n", double__tas_state);
 }
 
 void TECS_X::updateHeightRateSetpoint(float alt_sp_amsl_m, float target_climbrate_m_s, float target_sinkrate_m_s,
@@ -261,8 +266,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 					throttle_integ_input_limited = math::max(0.f, throttle_integ_input);
 				}
 				_throttle_integ_state = _throttle_integ_state + throttle_integ_input_limited;
-				double double__throttle_integ_state = double(_throttle_integ_state);
-				std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
+				//double double__throttle_integ_state = double(_throttle_integ_state);
+				//std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
 
 
 			} else {
