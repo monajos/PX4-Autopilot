@@ -149,6 +149,11 @@ public:
 	float hgt_rate_setpoint() { return _hgt_rate_setpoint; }
 	float vert_vel_state() { return _vert_vel_state; }
 
+	//added 16.07.21
+	float get_kin_energy() { return _SKE_estimate; }
+	float get_pot_energy() { return _SPE_estimate; }
+	float get_tot_energy() { return _SPE_estimate + _SKE_estimate; }
+	//end added 16.07.21
 	float get_EAS_setpoint() { return _EAS_setpoint; };
 	float TAS_rate_setpoint() { return _TAS_rate_setpoint; }
 	float speed_derivative() { return _tas_rate_filtered; }

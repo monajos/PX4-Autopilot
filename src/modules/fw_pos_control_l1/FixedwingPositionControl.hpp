@@ -88,6 +88,7 @@
 #include <uORB/topics/vehicle_command.h>
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_global_position.h> //take
+#include <uORB/topics/vehicle_gps_position.h> // take
 #include <uORB/topics/vehicle_land_detected.h>
 #include <uORB/topics/vehicle_local_position.h> //take
 #include <uORB/topics/vehicle_local_position_setpoint.h>
@@ -171,7 +172,12 @@ private:
 	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
 	//added 20210715
 	uORB::Subscription _vehicle_global_position_sub{ORB_ID(vehicle_global_position)};
-	//end added 20210721
+	uORB::Subscription _vehicle_gps_position_sub{ORB_ID(vehicle_gps_position)};
+	uORB::Subscription _pwm_input_sub{ORB_ID(pwm_input)};
+	uORB::Subscription _actuator_controls_sub{ORB_ID(actuator_controls)};
+	uORB::Subscription _actuator_outputs_sub{ORB_ID(actuator_outputs)};
+	uORB::Subscription _battery_status_sub{ORB_ID(battery_status)};
+	//end added 20210715
 
 	uORB::Publication<vehicle_attitude_setpoint_s>		_attitude_sp_pub;
 	uORB::Publication<position_controller_status_s>		_pos_ctrl_status_pub{ORB_ID(position_controller_status)};			///< navigation capabilities publication
@@ -195,6 +201,50 @@ private:
 	float _current_altitude{0.f};
 	//added 20210715
 	float _current_groundlevel{0.f};
+	float current_x_rate{0.f};
+	float current_y_rate{0.f};
+	float current_z_rate{0.f};
+	float current_true_airspeed{0.f};
+	float _current_groundspeed{0.f};
+	float current_calibrated_airspeed{0.f};
+	float _current_true_airspeed{0.0f};
+	float _current_gps_altitude{0.0f};
+	float _pwm_err{0.0f};
+	float _pwm_period{0.0f};
+	float _pwm_pulse_width{0.0f};
+	float _pwm_timestamp{0.0f};
+	float _act_out_output1{0.0f};
+	float _act_out_output2{0.0f};
+	float _act_out_output3{0.0f};
+	float _act_out_output4{0.0f};
+	float _act_out_output5{0.0f};
+	float _act_out_output6{0.0f};
+	float _act_out_output7{0.0f};
+	float _act_out_output8{0.0f};
+	float _act_out_output9{0.0f};
+	float _act_out_output10{0.0f};
+	float _act_out_output11{0.0f};
+	float _act_out_output12{0.0f};
+	float _act_out_output13{0.0f};
+	float _act_out_output14{0.0f};
+	float _act_out_output15{0.0f};
+	float _act_out_output0{0.0f};
+	float _act_cntr_output0{0.0f};
+	float _act_cntr_output1{0.0f};
+	float _act_cntr_output2{0.0f};
+	float _act_cntr_output3{0.0f};
+	float _act_cntr_output4{0.0f};
+	float _act_cntr_output5{0.0f};
+	float _act_cntr_output6{0.0f};
+	float _act_cntr_output7{0.0f};
+
+	float _act_out_timestamp{0.0f};
+	float _bat_status_timestamp{0.0f};
+	float _bat_status_current_a{0.0f};
+	float _bat_status_discharged_mah{0.0f};
+	float _bat_status_voltage_v{0.0f};
+	float _position_sp_alt{0.0f};
+	float _altctrl_airspeed{0.0f};
 	//end added 20210715
 
 
@@ -259,6 +309,7 @@ private:
 	float _airspeed{0.0f};
 	float _eas2tas{1.0f};
 
+	float _roll{0.0f};
 	float _pitch{0.0f};
 	float _yaw{0.0f};
 	float _yawrate{0.0f};

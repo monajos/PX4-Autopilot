@@ -279,9 +279,10 @@ FixedwingPositionControl::airspeed_poll()
 	if ((_param_fw_arsp_mode.get() == 0) && _airspeed_validated_sub.update(&airspeed_validated)) {
 
 		_eas2tas = 1.0f; //this is the default value, taken in case of invalid airspeed
+		_current_true_airspeed = airspeed_validated.true_airspeed_m_s;
 
 		if (PX4_ISFINITE(airspeed_validated.calibrated_airspeed_m_s)
-		    && PX4_ISFINITE(airspeed_validated.true_airspeed_m_s)
+		    && PX4_ISFINITE(_current_true_airspeed)
 		    && (airspeed_validated.calibrated_airspeed_m_s > 0.0f)) {
 
 			airspeed_valid = true;
@@ -352,6 +353,7 @@ FixedwingPositionControl::vehicle_attitude_poll()
 		}
 
 		const Eulerf euler_angles(R);
+		_roll = euler_angles(0);
 		_pitch = euler_angles(1);
 		_yaw = euler_angles(2);
 
@@ -383,7 +385,17 @@ FixedwingPositionControl::get_demanded_airspeed()
 				   (_manual_control_setpoint_airspeed * 2 - 1);
 	}
 
+	// OVERWRITE
+	altctrl_airspeed = _param_fw_x_spd_target.get();
+	if(_man_active == true) {
+		altctrl_airspeed += _maneuver.get_test_spd_sp();
+
+
+	}
+
+
 	return altctrl_airspeed;
+	_altctrl_airspeed = altctrl_airspeed;
 }
 
 float
@@ -564,14 +576,14 @@ FixedwingPositionControl::tecs_status_publish()
 	//vehicle_global_position_s vehicle_global_position = {};
 	//_vehicle_global_position_sub gpos;
 	//_global_pos_sub.copy(&gpos);
-	vehicle_global_position_s gpos;
+	//vehicle_global_position_s gpos;
 
-		if (_global_pos_sub.update(&gpos)) {
+		/*if (_global_pos_sub.update(&gpos)) {
 			_current_latitude = gpos.lat;
 			_current_longitude = gpos.lon;
 			_current_groundlevel = gpos.terrain_alt;
 		}
-
+	*/
 	tfx.terrain_alt = _local_pos.ref_alt;
 	tfx.man_active = _man_active;
 	//grab standard tecs parameters
@@ -668,10 +680,153 @@ FixedwingPositionControl::tecs_status_publish()
 	tfx.experimental_pi_param_fw_pi_x_h_gain = _param_fw_pi_x_h_gain.get();
 	tfx.experimental_pi_param_fw_pi_x_h_i_gain = _param_fw_pi_x_h_I_gain.get();
 
+	//grab the angular rates
+	vehicle_angular_velocity_s vav;
+
+		if (_vehicle_angular_velocity_sub.update(&vav)) {
+			current_x_rate = vav.xyz[0];
+			current_y_rate = vav.xyz[1];
+			current_z_rate = vav.xyz[2];
+		}
+
+	tfx.current_x_rate = current_x_rate;
+	tfx.current_y_rate = current_y_rate;
+	tfx.current_z_rate = current_z_rate;
+
+	//grab the attitude
+	tfx.current_att_pitch = _pitch;
+	tfx.current_att_roll = _roll;
+	tfx.current_att_yaw = _yaw;
+
+	//grab the speeds
+	tfx.current_true_airspeed = current_true_airspeed;
+	tfx.airspeed_valid = _airspeed_valid;
+	tfx.current_true_airspeed = _current_true_airspeed;
+
+	vehicle_gps_position_s v_gps_pos;
+
+		if (_vehicle_gps_position_sub.update(&v_gps_pos)) {
+			_current_groundspeed = v_gps_pos.vel_m_s;
+			_current_gps_altitude = v_gps_pos.alt;
+		}
+	tfx.current_groundspeed = _current_groundspeed;
+	tfx.current_calibrated_airspeed = _airspeed;
+
+	//grab thrust
+	tfx.current_thrust_body = _att_sp.thrust_body[0];
+
+	//grab altitudes
+	tfx.current_altitude_baro = _current_altitude;
+	tfx.current_gps_altitude = _current_gps_altitude;
+
+	//grab position
+	tfx.current_latitude = _current_latitude;
+	tfx.current_longitude = _current_longitude;
+
+	//grab PWM from pilot imput
+	pwm_input_s pwm_in;
+
+		if (_pwm_input_sub.update(&pwm_in)) {
+			_pwm_err = pwm_in.error_count;
+			_pwm_period = pwm_in.period;
+			_pwm_pulse_width = pwm_in.pulse_width;
+			_pwm_timestamp = pwm_in.timestamp;
+		}
+	tfx.pwm_err = _pwm_err;
+	tfx.pwm_period = _pwm_period;
+	tfx.pwm_pulse_width = _pwm_pulse_width;
+	tfx.pwm_timestamp = _pwm_timestamp;
 
 
+	//grab PWM from pilot imput
+	actuator_outputs_s act_out;
+
+		if (_actuator_outputs_sub.update(&act_out)) {
+			_act_out_output0 = act_out.output[0];
+			_act_out_output1 = act_out.output[1];
+			_act_out_output2 = act_out.output[2];
+			_act_out_output3 = act_out.output[3];
+			_act_out_output4 = act_out.output[4];
+			_act_out_output5 = act_out.output[5];
+			_act_out_output6 = act_out.output[6];
+			_act_out_output7 = act_out.output[7];
+			_act_out_output8 = act_out.output[8];
+			_act_out_output9 = act_out.output[9];
+			_act_out_output10 = act_out.output[10];
+			_act_out_output11 = act_out.output[11];
+			_act_out_output12 = act_out.output[12];
+			_act_out_output13 = act_out.output[13];
+			_act_out_output14 = act_out.output[14];
+			_act_out_output15 = act_out.output[15];
+			_act_out_timestamp = act_out.timestamp;
+		}
+	tfx.act_out_output0 = _act_out_output0;
+	tfx.act_out_output1 = _act_out_output1;
+	tfx.act_out_output2 = _act_out_output2;
+	tfx.act_out_output3 = _act_out_output3;
+	tfx.act_out_output4 = _act_out_output4;
+	tfx.act_out_output5 = _act_out_output5;
+	tfx.act_out_output6 = _act_out_output6;
+	tfx.act_out_output7 = _act_out_output7;
+	tfx.act_out_output8 = _act_out_output8;
+	tfx.act_out_output9 = _act_out_output9;
+	tfx.act_out_output10 = _act_out_output10;
+	tfx.act_out_output11 = _act_out_output11;
+	tfx.act_out_output12 = _act_out_output12;
+	tfx.act_out_output13 = _act_out_output13;
+	tfx.act_out_output14 = _act_out_output14;
+	tfx.act_out_output15 = _act_out_output15;
+
+	tfx.act_out_timestamp = _act_out_timestamp;
+
+	actuator_controls_s act_cntr;
+
+		if (_actuator_controls_sub.update(&act_cntr)) {
+			_act_cntr_output0 = act_cntr.control[0];
+			_act_cntr_output1 = act_cntr.control[1];
+			_act_cntr_output2 = act_cntr.control[2];
+			_act_cntr_output3 = act_cntr.control[3];
+			_act_cntr_output4 = act_cntr.control[4];
+			_act_cntr_output5 = act_cntr.control[5];
+			_act_cntr_output6 = act_cntr.control[6];
+			_act_cntr_output7 = act_cntr.control[7];
+
+			_act_out_timestamp = act_out.timestamp;
+		}
+	tfx.act_cntr_output0 = _act_cntr_output0;
+	tfx.act_cntr_output1 = _act_cntr_output1;
+	tfx.act_cntr_output2 = _act_cntr_output2;
+	tfx.act_cntr_output3 = _act_cntr_output3;
+	tfx.act_cntr_output4 = _act_cntr_output4;
+	tfx.act_cntr_output5 = _act_cntr_output5;
+	tfx.act_cntr_output6 = _act_cntr_output6;
+	tfx.act_cntr_output7 = _act_cntr_output7;
 
 
+	tfx.act_out_timestamp = _act_out_timestamp;
+
+	//grab battery status
+	battery_status_s bat_status;
+
+	if (_battery_status_sub.update(&bat_status)) {
+		_bat_status_timestamp = bat_status.timestamp;
+		_bat_status_current_a = bat_status.current_a;
+		_bat_status_discharged_mah = bat_status.discharged_mah;
+		_bat_status_voltage_v = bat_status.voltage_v;
+	}
+	tfx.bat_status_timestamp = _bat_status_timestamp;
+	tfx.bat_status_current_a = _bat_status_current_a;
+	tfx.bat_status_discharged_mah = _bat_status_discharged_mah;
+	tfx.bat_status_voltage_v = _bat_status_voltage_v;
+
+	//grab setpoints
+	tfx.position_sp_alt = _position_sp_alt;
+	tfx.position_sp_airspeed = _altctrl_airspeed;
+
+	//grab total energy from standard tecs
+	tfx.std_tecs_kin_energy = _tecs.get_kin_energy();
+	tfx.std_tecs_pot_energy = _tecs.get_pot_energy();
+	tfx.std_tecs_tot_energy = _tecs.get_tot_energy();
 
 	_testflight_status_x_pub.publish(tfx);
 }
@@ -1124,7 +1279,7 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 			_l1_control.navigate_waypoints(prev_wp, curr_wp, curr_pos, nav_speed_2d);
 			_att_sp.roll_body = _l1_control.get_roll_setpoint();
 			_att_sp.yaw_body = _l1_control.nav_bearing();
-
+			_position_sp_alt = position_sp_alt;
 			tecs_update_pitch_throttle(now, position_sp_alt,
 						   calculate_target_airspeed(mission_airspeed, ground_speed),
 						   radians(_param_fw_p_lim_min.get()),
@@ -1235,7 +1390,7 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 		_control_mode_current = FW_POSCTRL_MODE_POSITION;
 
 		float altctrl_airspeed = get_demanded_airspeed();
-
+		_altctrl_airspeed = altctrl_airspeed;
 		/* update desired altitude based on user pitch stick input */
 		update_desired_altitude(dt);
 
@@ -1355,6 +1510,9 @@ FixedwingPositionControl::control_position(const hrt_abstime &now, const Vector2
 			throttle_max = 0.0f;
 		}
 
+		// ---> TACKLE HERE
+		_altctrl_airspeed = altctrl_airspeed;
+		_position_sp_alt = _hold_alt;
 		tecs_update_pitch_throttle(now, _hold_alt,
 					   altctrl_airspeed,
 					   radians(_param_fw_p_lim_min.get()),
@@ -1973,6 +2131,7 @@ FixedwingPositionControl::Run()
 		if (_global_pos_sub.update(&gpos)) {
 			_current_latitude = gpos.lat;
 			_current_longitude = gpos.lon;
+			_current_groundlevel = gpos.terrain_alt;
 		}
 
 		_current_altitude = -_local_pos.z + _local_pos.ref_alt; // Altitude AMSL in meters
