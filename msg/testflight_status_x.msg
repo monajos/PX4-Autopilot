@@ -4,7 +4,6 @@ bool man_active
 #TECS Global
 
 #Standart TECS controller values from px4 TECS
-
 float32 std_tecs_param_fw_airspd_max
 float32 std_tecs_param_fw_airspd_min
 float32 std_tecs_fw_airspd_trim
@@ -36,7 +35,7 @@ float32 std_tecs_param_fw_t_i_gain_pit
 float32 std_tecs_param_fw_t_ptch_damp
 float32 std_tecs_param_fw_t_rll2thr
 float32 std_tecs_param_fw_t_sink_max
-float32 std_param_fw_t_sink_min
+float32 std_tecs_param_fw_t_sink_min
 float32 std_tecs_param_fw_t_spd_omega
 float32 std_tecs_param_fw_t_spdweight
 float32 std_tecs_param_fw_t_tas_error_tc
@@ -65,6 +64,48 @@ float32 std_tecs_param_takeoff_pitch_min
 
 
 #Experimental tecs values -> no absolute energy states are calculated
-float32 pitch_sp_rad_tecs_x
+float32 experimental_tecs_param_fw_x_hgt_target
+float32 experimental_tecs_param_fw_x_spd_target
+float32 experimental_tecs_param_fw_x_rel_hgt_target
+float32 experimental_tecs_param_fw_x_rel_spd_target
+float32 experimental_tecs_param_fw_x_risetime_hgt
+float32 experimental_tecs_param_fw_x_risetime_spd
+float32 experimental_tecs_param_fw_x_mode
+float32 experimental_tecs_param_fw_x_ctrl_sel
+float32 experimental_tecs_param_fw_x_init_time
+float32 experimental_tecs_param_fw_tx_clmb_max
+float32 experimental_tecs_param_fw_tx_hrate_ff
+float32 experimental_tecs_param_fw_tx_h_error_tc
+float32 experimental_tecs_param_fw_tx_i_gain_thr
+float32 experimental_tecs_param_fw_tx_i_gain_pit
+float32 experimental_tecs_param_fw_tx_ptch_damp
+float32 experimental_tecs_param_fw_tx_rll2thr
+float32 experimental_tecs_param_fw_tx_sink_max
+float32 experimental_tecs_param_fw_tx_sink_min
+float32 experimental_tecs_param_fw_tx_spdweight
+float32 experimental_tecs_param_fw_tx_tas_error_tc
+float32 experimental_tecs_param_fw_tx_thr_damp
+float32 experimental_tecs_param_fw_tx_vert_acc
+float32 experimental_tecs_param_ste_x_rate_time_const
+float32 experimental_tecs_param_tas_x_rate_time_const
+float32 experimental_tecs_param_seb_x_rate_ff
+float32 experimental_tecs_param_climbrate_x_target
+float32 experimental_tecs_param_sinkrate_x_target
+float32 experimental_tecs_param_fw_x_stall
+
+#Experimental pi values
+
+float32 experimental_pi_param_fw_pi_x_tas_gain
+float32 experimental_pi_param_fw_pi_x_tas_i_gain
+float32 experimental_pi_param_fw_pi_x_h_gain
+float32 experimental_pi_param_fw_pi_x_h_i_gain
+
+
+
+
+
+
+
+
 
 

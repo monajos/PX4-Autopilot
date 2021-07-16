@@ -358,11 +358,11 @@ void TECS_X::_update_pitch_setpoint()
 	_pitch_setpoint_unc = _pitch_integ_state;  /*/ climb_angle_to_SEB_rate;*/
 
 	float pitch_setpoint = constrain(_pitch_setpoint_unc, _pitch_min_rad, _pitch_max_rad);
-
+	_last_pitch_setpoint = pitch_setpoint;
 	// Comply with the specified vertical acceleration limit by applying a pitch rate limit
-	const float ptchRateIncr = _dt * _vert_accel_limit / _tas_state;
-	_last_pitch_setpoint = constrain(pitch_setpoint, _last_pitch_setpoint - ptchRateIncr,
-					 _last_pitch_setpoint + ptchRateIncr);
+	//const float ptchRateIncr = _dt * _vert_accel_limit / _tas_state;
+	//_last_pitch_setpoint = constrain(pitch_setpoint, _last_pitch_setpoint - ptchRateIncr,
+				//	 _last_pitch_setpoint + ptchRateIncr);
 }
 
 void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_altitude, float pitch_min_climbout,

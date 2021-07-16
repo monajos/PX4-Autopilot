@@ -161,8 +161,6 @@ FixedwingPositionControl::parameters_update()
 	_pi_X.set_max_climb_rate(_param_fw_tx_clmb_max.get());
 	_pi_X.set_max_sink_rate(_param_fw_tx_sink_max.get());
 	_pi_X.set_min_sink_rate(_param_fw_tx_sink_min.get());
-	_pi_X.set_integrator_gain_throttle(_param_fw_tx_I_gain_thr.get());
-	_pi_X.set_integrator_gain_pitch(_param_fw_tx_I_gain_pit.get());
 	_pi_X.set_vertical_accel_limit(_param_fw_tx_vert_acc.get());
 	_pi_X.set_speed_comp_filter_omega(_param_fw_tx_spd_omega.get());
 	_pi_X.set_roll_throttle_compensation(_param_fw_tx_rll2thr.get());
@@ -561,7 +559,7 @@ FixedwingPositionControl::tecs_status_publish()
 	_tecs_status_x_pub.publish(tx);
 
 	//testflight topic
-	tfx.pitch_sp_rad_tecs_x = _tecs_X.get_pitch_setpoint();
+
 	tfx.timestamp = hrt_absolute_time();
 	//vehicle_global_position_s vehicle_global_position = {};
 	//_vehicle_global_position_sub gpos;
@@ -608,7 +606,7 @@ FixedwingPositionControl::tecs_status_publish()
 	tfx.std_tecs_param_fw_t_ptch_damp = _param_fw_t_ptch_damp.get();
 	tfx.std_tecs_param_fw_t_rll2thr = _param_fw_t_rll2thr.get();
 	tfx.std_tecs_param_fw_t_sink_max = _param_fw_t_sink_max.get();
-	tfx.std_param_fw_t_sink_min = _param_fw_t_sink_min.get();
+	tfx.std_tecs_param_fw_t_sink_min = _param_fw_t_sink_min.get();
 	tfx.std_tecs_param_fw_t_spd_omega = _param_fw_t_spd_omega.get();
 	tfx.std_tecs_param_fw_t_spdweight = _param_fw_t_spdweight.get();
 	tfx.std_tecs_param_fw_t_tas_error_tc = _param_fw_t_tas_error_tc.get();
@@ -633,9 +631,42 @@ FixedwingPositionControl::tecs_status_publish()
 	tfx.std_tecs_param_fw_man_r_max = _param_fw_man_r_max.get();
 	tfx.std_tecs_param_nav_loiter_rad = _param_nav_loiter_rad.get();
 	tfx.std_tecs_param_takeoff_pitch_min = _takeoff_pitch_min.get();
+	//grab experimental tecs parameters
+	tfx.experimental_tecs_param_fw_x_hgt_target = _param_fw_x_hgt_target.get();
+	tfx.experimental_tecs_param_fw_x_spd_target = _param_fw_x_spd_target.get();
+	tfx.experimental_tecs_param_fw_x_rel_hgt_target = _param_fw_x_rel_hgt_target.get();
+	tfx.experimental_tecs_param_fw_x_rel_spd_target = _param_fw_x_rel_spd_target.get();
+	tfx.experimental_tecs_param_fw_x_risetime_hgt = _param_fw_x_risetime_hgt.get();
+	tfx.experimental_tecs_param_fw_x_risetime_spd = _param_fw_x_risetime_spd.get();
+	tfx.experimental_tecs_param_fw_x_mode = _param_fw_x_mode.get();
+	tfx.experimental_tecs_param_fw_x_ctrl_sel = _param_fw_x_ctrl_sel.get();
+	tfx.experimental_tecs_param_fw_x_init_time = _param_fw_x_init_time.get();
+	tfx.experimental_tecs_param_fw_tx_clmb_max = _param_fw_tx_clmb_max.get();
+	tfx.experimental_tecs_param_fw_tx_hrate_ff = _param_fw_tx_hrate_ff.get();
+	tfx.experimental_tecs_param_fw_tx_h_error_tc = _param_fw_tx_h_error_tc.get();
+	tfx.experimental_tecs_param_fw_tx_i_gain_thr =_param_fw_tx_I_gain_thr.get();
+	tfx.experimental_tecs_param_fw_tx_i_gain_pit =_param_fw_tx_I_gain_pit.get();
+	tfx.experimental_tecs_param_fw_tx_ptch_damp = _param_fw_tx_ptch_damp.get();
+	tfx.experimental_tecs_param_fw_tx_rll2thr = _param_fw_tx_rll2thr.get();
+	tfx.experimental_tecs_param_fw_tx_sink_max = _param_fw_tx_sink_max.get();
+	tfx.experimental_tecs_param_fw_tx_sink_min = _param_fw_tx_sink_min.get();
+	tfx.experimental_tecs_param_fw_tx_sink_min = _param_fw_tx_spd_omega.get();
+	tfx.experimental_tecs_param_fw_tx_spdweight = _param_fw_tx_spdweight.get();
+	tfx.experimental_tecs_param_fw_tx_tas_error_tc = _param_fw_tx_tas_error_tc.get();
+	tfx.experimental_tecs_param_fw_tx_thr_damp = _param_fw_tx_thr_damp.get();
+	tfx.experimental_tecs_param_fw_tx_vert_acc = _param_fw_tx_vert_acc.get();
+	tfx.experimental_tecs_param_ste_x_rate_time_const = _param_ste_x_rate_time_const.get();
+	tfx.experimental_tecs_param_tas_x_rate_time_const = _param_tas_x_rate_time_const.get();
+	tfx.experimental_tecs_param_seb_x_rate_ff = _param_seb_x_rate_ff.get();
+	tfx.experimental_tecs_param_climbrate_x_target = _param_climbrate_x_target.get();
+	tfx.experimental_tecs_param_sinkrate_x_target = _param_sinkrate_x_target.get();
+	tfx.experimental_tecs_param_fw_x_stall = _param_fw_x_stall.get();
 
-
-
+	//grab the experimental pi parameters
+	tfx.experimental_pi_param_fw_pi_x_tas_gain = _param_fw_pi_x_tas_gain.get();
+	tfx.experimental_pi_param_fw_pi_x_tas_i_gain = _param_fw_pi_x_tas_I_gain.get();
+	tfx.experimental_pi_param_fw_pi_x_h_gain = _param_fw_pi_x_h_gain.get();
+	tfx.experimental_pi_param_fw_pi_x_h_i_gain = _param_fw_pi_x_h_I_gain.get();
 
 
 
