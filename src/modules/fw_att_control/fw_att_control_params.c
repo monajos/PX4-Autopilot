@@ -75,7 +75,7 @@ PARAM_DEFINE_FLOAT(FW_R_TC, 0.4f);
  * @unit s
  * @min 0.0
  * @max 1.0
- * @decimal 2
+ * @decimal 5
  * @increment 0.05
  * @group FW Attitude Control
  */
@@ -90,7 +90,7 @@ PARAM_DEFINE_FLOAT(FW_P_TC, 0.1887f);
  * @unit %/rad/s
  * @min 0.005
  * @max 1.0
- * @decimal 3
+ * @decimal 5
  * @increment 0.005
  * @group FW Attitude Control
  */
@@ -105,7 +105,7 @@ PARAM_DEFINE_FLOAT(FW_PR_P, 0.059f);
  * @unit %/rad
  * @min 0.000
  * @max 0.5
- * @decimal 3
+ * @decimal 4
  * @increment 0.005
  * @group FW Attitude Control
  */
