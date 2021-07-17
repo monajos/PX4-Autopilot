@@ -586,6 +586,16 @@ FixedwingPositionControl::tecs_status_publish()
 	*/
 	tfx.terrain_alt = _local_pos.ref_alt;
 	tfx.man_active = _man_active;
+	//grab pitch controller parameters
+	tfx.pitch_cntr_param_fw_p_rmax_neg = _param_fw_p_rmax_neg.get();
+	tfx.pitch_cntr_param_fw_p_rmax_pos =  _param_fw_p_rmax_pos.get();
+	tfx.pitch_cntr_param_fw_p_tc =  _param_fw_p_tc.get();
+	tfx.pitch_cntr_param_fw_pr_ff = _param_fw_pr_ff.get();
+	tfx.pitch_cntr_param_fw_pr_i = _param_fw_pr_i.get();
+	tfx.pitch_cntr_param_fw_pr_imax =  _param_fw_pr_imax.get();
+	tfx.pitch_cntr_param_fw_pr_p = _param_fw_pr_p.get();
+	tfx.pitch_cntr_param_fw_psp_off = _param_fw_psp_off.get();
+
 	//grab standard tecs parameters
 	tfx.std_tecs_param_fw_airspd_max = _param_fw_airspd_max.get();
 	tfx.std_tecs_param_fw_airspd_min =_param_fw_airspd_min.get();

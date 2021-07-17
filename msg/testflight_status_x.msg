@@ -3,6 +3,16 @@ float32 terrain_alt				# Reference altitude AMSL, (metres)
 bool man_active
 #TECS Global
 
+#Pitch controller values
+float32 pitch_cntr_param_fw_p_rmax_neg
+float32 pitch_cntr_param_fw_p_rmax_pos
+float32 pitch_cntr_param_fw_p_tc
+float32 pitch_cntr_param_fw_pr_ff
+float32 pitch_cntr_param_fw_pr_i
+float32 pitch_cntr_param_fw_pr_imax
+float32 pitch_cntr_param_fw_pr_p
+float32 pitch_cntr_param_fw_psp_off
+
 #Standart TECS controller values from px4 TECS
 float32 std_tecs_param_fw_airspd_max
 float32 std_tecs_param_fw_airspd_min

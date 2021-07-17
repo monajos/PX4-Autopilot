@@ -551,7 +551,17 @@ private:
 		(ParamFloat<px4::params::FW_GAIN_SPD_PI>) _param_fw_pi_x_tas_gain,
 		(ParamFloat<px4::params::FW_I_GAIN_SPD_PI>) _param_fw_pi_x_tas_I_gain,
 		(ParamFloat<px4::params::FW_GAIN_H_PI>) _param_fw_pi_x_h_gain,
-		(ParamFloat<px4::params::FW_I_GAIN_H_PI>) _param_fw_pi_x_h_I_gain
+		(ParamFloat<px4::params::FW_I_GAIN_H_PI>) _param_fw_pi_x_h_I_gain,
+
+		//Pitch controller parameters
+		(ParamFloat<px4::params::FW_P_RMAX_NEG>) _param_fw_p_rmax_neg,
+		(ParamFloat<px4::params::FW_P_RMAX_POS>) _param_fw_p_rmax_pos,
+		(ParamFloat<px4::params::FW_P_TC>) _param_fw_p_tc,
+		(ParamFloat<px4::params::FW_PR_FF>) _param_fw_pr_ff,
+		(ParamFloat<px4::params::FW_PR_I>) _param_fw_pr_i,
+		(ParamFloat<px4::params::FW_PR_IMAX>) _param_fw_pr_imax,
+		(ParamFloat<px4::params::FW_PR_P>) _param_fw_pr_p
+		//(ParamFloat<px4::params::FW_PSP_OFF>) _param_fw_psp_off,
 
 	)
 
