@@ -1149,7 +1149,7 @@ PARAM_DEFINE_FLOAT(FW_T_I_GAIN_THRX, 0.3f);
  * @increment 0.05
  * @group FW X TECS
  */
-PARAM_DEFINE_FLOAT(FW_T_I_GAIN_PITX, 0.1f);
+PARAM_DEFINE_FLOAT(FW_T_I_GAIN_PITX, 0.3f);
 
 /**
  * Maximum vertical acceleration
@@ -1276,7 +1276,7 @@ PARAM_DEFINE_FLOAT(FW_T_HRATE_FF_X, 0.3f);
  * @increment 0.5
  * @group FW X TECS
  */
-PARAM_DEFINE_FLOAT(FW_T_TAS_TC_X, 5.0f);
+PARAM_DEFINE_FLOAT(FW_T_TAS_TC_X, 2.5f);
 
 /**
  * Minimum groundspeed
@@ -1332,7 +1332,7 @@ PARAM_DEFINE_FLOAT(FW_T_TAS_R_TC_X, 0.2f);
  * @increment 0.01
  * @group FW X TECS
  */
-PARAM_DEFINE_FLOAT(FW_T_SEB_R_FF_X, 1.0f);
+PARAM_DEFINE_FLOAT(FW_T_SEB_R_FF_X, 0.8f);
 
 /**
  * Default target climbrate.
@@ -1385,7 +1385,7 @@ PARAM_DEFINE_FLOAT(FW_T_SINK_R_SPX, 2.0f);
  * @increment 0.01
  * @group FW PI_X
  */
-PARAM_DEFINE_FLOAT(FW_GAIN_SPD_PI, 0.2f);
+PARAM_DEFINE_FLOAT(FW_GAIN_SPD_PI, 1.13f);
 
 
 /**
@@ -1398,7 +1398,7 @@ PARAM_DEFINE_FLOAT(FW_GAIN_SPD_PI, 0.2f);
  * @increment 0.01
  * @group FW PI_X
  */
-PARAM_DEFINE_FLOAT(FW_I_GAIN_SPD_PI, 0.2f);
+PARAM_DEFINE_FLOAT(FW_I_GAIN_SPD_PI, 0.093f);
 
 /**
  * Proportional Altitude Gain in Experimental PI
@@ -1410,7 +1410,7 @@ PARAM_DEFINE_FLOAT(FW_I_GAIN_SPD_PI, 0.2f);
  * @increment 0.01
  * @group FW PI_X
  */
-PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 0.2f);
+PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 2.29f);
 
 /**
  * Integral Altitude Gain in Experimental PI
@@ -1422,4 +1422,4 @@ PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 0.2f);
  * @increment 0.01
  * @group FW PI_X
  */
-PARAM_DEFINE_FLOAT(FW_I_GAIN_H_PI, 0.2f);
+PARAM_DEFINE_FLOAT(FW_I_GAIN_H_PI, 0.749f);

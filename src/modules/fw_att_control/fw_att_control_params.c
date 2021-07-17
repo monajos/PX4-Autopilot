@@ -79,7 +79,7 @@ PARAM_DEFINE_FLOAT(FW_R_TC, 0.4f);
  * @increment 0.05
  * @group FW Attitude Control
  */
-PARAM_DEFINE_FLOAT(FW_P_TC, 0.1f);
+PARAM_DEFINE_FLOAT(FW_P_TC, 0.1887f);
 
 /**
  * Pitch rate proportional gain.
@@ -94,7 +94,7 @@ PARAM_DEFINE_FLOAT(FW_P_TC, 0.1f);
  * @increment 0.005
  * @group FW Attitude Control
  */
-PARAM_DEFINE_FLOAT(FW_PR_P, 0.06f);
+PARAM_DEFINE_FLOAT(FW_PR_P, 0.059f);
 
 /**
  * Pitch rate integrator gain.
