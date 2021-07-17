@@ -245,6 +245,8 @@ private:
 	float _bat_status_voltage_v{0.0f};
 	float _position_sp_alt{0.0f};
 	float _altctrl_airspeed{0.0f};
+	float _man_delta_alt_cmd{0.0f};
+	float _man_delta_spd_cmd{0.0f};
 	//end added 20210715
 
 

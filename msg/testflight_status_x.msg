@@ -1,6 +1,12 @@
 uint64 timestamp		# time since system start (microseconds)
 float32 terrain_alt				# Reference altitude AMSL, (metres)
+
+#Maneuver
 bool man_active
+float32 man_delta_alt_cmd
+float32 man_delta_spd_cmd
+float32 man_risetime_spd
+float32 man_risetime_hgt
 #TECS Global
 
 #Pitch controller values
