@@ -95,6 +95,7 @@
 #include <uORB/topics/vehicle_status.h>
 //added 20210715
 #include <uORB/topics/testflight_status_x.h>
+#include <uORB/topics/testflight_control_params.h>
 #include <uORB/topics/battery_status.h>
 #include <uORB/topics/actuator_outputs.h>
 #include <uORB/topics/actuator_controls.h>
@@ -188,7 +189,10 @@ private:
 	//added 20210715
 	uORB::Publication<testflight_status_x_s>		_testflight_status_x_pub{ORB_ID(testflight_status_x)};
 	//end added 20210715
+	//added 20210720
+	uORB::Publication<testflight_control_params_s>		_testflight_control_params_pub{ORB_ID(testflight_control_params)};
 
+	//end added 20210720
 	manual_control_setpoint_s	_manual_control_setpoint {};			///< r/c channel data
 	position_setpoint_triplet_s	_pos_sp_triplet {};		///< triplet of mission items
 	vehicle_attitude_setpoint_s	_att_sp {};			///< vehicle attitude setpoint

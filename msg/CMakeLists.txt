@@ -186,6 +186,7 @@ set(msg_files
 	wind.msg
 	yaw_estimator_status.msg
 	testflight_status_x.msg
+	testflight_control_params.msg
 )
 
 if(NOT px4_constrained_flash_build)
