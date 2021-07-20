@@ -74,13 +74,15 @@
 #include <uORB/topics/airspeed_validated.h>
 #include <uORB/topics/manual_control_setpoint.h>
 #include <uORB/topics/parameter_update.h>
-#include <uORB/topics/position_controller_landing_status.h>
+//#include <uORB/topics/position_controller_landing_status.h>
 #include <uORB/topics/position_controller_status.h>
 #include <uORB/topics/position_setpoint_triplet.h>
 #include <uORB/topics/tecs_status.h>
 
 
 #include <uORB/topics/tecs_status_x.h>
+#include <uORB/topics/testflight_tecs_status_x.h>
+#include <uORB/topics/testflight_pi_status_x.h>
 #include <uORB/topics/vehicle_air_data.h> //take
 #include <uORB/topics/vehicle_angular_velocity.h> //take
 #include <uORB/topics/vehicle_attitude.h> //take
@@ -96,6 +98,7 @@
 //added 20210715
 #include <uORB/topics/testflight_status_x.h>
 #include <uORB/topics/testflight_control_params.h>
+#include <uORB/topics/testflight_std_tecs_params.h>
 #include <uORB/topics/battery_status.h>
 #include <uORB/topics/actuator_outputs.h>
 #include <uORB/topics/actuator_controls.h>
@@ -182,16 +185,18 @@ private:
 
 	uORB::Publication<vehicle_attitude_setpoint_s>		_attitude_sp_pub;
 	uORB::Publication<position_controller_status_s>		_pos_ctrl_status_pub{ORB_ID(position_controller_status)};			///< navigation capabilities publication
-	uORB::Publication<position_controller_landing_status_s>	_pos_ctrl_landing_status_pub{ORB_ID(position_controller_landing_status)};	///< landing status publication
+	//uORB::Publication<position_controller_landing_status_s>	_pos_ctrl_landing_status_pub{ORB_ID(position_controller_landing_status)};	///< landing status publication
 	uORB::Publication<tecs_status_s>			_tecs_status_pub{ORB_ID(tecs_status)};						///< TECS status publication
 
-	uORB::Publication<tecs_status_x_s>			_tecs_status_x_pub{ORB_ID(tecs_status_x)};
+	uORB::Publication<testflight_tecs_status_x_s>		_testflight_tecs_status_x_pub{ORB_ID(testflight_tecs_status_x)};
+	uORB::Publication<testflight_pi_status_x_s>		_testflight_pi_status_x_pub{ORB_ID(testflight_pi_status_x)};
+
 	//added 20210715
 	uORB::Publication<testflight_status_x_s>		_testflight_status_x_pub{ORB_ID(testflight_status_x)};
 	//end added 20210715
 	//added 20210720
 	uORB::Publication<testflight_control_params_s>		_testflight_control_params_pub{ORB_ID(testflight_control_params)};
-
+	uORB::Publication<testflight_std_tecs_params_s>		_testflight_std_tecs_params_pub{ORB_ID(testflight_control_params)};
 	//end added 20210720
 	manual_control_setpoint_s	_manual_control_setpoint {};			///< r/c channel data
 	position_setpoint_triplet_s	_pos_sp_triplet {};		///< triplet of mission items

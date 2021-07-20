@@ -92,12 +92,14 @@ void LoggedTopics::add_default_topics()
 	add_topic("system_power", 500);
 	add_topic("takeoff_status", 1000);
 
-	add_topic("tecs_status_x",200);
+	add_topic("testflight_tecs_status_x",200);
+	add_topic("testflight_pi_status_x",200);
 	//added 20210715
 	add_topic("testflight_status_x",200); //50 Hz I suppose
 	//end added 20210715
 	//added 20210720
 	add_topic("testflight_control_params",200); //50 Hz I suppose
+	add_topic("testflight_std_tecs_params",200); //50 Hz I suppose
 	//end added 20210720
 	add_topic("tecs_status", 200);
 	add_topic("test_motor", 500);
@@ -476,9 +478,9 @@ void LoggedTopics::initialize_configured_topics(SDLogProfileMask profile)
 		add_sensor_comparison_topics();
 	}
 
-	if (profile & SDLogProfileMask::VISION_AND_AVOIDANCE) {
-		add_vision_and_avoidance_topics();
-	}
+	//if (profile & SDLogProfileMask::VISION_AND_AVOIDANCE) {
+	//	add_vision_and_avoidance_topics();
+	//}
 
 	if (profile & SDLogProfileMask::RAW_IMU_GYRO_FIFO) {
 		add_raw_imu_gyro_fifo();

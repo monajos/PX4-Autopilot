@@ -448,9 +448,12 @@ FixedwingPositionControl::tecs_status_publish()
 {
 	tecs_status_s t{};
 
-	tecs_status_x_s tx{};
+	testflight_tecs_status_x_s tx{};
+	//testflight_tecs_status_x_s px{};
 	testflight_status_x_s tfx{};
 	testflight_control_params_s tfc{};
+	testflight_std_tecs_params_s tfc_std{};
+	testflight_pi_status_x_s pix{};
 
 	switch (_tecs.tecs_mode()) {
 	case TECS::ECL_TECS_MODE_NORMAL:
@@ -569,12 +572,14 @@ FixedwingPositionControl::tecs_status_publish()
 
 	tx.timestamp = hrt_absolute_time();
 
-	_tecs_status_x_pub.publish(tx);
+
 
 	//testflight topic
 
 	tfx.timestamp = hrt_absolute_time();
 	tfc.timestamp = hrt_absolute_time();
+	tfc_std.timestamp = hrt_absolute_time();
+	pix.timestamp = hrt_absolute_time();
 	//vehicle_global_position_s vehicle_global_position = {};
 	//_vehicle_global_position_sub gpos;
 	//_global_pos_sub.copy(&gpos);
@@ -597,6 +602,8 @@ FixedwingPositionControl::tecs_status_publish()
 	tfc.man_delta_spd_cmd = _man_delta_spd_cmd;
 	tfc.man_risetime_spd = _param_fw_x_risetime_spd.get();
 	tfc.man_risetime_hgt = _param_fw_x_risetime_hgt.get();
+	tfc.man_position_sp_alt = _position_sp_alt;
+	tfc.man_position_sp_airspeed = _altctrl_airspeed;
 
 	//grab pitch controller parameters
 	tfc.pitch_cntr_param_fw_p_rmax_neg = _param_fw_p_rmax_neg.get();
@@ -609,70 +616,70 @@ FixedwingPositionControl::tecs_status_publish()
 	tfc.pitch_cntr_param_fw_psp_off = _param_fw_psp_off.get();
 
 	//grab standard tecs parameters
-	tfc.std_tecs_param_fw_airspd_max = _param_fw_airspd_max.get();
-	tfc.std_tecs_param_fw_airspd_min =_param_fw_airspd_min.get();
-	tfc.std_tecs_fw_airspd_trim =_param_fw_airspd_trim.get();
-	tfc.std_tecs_param_fw_airspd_stall =_param_fw_airspd_stall.get();
-	tfc.std_tecs_aram_fw_clmbout_diff =_param_fw_clmbout_diff.get();
-	tfc.std_tecs_param_fw_gnd_spd_min =_param_fw_gnd_spd_min.get();
-	tfc.std_tecs_param_fw_l1_damping =_param_fw_l1_damping.get();
-	tfc.std_tecs_param_fw_l1_period =_param_fw_l1_period.get();
-	tfc.std_tecs_param_fw_l1_r_slew_max =_param_fw_l1_r_slew_max.get();
-	tfc.std_tecs_param_fw_r_lim = _param_fw_r_lim.get();
-	tfc.std_tecs_param_fw_lnd_airspd_sc =_param_fw_lnd_airspd_sc.get();
-	tfc.std_tecs_param_fw_lnd_ang =_param_fw_lnd_ang.get();
-	tfc.std_tecs_param_fw_lnd_fl_pmax =_param_fw_lnd_fl_pmax.get();
-	tfc.std_tecs_param_fw_lnd_fl_pmin = _param_fw_lnd_fl_pmin.get();
-	tfc.std_tecs_param_fw_lnd_flalt = _param_fw_lnd_flalt.get();
-	tfc.std_tecs_param_fw_lnd_hhdist = _param_fw_lnd_hhdist.get();
-	tfc.std_tecs_param_fw_lnd_hvirt =_param_fw_lnd_hvirt.get();
-	tfc.std_tecs_param_fw_thrtc_sc =_param_fw_thrtc_sc.get();
-	tfc.std_tecs_param_fw_lnd_tlalt =_param_fw_lnd_tlalt.get();
-	tfc.std_tecs_param_fw_lnd_earlycfg =_param_fw_lnd_earlycfg.get();
-	tfc.std_tecs_param_fw_lnd_useter =_param_fw_lnd_useter.get();
-	tfc.std_tecs_param_fw_p_lim_max =_param_fw_p_lim_max.get();
-	tfc.std_param_fw_p_lim_min=_param_fw_p_lim_min.get();
-	tfc.std_tecs_param_fw_t_clmb_max =_param_fw_t_clmb_max.get();
-	tfc.std_tecs_param_fw_t_hrate_ff =_param_fw_t_hrate_ff.get();
-	tfc.std_tecs_param_fw_t_h_error_tc = _param_fw_t_h_error_tc.get();
-	tfc.std_tecs_param_fw_t_i_gain_thr = _param_fw_t_I_gain_thr.get();
-	tfc.std_tecs_param_fw_t_i_gain_pit = _param_fw_t_I_gain_pit.get();
-	tfc.std_tecs_param_fw_t_ptch_damp = _param_fw_t_ptch_damp.get();
-	tfc.std_tecs_param_fw_t_rll2thr = _param_fw_t_rll2thr.get();
-	tfc.std_tecs_param_fw_t_sink_max = _param_fw_t_sink_max.get();
-	tfc.std_tecs_param_fw_t_sink_min = _param_fw_t_sink_min.get();
-	tfc.std_tecs_param_fw_t_spd_omega = _param_fw_t_spd_omega.get();
-	tfc.std_tecs_param_fw_t_spdweight = _param_fw_t_spdweight.get();
-	tfc.std_tecs_param_fw_t_tas_error_tc = _param_fw_t_tas_error_tc.get();
-	tfc.std_tecs_param_fw_t_thr_damp = _param_fw_t_thr_damp.get();
-	tfc.std_tecs_param_fw_t_vert_acc = _param_fw_t_vert_acc.get();
-	tfc.std_tecs_param_ste_rate_time_const = _param_ste_rate_time_const.get();
-	tfc.std_tecs_param_tas_rate_time_const = _param_tas_rate_time_const.get();
-	tfc.std_tecs_param_seb_rate_ff = _param_seb_rate_ff.get();
-	tfc.std_tecs_param_climbrate_target = _param_climbrate_target.get();
-	tfc.std_tecs_param_sinkrate_target = _param_sinkrate_target.get();
-	tfc.std_tecs_param_fw_thr_alt_scl = _param_fw_thr_alt_scl.get();
-	tfc.std_tecs_param_param_fw_thr_cruise = _param_fw_thr_cruise.get();
-	tfc.std_tecs_param_fw_thr_idle = _param_fw_thr_idle.get();
-	tfc.std_tecs_param_fw_thr_lnd_max= _param_fw_thr_lnd_max.get();
-	tfc.std_tecs_param_fw_thr_max = _param_fw_thr_max.get();
-	tfc.std_tecs_param_fw_thr_min = _param_fw_thr_min.get();
-	tfc.std_tecs_param_fw_thr_slew_max = _param_fw_thr_slew_max.get();
-	tfc.std_tecs_param_fw_posctl_inv_st = _param_fw_posctl_inv_st.get();
-	tfc.std_tecs_param_fw_arsp_mode = _param_fw_arsp_mode.get();
-	tfc.std_tecs_param_fw_psp_off = _param_fw_psp_off.get();
-	tfc.std_tecs_param_fw_man_p_max = _param_fw_man_p_max.get();
-	tfc.std_tecs_param_fw_man_r_max = _param_fw_man_r_max.get();
-	tfc.std_tecs_param_nav_loiter_rad = _param_nav_loiter_rad.get();
-	tfc.std_tecs_param_takeoff_pitch_min = _takeoff_pitch_min.get();
+	//tfc.std_tecs_param_fw_airspd_max = _param_fw_airspd_max.get();
+	//tfc.std_tecs_param_fw_airspd_min =_param_fw_airspd_min.get();
+	tfc_std.std_tecs_fw_airspd_trim =_param_fw_airspd_trim.get();
+	//tfc.std_tecs_param_fw_airspd_stall =_param_fw_airspd_stall.get();
+	tfc_std.std_tecs_aram_fw_clmbout_diff =_param_fw_clmbout_diff.get();
+	//tfc.std_tecs_param_fw_gnd_spd_min =_param_fw_gnd_spd_min.get();
+	//tfc.std_tecs_param_fw_l1_damping =_param_fw_l1_damping.get();
+	//fc.std_tecs_param_fw_l1_period =_param_fw_l1_period.get();
+	//tfc.std_tecs_param_fw_l1_r_slew_max =_param_fw_l1_r_slew_max.get();
+	//tfc.std_tecs_param_fw_r_lim = _param_fw_r_lim.get();
+	//tfc.std_tecs_param_fw_lnd_airspd_sc =_param_fw_lnd_airspd_sc.get();
+	//tfc.std_tecs_param_fw_lnd_ang =_param_fw_lnd_ang.get();
+	//tfc.std_tecs_param_fw_lnd_fl_pmax =_param_fw_lnd_fl_pmax.get();
+	//tfc.std_tecs_param_fw_lnd_fl_pmin = _param_fw_lnd_fl_pmin.get();
+	//tfc.std_tecs_param_fw_lnd_flalt = _param_fw_lnd_flalt.get();
+	//tfc.std_tecs_param_fw_lnd_hhdist = _param_fw_lnd_hhdist.get();
+	//tfc.std_tecs_param_fw_lnd_hvirt =_param_fw_lnd_hvirt.get();
+	//tfc.std_tecs_param_fw_thrtc_sc =_param_fw_thrtc_sc.get();
+	//tfc.std_tecs_param_fw_lnd_tlalt =_param_fw_lnd_tlalt.get();
+	//tfc.std_tecs_param_fw_lnd_earlycfg =_param_fw_lnd_earlycfg.get();
+	//tfc.std_tecs_param_fw_lnd_useter =_param_fw_lnd_useter.get();
+	tfc_std.std_tecs_param_fw_p_lim_max =_param_fw_p_lim_max.get();
+	tfc_std.std_param_fw_p_lim_min=_param_fw_p_lim_min.get();
+	tfc_std.std_tecs_param_fw_t_clmb_max =_param_fw_t_clmb_max.get();
+	tfc_std.std_tecs_param_fw_t_hrate_ff =_param_fw_t_hrate_ff.get();
+	tfc_std.std_tecs_param_fw_t_h_error_tc = _param_fw_t_h_error_tc.get();
+	tfc_std.std_tecs_param_fw_t_i_gain_thr = _param_fw_t_I_gain_thr.get();
+	tfc_std.std_tecs_param_fw_t_i_gain_pit = _param_fw_t_I_gain_pit.get();
+	tfc_std.std_tecs_param_fw_t_ptch_damp = _param_fw_t_ptch_damp.get();
+	//tfc.std_tecs_param_fw_t_rll2thr = _param_fw_t_rll2thr.get();
+	tfc_std.std_tecs_param_fw_t_sink_max = _param_fw_t_sink_max.get();
+	tfc_std.std_tecs_param_fw_t_sink_min = _param_fw_t_sink_min.get();
+	tfc_std.std_tecs_param_fw_t_spd_omega = _param_fw_t_spd_omega.get();
+	tfc_std.std_tecs_param_fw_t_spdweight = _param_fw_t_spdweight.get();
+	tfc_std.std_tecs_param_fw_t_tas_error_tc = _param_fw_t_tas_error_tc.get();
+	tfc_std.std_tecs_param_fw_t_thr_damp = _param_fw_t_thr_damp.get();
+	tfc_std.std_tecs_param_fw_t_vert_acc = _param_fw_t_vert_acc.get();
+	tfc_std.std_tecs_param_ste_rate_time_const = _param_ste_rate_time_const.get();
+	tfc_std.std_tecs_param_tas_rate_time_const = _param_tas_rate_time_const.get();
+	tfc_std.std_tecs_param_seb_rate_ff = _param_seb_rate_ff.get();
+	tfc_std.std_tecs_param_climbrate_target = _param_climbrate_target.get();
+	tfc_std.std_tecs_param_sinkrate_target = _param_sinkrate_target.get();
+	tfc_std.std_tecs_param_fw_thr_alt_scl = _param_fw_thr_alt_scl.get();
+	tfc_std.std_tecs_param_param_fw_thr_cruise = _param_fw_thr_cruise.get();
+	tfc_std.std_tecs_param_fw_thr_idle = _param_fw_thr_idle.get();
+	tfc_std.std_tecs_param_fw_thr_lnd_max= _param_fw_thr_lnd_max.get();
+	tfc_std.std_tecs_param_fw_thr_max = _param_fw_thr_max.get();
+	tfc_std.std_tecs_param_fw_thr_min = _param_fw_thr_min.get();
+	tfc_std.std_tecs_param_fw_thr_slew_max = _param_fw_thr_slew_max.get();
+	tfc_std.std_tecs_param_fw_posctl_inv_st = _param_fw_posctl_inv_st.get();
+	tfc_std.std_tecs_param_fw_arsp_mode = _param_fw_arsp_mode.get();
+	tfc_std.std_tecs_param_fw_psp_off = _param_fw_psp_off.get();
+	tfc_std.std_tecs_param_fw_man_p_max = _param_fw_man_p_max.get();
+	//tfc.std_tecs_param_fw_man_r_max = _param_fw_man_r_max.get();
+	//tfc.std_tecs_param_nav_loiter_rad = _param_nav_loiter_rad.get();
+	//tfc.std_tecs_param_takeoff_pitch_min = _takeoff_pitch_min.get();
 	//grab experimental tecs parameters
-	tfc.experimental_tecs_param_fw_x_hgt_target = _param_fw_x_hgt_target.get();
-	tfc.experimental_tecs_param_fw_x_spd_target = _param_fw_x_spd_target.get();
-	tfc.experimental_tecs_param_fw_x_rel_hgt_target = _param_fw_x_rel_hgt_target.get();
-	tfc.experimental_tecs_param_fw_x_rel_spd_target = _param_fw_x_rel_spd_target.get();
-	tfc.experimental_tecs_param_fw_x_risetime_hgt = _param_fw_x_risetime_hgt.get();
-	tfc.experimental_tecs_param_fw_x_risetime_spd = _param_fw_x_risetime_spd.get();
-	tfc.experimental_tecs_param_fw_x_mode = _param_fw_x_mode.get();
+	//tfc.experimental_tecs_param_fw_x_hgt_target = _param_fw_x_hgt_target.get();
+	//tfc.experimental_tecs_param_fw_x_spd_target = _param_fw_x_spd_target.get();
+	//tfc.experimental_tecs_param_fw_x_rel_hgt_target = _param_fw_x_rel_hgt_target.get();
+	//tfc.experimental_tecs_param_fw_x_rel_spd_target = _param_fw_x_rel_spd_target.get();
+	//tfc.experimental_tecs_param_fw_x_risetime_hgt = _param_fw_x_risetime_hgt.get();
+	//tfc.experimental_tecs_param_fw_x_risetime_spd = _param_fw_x_risetime_spd.get();
+	//tfc.experimental_tecs_param_fw_x_mode = _param_fw_x_mode.get();
 	tfc.experimental_tecs_param_fw_x_ctrl_sel = _param_fw_x_ctrl_sel.get();
 	tfc.experimental_tecs_param_fw_x_init_time = _param_fw_x_init_time.get();
 	tfc.experimental_tecs_param_fw_tx_clmb_max = _param_fw_tx_clmb_max.get();
@@ -681,14 +688,14 @@ FixedwingPositionControl::tecs_status_publish()
 	tfc.experimental_tecs_param_fw_tx_i_gain_thr =_param_fw_tx_I_gain_thr.get();
 	tfc.experimental_tecs_param_fw_tx_i_gain_pit =_param_fw_tx_I_gain_pit.get();
 	tfc.experimental_tecs_param_fw_tx_ptch_damp = _param_fw_tx_ptch_damp.get();
-	tfc.experimental_tecs_param_fw_tx_rll2thr = _param_fw_tx_rll2thr.get();
-	tfc.experimental_tecs_param_fw_tx_sink_max = _param_fw_tx_sink_max.get();
-	tfc.experimental_tecs_param_fw_tx_sink_min = _param_fw_tx_sink_min.get();
-	tfc.experimental_tecs_param_fw_tx_sink_min = _param_fw_tx_spd_omega.get();
+	//tfc.experimental_tecs_param_fw_tx_rll2thr = _param_fw_tx_rll2thr.get();
+	//tfc.experimental_tecs_param_fw_tx_sink_max = _param_fw_tx_sink_max.get();
+	//tfc.experimental_tecs_param_fw_tx_sink_min = _param_fw_tx_sink_min.get();
+	//tfc.experimental_tecs_param_fw_tx_sink_min = _param_fw_tx_spd_omega.get();
 	tfc.experimental_tecs_param_fw_tx_spdweight = _param_fw_tx_spdweight.get();
 	tfc.experimental_tecs_param_fw_tx_tas_error_tc = _param_fw_tx_tas_error_tc.get();
-	tfc.experimental_tecs_param_fw_tx_thr_damp = _param_fw_tx_thr_damp.get();
-	tfc.experimental_tecs_param_fw_tx_vert_acc = _param_fw_tx_vert_acc.get();
+	//tfc.experimental_tecs_param_fw_tx_thr_damp = _param_fw_tx_thr_damp.get();
+	//tfc.experimental_tecs_param_fw_tx_vert_acc = _param_fw_tx_vert_acc.get();
 	tfc.experimental_tecs_param_ste_x_rate_time_const = _param_ste_x_rate_time_const.get();
 	tfc.experimental_tecs_param_tas_x_rate_time_const = _param_tas_x_rate_time_const.get();
 	tfc.experimental_tecs_param_seb_x_rate_ff = _param_seb_x_rate_ff.get();
@@ -850,8 +857,15 @@ FixedwingPositionControl::tecs_status_publish()
 	tfx.std_tecs_pot_energy = _tecs.get_pot_energy();
 	tfx.std_tecs_tot_energy = _tecs.get_tot_energy();
 
+	//grab internal PIX states
+	pix.integrator_speed = _pi_X.get_integrator_state_speed();
+	pix.integrator_altitude = _pi_X.get_integrator_state_altitude();
+
 	_testflight_status_x_pub.publish(tfx);
 	_testflight_control_params_pub.publish(tfc);
+	_testflight_std_tecs_params_pub.publish(tfc_std);
+	_testflight_tecs_status_x_pub.publish(tx);
+	_testflight_pi_status_x_pub.publish(pix);
 }
 
 void
@@ -883,7 +897,7 @@ FixedwingPositionControl::status_publish()
 void
 FixedwingPositionControl::landing_status_publish()
 {
-	position_controller_landing_status_s pos_ctrl_landing_status = {};
+	/*position_controller_landing_status_s pos_ctrl_landing_status = {};
 
 	pos_ctrl_landing_status.slope_angle_rad = _landingslope.landing_slope_angle_rad();
 	pos_ctrl_landing_status.horizontal_slope_displacement = _landingslope.horizontal_slope_displacement();
@@ -893,7 +907,7 @@ FixedwingPositionControl::landing_status_publish()
 
 	pos_ctrl_landing_status.timestamp = hrt_absolute_time();
 
-	_pos_ctrl_landing_status_pub.publish(pos_ctrl_landing_status);
+	_pos_ctrl_landing_status_pub.publish(pos_ctrl_landing_status);*/
 }
 
 void

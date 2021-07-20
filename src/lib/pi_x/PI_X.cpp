@@ -277,8 +277,8 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 				   _integrator_gain_pitch_pi_x,
 				   0.0f, //d gain
 				   10000.0f,  //integral limit -> not used
-				   -10.0f, //output limit low
-				   15.0f); //output limit high
+				   _pitch_setpoint_min, //output limit low
+				   _pitch_setpoint_max); //output limit high
 
 
 
@@ -355,6 +355,8 @@ void PI_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_set
 	// Calculate the pitch demand
 	_update_pitch_setpoint();
 
+
+
 	// Update time stamps
 	_pitch_update_timestamp = now;
 
@@ -366,3 +368,14 @@ void PI_X::_update_speed_height_weights()
 {
 
 }
+
+float PI_X::get_integrator_state_speed()
+{
+	return _speed_controller.integral;
+}
+
+float PI_X::get_integrator_state_altitude()
+{
+	return _altitude_controller.integral;
+}
+

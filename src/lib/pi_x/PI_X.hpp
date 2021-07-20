@@ -170,6 +170,9 @@ public:
 	float throttle_integ_state() { return _throttle_integ_state; }
 	float pitch_integ_state() { return _pitch_integ_state; }
 
+	float get_integrator_state_speed() ;
+	float get_integrator_state_altitude() ;
+
 	/*float STE() { return _SPE_estimate + _SKE_estimate; }
 
 	float STE_setpoint() { return _SPE_setpoint + _SKE_setpoint; }

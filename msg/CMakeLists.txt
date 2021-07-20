@@ -140,6 +140,8 @@ set(msg_files
 	takeoff_status.msg
 	task_stack_info.msg
 	tecs_status.msg
+	testflight_tecs_status_x.msg
+	testflight_pi_status_x.msg
 	telemetry_status.msg
 	test_motor.msg
 	timesync.msg
@@ -187,6 +189,7 @@ set(msg_files
 	yaw_estimator_status.msg
 	testflight_status_x.msg
 	testflight_control_params.msg
+	testflight_std_tecs_params.msg
 )
 
 if(NOT px4_constrained_flash_build)

@@ -1,0 +1,44 @@
+uint64 timestamp		# time since system start (microseconds)
+uint8 TECS_MODE_NORMAL_X = 0
+uint8 TECS_MODE_UNDERSPEED_X = 1
+uint8 TECS_MODE_TAKEOFF_X = 2
+uint8 TECS_MODE_LAND_X = 3
+uint8 TECS_MODE_LAND_THROTTLELIM_X = 4
+uint8 TECS_MODE_BAD_DESCENT_X = 5
+uint8 TECS_MODE_CLIMBOUT_X = 6
+
+
+float32 altitude_sp_x
+float32 altitude_filtered_x
+float32 height_rate_setpoint_x
+float32 height_rate_x
+float32 equivalent_airspeed_sp_x
+float32 true_airspeed_sp_x
+float32 true_airspeed_filtered_x
+float32 true_airspeed_derivative_sp_x
+float32 true_airspeed_derivative_x
+float32 true_airspeed_derivative_raw_x
+float32 true_airspeed_innovation_x
+
+float32 total_energy_error_x
+float32 energy_distribution_error_x
+float32 total_energy_rate_error_x
+float32 energy_distribution_rate_error_x
+
+float32 total_energy_x
+float32 total_energy_rate_x
+float32 total_energy_balance_x
+float32 total_energy_balance_rate_x
+
+float32 total_energy_sp_x
+float32 total_energy_rate_sp_x
+float32 total_energy_balance_sp_x
+float32 total_energy_balance_rate_sp_x
+
+float32 throttle_integ_x
+float32 pitch_integ_x
+
+float32 throttle_sp_x
+float32 pitch_sp_rad_x
+
+uint8 mode_x
