@@ -516,19 +516,19 @@ FixedwingPositionControl::tecs_status_publish()
 
 	switch (_tecs_X.tecs_mode()) {
 	case TECS::ECL_TECS_MODE_NORMAL:
-		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;
+		tx.mode_x = testflight_tecs_status_x_s::TECS_MODE_NORMAL_X;
 		break;
 
 	case TECS::ECL_TECS_MODE_UNDERSPEED:
-		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_UNDERSPEED_X;
+		tx.mode_x = testflight_tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_UNDERSPEED_X;
 		break;
 
 	case TECS::ECL_TECS_MODE_BAD_DESCENT:
-		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_BAD_DESCENT_X;
+		tx.mode_x = testflight_tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_BAD_DESCENT_X;
 		break;
 
 	case TECS::ECL_TECS_MODE_CLIMBOUT:
-		tx.mode_x = tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_CLIMBOUT_X;
+		tx.mode_x = testflight_tecs_status_x_s::TECS_MODE_NORMAL_X;//tx.mode_x = tecs_status_x_s::TECS_MODE_CLIMBOUT_X;
 		break;
 	}
 

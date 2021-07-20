@@ -79,8 +79,7 @@
 #include <uORB/topics/position_setpoint_triplet.h>
 #include <uORB/topics/tecs_status.h>
 
-
-#include <uORB/topics/tecs_status_x.h>
+//#include <uORB/topics/tecs_status_x.h>
 #include <uORB/topics/testflight_tecs_status_x.h>
 #include <uORB/topics/testflight_pi_status_x.h>
 #include <uORB/topics/vehicle_air_data.h> //take
