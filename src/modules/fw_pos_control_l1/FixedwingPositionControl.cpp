@@ -393,9 +393,9 @@ FixedwingPositionControl::get_demanded_airspeed()
 
 	}
 
-
-	return altctrl_airspeed;
 	_altctrl_airspeed = altctrl_airspeed;
+	return altctrl_airspeed;
+
 }
 
 float
@@ -576,10 +576,10 @@ FixedwingPositionControl::tecs_status_publish()
 
 	//testflight topic
 
-	tfx.timestamp = hrt_absolute_time();
-	tfc.timestamp = hrt_absolute_time();
-	tfc_std.timestamp = hrt_absolute_time();
-	pix.timestamp = hrt_absolute_time();
+	tfx.timestamp = tx.timestamp;
+	tfc.timestamp = tx.timestamp;
+	tfc_std.timestamp = tx.timestamp;
+	pix.timestamp = tx.timestamp;
 	//vehicle_global_position_s vehicle_global_position = {};
 	//_vehicle_global_position_sub gpos;
 	//_global_pos_sub.copy(&gpos);
@@ -868,6 +868,9 @@ FixedwingPositionControl::tecs_status_publish()
 	_testflight_std_tecs_params_pub.publish(tfc_std);
 	_testflight_tecs_status_x_pub.publish(tx);
 	_testflight_pi_status_x_pub.publish(pix);
+
+
+
 }
 
 void

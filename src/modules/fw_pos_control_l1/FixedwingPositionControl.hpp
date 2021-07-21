@@ -174,7 +174,7 @@ private:
 	uORB::Subscription _vehicle_land_detected_sub{ORB_ID(vehicle_land_detected)};
 	uORB::Subscription _vehicle_status_sub{ORB_ID(vehicle_status)};
 	//added 20210715
-	uORB::Subscription _vehicle_global_position_sub{ORB_ID(vehicle_global_position)};
+
 	uORB::Subscription _vehicle_gps_position_sub{ORB_ID(vehicle_gps_position)};
 	uORB::Subscription _pwm_input_sub{ORB_ID(pwm_input)};
 	uORB::Subscription _actuator_controls_sub{ORB_ID(actuator_controls)};
