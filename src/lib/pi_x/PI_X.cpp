@@ -232,8 +232,8 @@ void PI_X::_update_pitch_setpoint()
 
 	_last_pitch_setpoint = _pitch_setpoint;
 
-	//double double_last_pitch_setpoint = double(_last_pitch_setpoint);
-	//	std::printf("pi_x_double_last_pitch_setpoint:\t %f\n", double_last_pitch_setpoint);
+
+
 }
 
 void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_altitude, float pitch_min_climbout,
@@ -277,8 +277,9 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 				   _integrator_gain_pitch_pi_x,
 				   0.0f, //d gain
 				   10000.0f,  //integral limit -> not used
-				   _pitch_setpoint_min, //output limit low
-				   _pitch_setpoint_max); //output limit high
+				   _pitch_setpoint_min * float(180/MATH_PI), //output limit low -> those come in RAD but the controller uses DEG
+				   _pitch_setpoint_max * float(180/MATH_PI)); //output limit high -> those come in RAD but the controller uses DEG
+
 
 
 
@@ -306,6 +307,9 @@ void PI_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_set
 	// Calculate the time since last update (seconds)
 	uint64_t now = hrt_absolute_time();
 	_dt = fmaxf((now - _pitch_update_timestamp) * 1e-6f, DT_MIN);
+
+	//important: Hand the hgt setpoint to local variables:
+	_hgt_setpoint  =  hgt_setpoint;
 
 	// Set class variables from inputs
 	_throttle_setpoint_max = throttle_max;

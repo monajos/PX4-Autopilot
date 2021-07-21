@@ -286,7 +286,7 @@ __EXPORT float pid_calculate_upper_lower(PID_t *pid, float sp, float val, float 
 		if (output > pid->output_limit_high) {
 			output = pid->output_limit_high;
 
-		} else if (output < -pid->output_limit_low) {
+		} else if (output < pid->output_limit_low) {
 			output = pid->output_limit_low;
 		}
 

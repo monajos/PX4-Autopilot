@@ -195,7 +195,7 @@ private:
 	//end added 20210715
 	//added 20210720
 	uORB::Publication<testflight_control_params_s>		_testflight_control_params_pub{ORB_ID(testflight_control_params)};
-	uORB::Publication<testflight_std_tecs_params_s>		_testflight_std_tecs_params_pub{ORB_ID(testflight_control_params)};
+	uORB::Publication<testflight_std_tecs_params_s>		_testflight_std_tecs_params_pub{ORB_ID(testflight_std_tecs_params)};
 	//end added 20210720
 	manual_control_setpoint_s	_manual_control_setpoint {};			///< r/c channel data
 	position_setpoint_triplet_s	_pos_sp_triplet {};		///< triplet of mission items

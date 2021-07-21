@@ -594,7 +594,7 @@ FixedwingPositionControl::tecs_status_publish()
 	tfx.terrain_alt = _local_pos.ref_alt;
 	//grab maneuver parameters
 	tfc.man_active = _man_active;
-	if(_man_active){
+		if(_man_active){
 		_man_delta_alt_cmd = _maneuver.get_test_hgt_sp();
 	 	_man_delta_spd_cmd = _maneuver.get_test_spd_sp();
 	}
@@ -863,6 +863,8 @@ FixedwingPositionControl::tecs_status_publish()
 
 	_testflight_status_x_pub.publish(tfx);
 	_testflight_control_params_pub.publish(tfc);
+
+
 	_testflight_std_tecs_params_pub.publish(tfc_std);
 	_testflight_tecs_status_x_pub.publish(tx);
 	_testflight_pi_status_x_pub.publish(pix);
@@ -2486,7 +2488,7 @@ FixedwingPositionControl::man_active(float dt)
 		_maneuver.init_trajectory();
 		return true;
 	}
-	else if((_manual_control_setpoint.z > 0.8f) && (_man_active == true))
+	else if((_manual_control_setpoint.aux1 > 0.8f) && (_man_active == true))
 	{
 		_maneuver.update_trajectory(dt);
 		return true;
