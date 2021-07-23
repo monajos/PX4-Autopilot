@@ -316,8 +316,8 @@ void TECS_X::_update_pitch_setpoint()
 
 	// Calculate derivative from change in climb angle to rate of change of specific energy balance
 	/*const float climb_angle_to_SEB_rate = _tas_state * CONSTANTS_ONE_G;*/
-	float _pitch_max_rad = radians(15.0);
-	float _pitch_min_rad = radians(-10.0);
+	//float _pitch_max_rad = radians(15.0);
+	//float _pitch_min_rad = radians(-10.0);
 	if (_integrator_gain_pitch > 0.0f) {
 		// Calculate pitch integrator input term
 		/*According to Dissertation of Lamp, Maxim (ISBN 9783863876654) all pitch commands go through the integrator
@@ -338,9 +338,9 @@ void TECS_X::_update_pitch_setpoint()
 
 		// only allow integrator propagation into direction which unsaturates pitch demand
 		// total pitch demand below is: _pitch_setpoint_unc = _pitch_integ_state;
-		if (_pitch_integ_state > _pitch_max_rad) {
+		if (_pitch_integ_state > _pitch_setpoint_max) {
 			pitch_integ_input = math::min(0.f, pitch_integ_input);
-		} else if (_pitch_integ_state < _pitch_min_rad) {
+		} else if (_pitch_integ_state < _pitch_setpoint_min) {
 			pitch_integ_input = math::max(0.f, pitch_integ_input);
 		}
 		_pitch_integ_state = _pitch_integ_state + pitch_integ_input * _dt;
@@ -357,7 +357,7 @@ void TECS_X::_update_pitch_setpoint()
 	/*According to Dissertation of Lamp, Maxim (ISBN 9783863876654) all pitch commands go through the integrator*/
 	_pitch_setpoint_unc = _pitch_integ_state;  /*/ climb_angle_to_SEB_rate;*/
 
-	float pitch_setpoint = constrain(_pitch_setpoint_unc, _pitch_min_rad, _pitch_max_rad);
+	float pitch_setpoint = constrain(_pitch_setpoint_unc, _pitch_setpoint_min, _pitch_setpoint_max);
 	_last_pitch_setpoint = pitch_setpoint;
 	// Comply with the specified vertical acceleration limit by applying a pitch rate limit
 	//const float ptchRateIncr = _dt * _vert_accel_limit / _tas_state;

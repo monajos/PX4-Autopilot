@@ -598,6 +598,7 @@ FixedwingPositionControl::tecs_status_publish()
 		_man_delta_alt_cmd = _maneuver.get_test_hgt_sp();
 	 	_man_delta_spd_cmd = _maneuver.get_test_spd_sp();
 	}
+	tfc.man_ctrl_sel = _ctrl_sel;
 	tfc.man_delta_alt_cmd = _man_delta_alt_cmd;
 	tfc.man_delta_spd_cmd = _man_delta_spd_cmd;
 	tfc.man_risetime_spd = _param_fw_x_risetime_spd.get();
@@ -2484,14 +2485,14 @@ FixedwingPositionControl::man_active(float dt)
 {
 	/*This is the first entry of the maneuver setting and executed once.
 	Here the option to reset the experimental controller states is added*/
-	if((_manual_control_setpoint.aux1 > 0.8f) && (_man_active == false))
+	if((_manual_control_setpoint.z > 0.8f) && (_man_active == false))
 	{
 		//_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
 		_man_active = true;
 		_maneuver.init_trajectory();
 		return true;
 	}
-	else if((_manual_control_setpoint.aux1 > 0.8f) && (_man_active == true))
+	else if((_manual_control_setpoint.z > 0.8f) && (_man_active == true))
 	{
 		_maneuver.update_trajectory(dt);
 		return true;

@@ -1,6 +1,7 @@
 uint64 timestamp
 #Maneuver
 bool man_active
+uint32 man_ctrl_sel
 float32 man_delta_alt_cmd
 float32 man_delta_spd_cmd
 float32 man_risetime_spd
