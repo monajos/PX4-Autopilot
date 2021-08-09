@@ -54,13 +54,15 @@ static constexpr float DT_MAX = 1.0f;	///< max value of _dt allowed before a fil
  */
 
 
-void PI_X::init_integrator_throttle(float current_throttle){
+void PI_X::init_integrator_throttle(float current_throttle)
+{
 
 	_speed_controller.integral = current_throttle / _speed_controller.ki ;
 
 };
 
-void PI_X::init_integrator_pitch(float current_pitch){
+void PI_X::init_integrator_pitch(float current_pitch)
+{
 
 	_altitude_controller.integral = current_pitch / (_altitude_controller.ki) ;
 
@@ -213,7 +215,8 @@ void PI_X::_update_energy_estimates()
 }
 
 void PI_X::_update_throttle_setpoint(const float throttle_cruise)
-{	//instead off adding up throttle cruise here, set to zero
+{
+	//instead off adding up throttle cruise here, set to zero
 	float _throttle_setpoint = 0;
 
 	if (airspeed_sensor_enabled()) {
@@ -261,24 +264,24 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 
 		pid_init(&_speed_controller, PID_MODE_DERIVATIV_CALC, _dt);
 		pid_set_parameters_upper_lower(&_speed_controller,
-				   _airspeed_error_gain_pi_x,
-				   _integrator_gain_throttle_pi_x,
-				   0.0f, //d gain
-				   10000.0f,  //integral limit -> not used
-				   0.0f, //output limit low
-				   1.0f); //output limit high
+					       _airspeed_error_gain_pi_x,
+					       _integrator_gain_throttle_pi_x,
+					       0.0f, //d gain
+					       10000.0f,  //integral limit -> not used
+					       0.0f, //output limit low
+					       1.0f); //output limit high
 		//double double__airspeed_error_gain_pi_x = double(_airspeed_error_gain_pi_x);
 		//std::printf("pi_x double__airspeed_error_gain_pi_x:\t %f\n", double__airspeed_error_gain_pi_x);
 
 		pid_init(&_altitude_controller, PID_MODE_DERIVATIV_CALC, _dt);
 		//use the overloaded set method which has lower and upper output limit
 		pid_set_parameters_upper_lower(&_altitude_controller,
-				   _height_error_gain_pi_x,
-				   _integrator_gain_pitch_pi_x,
-				   0.0f, //d gain
-				   10000.0f,  //integral limit -> not used
-				   _pitch_setpoint_min * float(180/MATH_PI), //output limit low -> those come in RAD but the controller uses DEG
-				   _pitch_setpoint_max * float(180/MATH_PI)); //output limit high -> those come in RAD but the controller uses DEG
+					       _height_error_gain_pi_x,
+					       _integrator_gain_pitch_pi_x,
+					       0.0f, //d gain
+					       10000.0f,  //integral limit -> not used
+					       _pitch_setpoint_min * float(180 / MATH_PI), //output limit low -> those come in RAD but the controller uses DEG
+					       _pitch_setpoint_max * float(180 / MATH_PI)); //output limit high -> those come in RAD but the controller uses DEG
 
 
 

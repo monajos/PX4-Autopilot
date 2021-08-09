@@ -64,8 +64,8 @@ public:
 	 */
 	bool airspeed_sensor_enabled() { return _airspeed_enabled; }
 
-	void init_integrator_throttle (float current_throttle) ;
-	void init_integrator_pitch (float current_pitch) ;
+	void init_integrator_throttle(float current_throttle) ;
+	void init_integrator_pitch(float current_pitch) ;
 
 	/**
 	 * Set the airspeed enable state

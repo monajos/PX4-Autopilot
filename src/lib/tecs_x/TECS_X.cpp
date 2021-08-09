@@ -52,17 +52,19 @@ static constexpr float DT_MAX = 1.0f;	///< max value of _dt allowed before a fil
  * @author Paul Riseborough / Mods by Henrik Spark
  */
 
-void TECS_X::init_integrator_throttle(float current_throttle){
+void TECS_X::init_integrator_throttle(float current_throttle)
+{
 	//throttle_setpoint = _throttle_integ_state * _mass * CONSTANTS_ONE_G;
-			//-> shape to range [0 1] needed : force * velocity = power
-			float _max_power = 600;
+	//-> shape to range [0 1] needed : force * velocity = power
+	float _max_power = 600;
 	//		throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
 
 	_throttle_integ_state = current_throttle / (_tas_state * _mass * CONSTANTS_ONE_G / _max_power)  ;
 
 };
 
-void TECS_X::init_integrator_pitch(float current_pitch){
+void TECS_X::init_integrator_pitch(float current_pitch)
+{
 
 	_pitch_integ_state = current_pitch;
 
@@ -182,7 +184,7 @@ void TECS_X::_update_speed_setpoint()
 }
 
 void TECS_X::updateHeightRateSetpoint(float alt_sp_amsl_m, float target_climbrate_m_s, float target_sinkrate_m_s,
-				    float alt_amsl)
+				      float alt_amsl)
 {
 	_hgt_setpoint = alt_sp_amsl_m;
 	// Use a first order system to calculate a height rate setpoint from the current height error.
@@ -232,70 +234,72 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 	float throttle_setpoint;
 
 
-		// was:  const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
-		// adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654
-		//const float STE_rate_to_throttle = 1.0f / (CONSTANTS_ONE_G * _tas_state);
+	// was:  const float STE_rate_to_throttle = 1.0f / (_STE_rate_max - _STE_rate_min);
+	// adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654
+	//const float STE_rate_to_throttle = 1.0f / (CONSTANTS_ONE_G * _tas_state);
 
-		// Add proportional and derivative control feedback to the predicted throttle and constrain to throttle limits
-		// Killed this path here.
-		throttle_setpoint = 0.0;
+	// Add proportional and derivative control feedback to the predicted throttle and constrain to throttle limits
+	// Killed this path here.
+	throttle_setpoint = 0.0;
 
-		if (airspeed_sensor_enabled()) {
-			if (_integrator_gain_throttle > 0.0f) {
+	if (airspeed_sensor_enabled()) {
+		if (_integrator_gain_throttle > 0.0f) {
 
-				float throttle_integ_input = (_STE_rate_error * _integrator_gain_throttle) * _dt * 1;
-							     //STE_rate_to_throttle;
-
-
-
-				// Calculate a throttle demand from the integrated total energy rate error
-				// This will be added to the total throttle demand to compensate for steady state errors
-				// Only allow itegration action which unsaturates the throttle (taken from _last_throttle_setpoint)
-				// 	    throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G * _tas_state / _max_power;
-				// throttle in range [0 - 1]
-				// so
-				float _max_power = 600;
-				float _throttle_integ_state_min = -_last_throttle_setpoint / ( _mass * CONSTANTS_ONE_G * _tas_state / _max_power);  //and
-				float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / ( _mass * CONSTANTS_ONE_G * _tas_state / _max_power);
-				float throttle_integ_input_limited = throttle_integ_input;
-				// only allow integrator propagation into direction which unsaturates throttle
-				if (_throttle_integ_state + throttle_integ_input > _throttle_integ_state_max) {
-					throttle_integ_input_limited = math::min(0.f, throttle_integ_input);
-
-				} else if (_throttle_integ_state + throttle_integ_input < _throttle_integ_state_min) {
-					throttle_integ_input_limited = math::max(0.f, throttle_integ_input);
-				}
-				_throttle_integ_state = _throttle_integ_state + throttle_integ_input_limited;
-				//double double__throttle_integ_state = double(_throttle_integ_state);
-				//std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
+			float throttle_integ_input = (_STE_rate_error * _integrator_gain_throttle) * _dt * 1;
+			//STE_rate_to_throttle;
 
 
-			} else {
-				_throttle_integ_state = 0.0f;
+
+			// Calculate a throttle demand from the integrated total energy rate error
+			// This will be added to the total throttle demand to compensate for steady state errors
+			// Only allow itegration action which unsaturates the throttle (taken from _last_throttle_setpoint)
+			// 	    throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G * _tas_state / _max_power;
+			// throttle in range [0 - 1]
+			// so
+			float _max_power = 600;
+			float _throttle_integ_state_min = -_last_throttle_setpoint / (_mass * CONSTANTS_ONE_G * _tas_state /
+							  _max_power);   //and
+			float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / (_mass * CONSTANTS_ONE_G * _tas_state / _max_power);
+			float throttle_integ_input_limited = throttle_integ_input;
+
+			// only allow integrator propagation into direction which unsaturates throttle
+			if (_throttle_integ_state + throttle_integ_input > _throttle_integ_state_max) {
+				throttle_integ_input_limited = math::min(0.f, throttle_integ_input);
+
+			} else if (_throttle_integ_state + throttle_integ_input < _throttle_integ_state_min) {
+				throttle_integ_input_limited = math::max(0.f, throttle_integ_input);
 			}
 
-		}
+			_throttle_integ_state = _throttle_integ_state + throttle_integ_input_limited;
+			//double double__throttle_integ_state = double(_throttle_integ_state);
+			//std::printf("tecsx double__throttle_integ_state:\t %f\n", double__throttle_integ_state);
 
-		if (airspeed_sensor_enabled()) {
-			// Add the integrator feedback during closed loop operation with an airspeed sensor
-			/* adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654:
-			The integrator is multiplied by mass and velocity to command an unspecific thrust force*/
-
-			//throttle_setpoint = throttle_cruise;
-			//This throttle setpoint is the force command
-			throttle_setpoint = _throttle_integ_state * _mass * CONSTANTS_ONE_G;
-			//-> shape to range [0 1] needed : force * velocity = power
-			float _max_power = 600;
-			throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
-
-			//double double_throttle_setpoint = double(throttle_setpoint);
-			//std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
 
 		} else {
-			// when flying without an airspeed sensor, use the predicted throttle only
-			throttle_setpoint = 0; /*throttle_predicted;*/
-
+			_throttle_integ_state = 0.0f;
 		}
+
+
+
+	if (airspeed_sensor_enabled()) {
+		// Add the integrator feedback during closed loop operation with an airspeed sensor
+		/* adaption to controller structure in Lamp, Maxim (2015) ISBN 978-3863876654:
+		The integrator is multiplied by mass and velocity to command an unspecific thrust force*/
+		//throttle_setpoint = throttle_cruise;
+		//This throttle setpoint is the force command
+		throttle_setpoint = _throttle_integ_state * _mass * CONSTANTS_ONE_G;
+		//-> shape to range [0 1] needed : force * velocity = power
+		float _max_power = 600;
+		throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
+
+		//double double_throttle_setpoint = double(throttle_setpoint);
+		//std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
+
+	} else {
+		// when flying without an airspeed sensor, use the predicted throttle only
+		throttle_setpoint = 0; /*throttle_predicted;*/
+
+	}
 
 	_last_throttle_setpoint = throttle_setpoint;
 	//double double_last_throttle_setpoint = double(_last_throttle_setpoint);
@@ -340,9 +344,11 @@ void TECS_X::_update_pitch_setpoint()
 		// total pitch demand below is: _pitch_setpoint_unc = _pitch_integ_state;
 		if (_pitch_integ_state > _pitch_setpoint_max) {
 			pitch_integ_input = math::min(0.f, pitch_integ_input);
+
 		} else if (_pitch_integ_state < _pitch_setpoint_min) {
 			pitch_integ_input = math::max(0.f, pitch_integ_input);
 		}
+
 		_pitch_integ_state = _pitch_integ_state + pitch_integ_input * _dt;
 
 	} else {
@@ -362,11 +368,11 @@ void TECS_X::_update_pitch_setpoint()
 	// Comply with the specified vertical acceleration limit by applying a pitch rate limit
 	//const float ptchRateIncr = _dt * _vert_accel_limit / _tas_state;
 	//_last_pitch_setpoint = constrain(pitch_setpoint, _last_pitch_setpoint - ptchRateIncr,
-				//	 _last_pitch_setpoint + ptchRateIncr);
+	//	 _last_pitch_setpoint + ptchRateIncr);
 }
 
 void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_altitude, float pitch_min_climbout,
-			      float EAS2TAS)
+				float EAS2TAS)
 {
 	if (_pitch_update_timestamp == 0 || _dt > DT_MAX || !_in_air || !_states_initialized) {
 		// On first time through or when not using TECS of if there has been a large time slip,
@@ -406,6 +412,7 @@ void TECS_X::_initialize_states(float pitch, float throttle_cruise, float baro_a
 
 
 	}
+
 	// filter specific energy rate error using first order filter with 0.5 second time constant
 	_STE_rate_error_filter.setParameters(DT_DEFAULT, _STE_rate_time_const);
 	_STE_rate_error_filter.reset(0.0f);
@@ -423,9 +430,9 @@ void TECS_X::_update_STE_rate_lim()
 }
 
 void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_setpoint,
-				 float EAS_setpoint, float equivalent_airspeed, float eas_to_tas, bool climb_out_setpoint, float pitch_min_climbout,
-				 float throttle_min, float throttle_max, float throttle_cruise, float pitch_limit_min, float pitch_limit_max,
-				 float target_climbrate, float target_sinkrate, float hgt_rate_sp)
+				   float EAS_setpoint, float equivalent_airspeed, float eas_to_tas, bool climb_out_setpoint, float pitch_min_climbout,
+				   float throttle_min, float throttle_max, float throttle_cruise, float pitch_limit_min, float pitch_limit_max,
+				   float target_climbrate, float target_sinkrate, float hgt_rate_sp)
 {
 	// Calculate the time since last update (seconds)
 	uint64_t now = hrt_absolute_time();
@@ -501,7 +508,7 @@ void TECS_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_s
 
 void TECS_X::_update_speed_height_weights()
 {
-		// don't allow any weight to be larger than one, as it has the same effect as reducing the control
+	// don't allow any weight to be larger than one, as it has the same effect as reducing the control
 	// loop time constant and therefore can lead to a destabilization of that control loop
 	_SPE_weighting = 1.0f;
 	_SKE_weighting = 1.0f;

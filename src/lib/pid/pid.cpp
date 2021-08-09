@@ -114,7 +114,8 @@ __EXPORT int pid_set_parameters(PID_t *pid, float kp, float ki, float kd, float 
 	return ret;
 }
 
-__EXPORT int pid_set_parameters_upper_lower(PID_t *pid, float kp, float ki, float kd, float integral_limit, float output_limit_low, float output_limit_high)
+__EXPORT int pid_set_parameters_upper_lower(PID_t *pid, float kp, float ki, float kd, float integral_limit,
+		float output_limit_low, float output_limit_high)
 {
 	int ret = 0;
 
@@ -270,7 +271,7 @@ __EXPORT float pid_calculate_upper_lower(PID_t *pid, float sp, float val, float 
 		/* check for saturation */
 		if (PX4_ISFINITE(i)) {
 			if (((output + (i * pid->ki) <= pid->output_limit_high)) && ((output + (i * pid->ki) >= pid->output_limit_low))
-			   && fabsf(i) <= pid->integral_limit) {
+			    && fabsf(i) <= pid->integral_limit) {
 				/* not saturated, use new integral value */
 				pid->integral = i;
 			}

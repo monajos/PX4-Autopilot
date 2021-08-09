@@ -201,10 +201,10 @@ FixedwingPositionControl::parameters_update()
 	_pi_X.set_speed_comp_filter_omega(_param_fw_tx_spd_omega.get());
 	_pi_X.set_roll_throttle_compensation(_param_fw_tx_rll2thr.get());
 	_pi_X.set_height_error_time_constant(_param_fw_tx_h_error_tc.get());
-	_pi_X.set_error_gain_throttle( _param_fw_pi_x_tas_gain.get());
-	_pi_X.set_integrator_gain_throttle( _param_fw_pi_x_tas_I_gain.get());
-	_pi_X.set_error_gain_pitch( _param_fw_pi_x_h_gain.get());
-	_pi_X.set_integrator_gain_pitch( _param_fw_pi_x_h_I_gain.get());
+	_pi_X.set_error_gain_throttle(_param_fw_pi_x_tas_gain.get());
+	_pi_X.set_integrator_gain_throttle(_param_fw_pi_x_tas_I_gain.get());
+	_pi_X.set_error_gain_pitch(_param_fw_pi_x_h_gain.get());
+	_pi_X.set_integrator_gain_pitch(_param_fw_pi_x_h_I_gain.get());
 
 
 
@@ -423,9 +423,11 @@ FixedwingPositionControl::get_demanded_airspeed()
 				   (_param_fw_airspd_max.get() - _param_fw_airspd_trim.get()) *
 				   (_manual_control_setpoint_airspeed * 2 - 1);
 	}
+
 	// OVERWRITE
 	altctrl_airspeed = _param_fw_x_spd_target.get();
-	if(_man_active == true) {
+
+	if (_man_active == true) {
 		altctrl_airspeed += _maneuver.get_test_spd_sp();
 	}
 
@@ -632,19 +634,21 @@ FixedwingPositionControl::tecs_status_publish()
 	//_global_pos_sub.copy(&gpos);
 	//vehicle_global_position_s gpos;
 
-		/*if (_global_pos_sub.update(&gpos)) {
-			_current_latitude = gpos.lat;
-			_current_longitude = gpos.lon;
-			_current_groundlevel = gpos.terrain_alt;
-		}
+	/*if (_global_pos_sub.update(&gpos)) {
+		_current_latitude = gpos.lat;
+		_current_longitude = gpos.lon;
+		_current_groundlevel = gpos.terrain_alt;
+	}
 	*/
 	tfx.terrain_alt = _local_pos.ref_alt;
 	//grab maneuver parameters
 	tfc.man_active = _man_active;
-		if(_man_active){
+
+	if (_man_active) {
 		_man_delta_alt_cmd = _maneuver.get_test_hgt_sp();
-	 	_man_delta_spd_cmd = _maneuver.get_test_spd_sp();
+		_man_delta_spd_cmd = _maneuver.get_test_spd_sp();
 	}
+
 	tfc.man_ctrl_sel = _ctrl_sel;
 	tfc.man_delta_alt_cmd = _man_delta_alt_cmd;
 	tfc.man_delta_spd_cmd = _man_delta_spd_cmd;
@@ -666,9 +670,9 @@ FixedwingPositionControl::tecs_status_publish()
 	//grab standard tecs parameters
 	//tfc.std_tecs_param_fw_airspd_max = _param_fw_airspd_max.get();
 	//tfc.std_tecs_param_fw_airspd_min =_param_fw_airspd_min.get();
-	tfc_std.std_tecs_fw_airspd_trim =_param_fw_airspd_trim.get();
+	tfc_std.std_tecs_fw_airspd_trim = _param_fw_airspd_trim.get();
 	//tfc.std_tecs_param_fw_airspd_stall =_param_fw_airspd_stall.get();
-	tfc_std.std_tecs_aram_fw_clmbout_diff =_param_fw_clmbout_diff.get();
+	tfc_std.std_tecs_aram_fw_clmbout_diff = _param_fw_clmbout_diff.get();
 	//tfc.std_tecs_param_fw_gnd_spd_min =_param_fw_gnd_spd_min.get();
 	//tfc.std_tecs_param_fw_l1_damping =_param_fw_l1_damping.get();
 	//fc.std_tecs_param_fw_l1_period =_param_fw_l1_period.get();
@@ -685,10 +689,10 @@ FixedwingPositionControl::tecs_status_publish()
 	//tfc.std_tecs_param_fw_lnd_tlalt =_param_fw_lnd_tlalt.get();
 	//tfc.std_tecs_param_fw_lnd_earlycfg =_param_fw_lnd_earlycfg.get();
 	//tfc.std_tecs_param_fw_lnd_useter =_param_fw_lnd_useter.get();
-	tfc_std.std_tecs_param_fw_p_lim_max =_param_fw_p_lim_max.get();
-	tfc_std.std_param_fw_p_lim_min=_param_fw_p_lim_min.get();
-	tfc_std.std_tecs_param_fw_t_clmb_max =_param_fw_t_clmb_max.get();
-	tfc_std.std_tecs_param_fw_t_hrate_ff =_param_fw_t_hrate_ff.get();
+	tfc_std.std_tecs_param_fw_p_lim_max = _param_fw_p_lim_max.get();
+	tfc_std.std_param_fw_p_lim_min = _param_fw_p_lim_min.get();
+	tfc_std.std_tecs_param_fw_t_clmb_max = _param_fw_t_clmb_max.get();
+	tfc_std.std_tecs_param_fw_t_hrate_ff = _param_fw_t_hrate_ff.get();
 	tfc_std.std_tecs_param_fw_t_h_error_tc = _param_fw_t_h_error_tc.get();
 	tfc_std.std_tecs_param_fw_t_i_gain_thr = _param_fw_t_I_gain_thr.get();
 	tfc_std.std_tecs_param_fw_t_i_gain_pit = _param_fw_t_I_gain_pit.get();
@@ -709,7 +713,7 @@ FixedwingPositionControl::tecs_status_publish()
 	tfc_std.std_tecs_param_fw_thr_alt_scl = _param_fw_thr_alt_scl.get();
 	tfc_std.std_tecs_param_param_fw_thr_cruise = _param_fw_thr_cruise.get();
 	tfc_std.std_tecs_param_fw_thr_idle = _param_fw_thr_idle.get();
-	tfc_std.std_tecs_param_fw_thr_lnd_max= _param_fw_thr_lnd_max.get();
+	tfc_std.std_tecs_param_fw_thr_lnd_max = _param_fw_thr_lnd_max.get();
 	tfc_std.std_tecs_param_fw_thr_max = _param_fw_thr_max.get();
 	tfc_std.std_tecs_param_fw_thr_min = _param_fw_thr_min.get();
 	tfc_std.std_tecs_param_fw_thr_slew_max = _param_fw_thr_slew_max.get();
@@ -733,8 +737,8 @@ FixedwingPositionControl::tecs_status_publish()
 	tfc.experimental_tecs_param_fw_tx_clmb_max = _param_fw_tx_clmb_max.get();
 	tfc.experimental_tecs_param_fw_tx_hrate_ff = _param_fw_tx_hrate_ff.get();
 	tfc.experimental_tecs_param_fw_tx_h_error_tc = _param_fw_tx_h_error_tc.get();
-	tfc.experimental_tecs_param_fw_tx_i_gain_thr =_param_fw_tx_I_gain_thr.get();
-	tfc.experimental_tecs_param_fw_tx_i_gain_pit =_param_fw_tx_I_gain_pit.get();
+	tfc.experimental_tecs_param_fw_tx_i_gain_thr = _param_fw_tx_I_gain_thr.get();
+	tfc.experimental_tecs_param_fw_tx_i_gain_pit = _param_fw_tx_I_gain_pit.get();
 	tfc.experimental_tecs_param_fw_tx_ptch_damp = _param_fw_tx_ptch_damp.get();
 	//tfc.experimental_tecs_param_fw_tx_rll2thr = _param_fw_tx_rll2thr.get();
 	//tfc.experimental_tecs_param_fw_tx_sink_max = _param_fw_tx_sink_max.get();
@@ -760,11 +764,11 @@ FixedwingPositionControl::tecs_status_publish()
 	//grab the angular rates
 	vehicle_angular_velocity_s vav;
 
-		if (_vehicle_angular_velocity_sub.update(&vav)) {
-			current_x_rate = vav.xyz[0];
-			current_y_rate = vav.xyz[1];
-			current_z_rate = vav.xyz[2];
-		}
+	if (_vehicle_angular_velocity_sub.update(&vav)) {
+		current_x_rate = vav.xyz[0];
+		current_y_rate = vav.xyz[1];
+		current_z_rate = vav.xyz[2];
+	}
 
 	tfx.current_x_rate = current_x_rate;
 	tfx.current_y_rate = current_y_rate;
@@ -782,10 +786,11 @@ FixedwingPositionControl::tecs_status_publish()
 
 	vehicle_gps_position_s v_gps_pos;
 
-		if (_vehicle_gps_position_sub.update(&v_gps_pos)) {
-			_current_groundspeed = v_gps_pos.vel_m_s;
-			_current_gps_altitude = v_gps_pos.alt;
-		}
+	if (_vehicle_gps_position_sub.update(&v_gps_pos)) {
+		_current_groundspeed = v_gps_pos.vel_m_s;
+		_current_gps_altitude = v_gps_pos.alt;
+	}
+
 	tfx.current_groundspeed = _current_groundspeed;
 	tfx.current_calibrated_airspeed = _airspeed;
 
@@ -803,12 +808,13 @@ FixedwingPositionControl::tecs_status_publish()
 	//grab PWM from pilot imput
 	pwm_input_s pwm_in;
 
-		if (_pwm_input_sub.update(&pwm_in)) {
-			_pwm_err = pwm_in.error_count;
-			_pwm_period = pwm_in.period;
-			_pwm_pulse_width = pwm_in.pulse_width;
-			_pwm_timestamp = pwm_in.timestamp;
-		}
+	if (_pwm_input_sub.update(&pwm_in)) {
+		_pwm_err = pwm_in.error_count;
+		_pwm_period = pwm_in.period;
+		_pwm_pulse_width = pwm_in.pulse_width;
+		_pwm_timestamp = pwm_in.timestamp;
+	}
+
 	tfx.pwm_err = _pwm_err;
 	tfx.pwm_period = _pwm_period;
 	tfx.pwm_pulse_width = _pwm_pulse_width;
@@ -818,25 +824,26 @@ FixedwingPositionControl::tecs_status_publish()
 	//grab PWM from pilot imput
 	actuator_outputs_s act_out;
 
-		if (_actuator_outputs_sub.update(&act_out)) {
-			_act_out_output0 = act_out.output[0];
-			_act_out_output1 = act_out.output[1];
-			_act_out_output2 = act_out.output[2];
-			_act_out_output3 = act_out.output[3];
-			_act_out_output4 = act_out.output[4];
-			_act_out_output5 = act_out.output[5];
-			_act_out_output6 = act_out.output[6];
-			_act_out_output7 = act_out.output[7];
-			_act_out_output8 = act_out.output[8];
-			_act_out_output9 = act_out.output[9];
-			_act_out_output10 = act_out.output[10];
-			_act_out_output11 = act_out.output[11];
-			_act_out_output12 = act_out.output[12];
-			_act_out_output13 = act_out.output[13];
-			_act_out_output14 = act_out.output[14];
-			_act_out_output15 = act_out.output[15];
-			_act_out_timestamp = act_out.timestamp;
-		}
+	if (_actuator_outputs_sub.update(&act_out)) {
+		_act_out_output0 = act_out.output[0];
+		_act_out_output1 = act_out.output[1];
+		_act_out_output2 = act_out.output[2];
+		_act_out_output3 = act_out.output[3];
+		_act_out_output4 = act_out.output[4];
+		_act_out_output5 = act_out.output[5];
+		_act_out_output6 = act_out.output[6];
+		_act_out_output7 = act_out.output[7];
+		_act_out_output8 = act_out.output[8];
+		_act_out_output9 = act_out.output[9];
+		_act_out_output10 = act_out.output[10];
+		_act_out_output11 = act_out.output[11];
+		_act_out_output12 = act_out.output[12];
+		_act_out_output13 = act_out.output[13];
+		_act_out_output14 = act_out.output[14];
+		_act_out_output15 = act_out.output[15];
+		_act_out_timestamp = act_out.timestamp;
+	}
+
 	tfx.act_out_output0 = _act_out_output0;
 	tfx.act_out_output1 = _act_out_output1;
 	tfx.act_out_output2 = _act_out_output2;
@@ -858,18 +865,19 @@ FixedwingPositionControl::tecs_status_publish()
 
 	actuator_controls_s act_cntr;
 
-		if (_actuator_controls_sub.update(&act_cntr)) {
-			_act_cntr_output0 = act_cntr.control[0];
-			_act_cntr_output1 = act_cntr.control[1];
-			_act_cntr_output2 = act_cntr.control[2];
-			_act_cntr_output3 = act_cntr.control[3];
-			_act_cntr_output4 = act_cntr.control[4];
-			_act_cntr_output5 = act_cntr.control[5];
-			_act_cntr_output6 = act_cntr.control[6];
-			_act_cntr_output7 = act_cntr.control[7];
+	if (_actuator_controls_sub.update(&act_cntr)) {
+		_act_cntr_output0 = act_cntr.control[0];
+		_act_cntr_output1 = act_cntr.control[1];
+		_act_cntr_output2 = act_cntr.control[2];
+		_act_cntr_output3 = act_cntr.control[3];
+		_act_cntr_output4 = act_cntr.control[4];
+		_act_cntr_output5 = act_cntr.control[5];
+		_act_cntr_output6 = act_cntr.control[6];
+		_act_cntr_output7 = act_cntr.control[7];
 
-			_act_out_timestamp = act_out.timestamp;
-		}
+		_act_out_timestamp = act_out.timestamp;
+	}
+
 	tfx.act_cntr_output0 = _act_cntr_output0;
 	tfx.act_cntr_output1 = _act_cntr_output1;
 	tfx.act_cntr_output2 = _act_cntr_output2;
@@ -891,6 +899,7 @@ FixedwingPositionControl::tecs_status_publish()
 		_bat_status_discharged_mah = bat_status.discharged_mah;
 		_bat_status_voltage_v = bat_status.voltage_v;
 	}
+
 	tfx.bat_status_timestamp = _bat_status_timestamp;
 	tfx.bat_status_current_a = _bat_status_current_a;
 	tfx.bat_status_discharged_mah = _bat_status_discharged_mah;
@@ -1054,14 +1063,14 @@ FixedwingPositionControl::update_desired_altitude(float dt)
 	}
 
 	// NASTY DISABLE
-	if(1) {
+	if (1) {
 		_hold_alt = _param_fw_x_hgt_target.get() + _local_pos.ref_alt;
-		if(_man_active == true) {
+
+		if (_man_active == true) {
 			_hold_alt += _maneuver.get_test_hgt_sp();
 		}
-	}
-	else
-	{
+
+	} else {
 		/*
 		* Manual control has as convention the rotation around
 		* an axis. Positive X means to rotate positively around
@@ -1097,6 +1106,7 @@ FixedwingPositionControl::update_desired_altitude(float dt)
 			_manual_height_rate_setpoint_m_s = NAN;
 		}
 	}
+
 	if (_vehicle_status.is_vtol) {
 		if (_vehicle_status.vehicle_type == vehicle_status_s::VEHICLE_TYPE_ROTARY_WING || _vehicle_status.in_transition_mode) {
 			_hold_alt = _current_altitude;
@@ -2163,6 +2173,7 @@ FixedwingPositionControl::get_tecs_pitch()
 {
 	if (_is_tecs_running) {
 
+
 		if(_man_active)
 		{
 			if(_param_fw_x_ctrl_sel.get() == 1) {
@@ -2171,14 +2182,17 @@ FixedwingPositionControl::get_tecs_pitch()
 			else if(_param_fw_x_ctrl_sel.get() == 2) {
 
 
+
 				return _pi_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get()); // PI OUTPUT HERE
 			}
-		}else{
+
+		} else {
 			//reset the integrators to the last output
 			_tecs_X.init_integrator_throttle(_tecs.get_throttle_setpoint());
 			_tecs_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get()));
 			_pi_X.init_integrator_throttle(_tecs.get_throttle_setpoint()); //FixedwingPositionControl::get_tecs_thrust()
-			_pi_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get())); //FixedwingPositionControl::get_tecs_pitch()
+			_pi_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(
+							    _param_fw_psp_off.get())); //FixedwingPositionControl::get_tecs_pitch()
 			return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 
 		}
@@ -2195,6 +2209,7 @@ FixedwingPositionControl::get_tecs_thrust()
 {
 	if (_is_tecs_running) {
 
+
 		if(_man_active)
 		{
 			if(_param_fw_x_ctrl_sel.get() == 1)
@@ -2206,11 +2221,13 @@ FixedwingPositionControl::get_tecs_thrust()
 			}
 			else if(_param_fw_x_ctrl_sel.get() == 2)
 			{
+
 				return _pi_X.get_throttle_setpoint(); // PI OUTPUT HERE
 				return 0.0; // PI OUTPUT HERE
 
 		}
 		}
+
 		return _tecs.get_throttle_setpoint();
 
 	}
@@ -2493,7 +2510,7 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 					      || mode == tecs_status_s::TECS_MODE_LAND_THROTTLELIM));
 
 	_tecs_X.set_detect_underspeed_enabled(!(mode == tecs_status_s::TECS_MODE_LAND
-					      || mode == tecs_status_s::TECS_MODE_LAND_THROTTLELIM));
+						|| mode == tecs_status_s::TECS_MODE_LAND_THROTTLELIM));
 
 	/* tell TECS to update its state, but let it know when it cannot actually control the plane */
 	bool in_air_alt_control = (!_landed &&
@@ -2508,7 +2525,7 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 
 
 	_tecs_X.update_vehicle_state_estimates(_airspeed, _body_acceleration(0), (_local_pos.timestamp > 0), in_air_alt_control,
-					     _current_altitude, _local_pos.vz);
+					       _current_altitude, _local_pos.vz);
 
 	_pi_X.update_vehicle_state_estimates(_airspeed, _body_acceleration(0), (_local_pos.timestamp > 0), in_air_alt_control,
 					     _current_altitude, _local_pos.vz);
@@ -2541,14 +2558,14 @@ FixedwingPositionControl::tecs_update_pitch_throttle(const hrt_abstime &now, flo
 
 
 	_tecs_X.update_pitch_throttle(_pitch - radians(_param_fw_psp_off.get()),
-				    _current_altitude, alt_sp,
-				    airspeed_sp, _airspeed, _eas2tas,
-				    climbout_mode,
-				    climbout_pitch_min_rad - radians(_param_fw_psp_off.get()),
-				    throttle_min, throttle_max, throttle_cruise,
-				    pitch_min_rad - radians(_param_fw_psp_off.get()),
-				    pitch_max_rad - radians(_param_fw_psp_off.get()),
-				    _param_climbrate_x_target.get(), _param_sinkrate_x_target.get(), hgt_rate_sp);
+				      _current_altitude, alt_sp,
+				      airspeed_sp, _airspeed, _eas2tas,
+				      climbout_mode,
+				      climbout_pitch_min_rad - radians(_param_fw_psp_off.get()),
+				      throttle_min, throttle_max, throttle_cruise,
+				      pitch_min_rad - radians(_param_fw_psp_off.get()),
+				      pitch_max_rad - radians(_param_fw_psp_off.get()),
+				      _param_climbrate_x_target.get(), _param_sinkrate_x_target.get(), hgt_rate_sp);
 
 
 	_pi_X.update_pitch_throttle(_pitch - radians(_param_fw_psp_off.get()),
@@ -2574,22 +2591,19 @@ FixedwingPositionControl::man_active(float dt)
 	/*This is the first entry of the maneuver setting and executed once.
 	Here the option to reset the experimental controller states is added*/
 
-	if((_manual_control_setpoint.z > 0.8f) && (_man_active == false))
-	{
+	if ((_manual_control_setpoint.z > 0.8f) && (_man_active == false)) {
 		//_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
 
 		_man_active = true;
 		_maneuver.init_trajectory();
 		return true;
-	}
 
-	else if((_manual_control_setpoint.z > 0.8f) && (_man_active == true))
-	{
+
+	} else if ((_manual_control_setpoint.z > 0.8f) && (_man_active == true)) {
 		_maneuver.update_trajectory(dt);
 		return true;
-	}
-	else
-	{
+
+	} else {
 		_maneuver.reset_trajectory();
 		_man_active = false;
 		return false;
