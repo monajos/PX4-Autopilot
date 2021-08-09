@@ -38,5 +38,10 @@ px4_add_library(tecs_x
 
 
 # do these have to be changed?
+
 add_dependencies(tecs_x git_ecl)
-target_link_libraries(tecs_x PRIVATE ecl_geo)
+#target_link_libraries(tecs_x PRIVATE ecl_geo)
+
+# add_dependencies(tecs_x git_ecl)
+target_link_libraries(tecs_x PRIVATE geo pid)
+
