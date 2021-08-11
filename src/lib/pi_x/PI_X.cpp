@@ -170,50 +170,6 @@ void PI_X::_update_speed_states(float equivalent_airspeed_setpoint, float equiva
 
 }
 
-void PI_X::_update_speed_setpoint()
-{
-	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state) * _airspeed_error_gain;
-}
-
-void PI_X::updateHeightRateSetpoint(float alt_sp_amsl_m, float target_climbrate_m_s, float target_sinkrate_m_s,
-				    float alt_amsl)
-{
-	_hgt_setpoint = alt_sp_amsl_m;
-	// Use a first order system to calculate a height rate setpoint from the current height error.
-	_hgt_actual = alt_amsl;
-
-
-
-}
-
-void PI_X::_update_height_rate_setpoint(float hgt_rate_sp)
-{
-	// Limit the rate of change of height demand to respect vehicle performance limits
-	//_hgt_rate_setpoint = math::constrain(hgt_rate_sp, -_max_sink_rate, _max_climb_rate);
-	_hgt_setpoint = _vert_pos_state;
-}
-
-void PI_X::_detect_underspeed()
-{
-
-}
-
-//MAYBE REPORT ENERGY ESTIMATES TO COMPARE TO OTHER METHOD
-void PI_X::_update_energy_estimates()
-{
-	/*// Calculate specific energy rate demands in units of (m**2/sec**3)
-	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state; // potential energy rate of change
-	_SKE_rate_setpoint = _TAS_rate_setpoint / CONSTANTS_ONE_G; // kinetic energy rate of change
-	double double__hgt_rate_setpoint = double(_hgt_rate_setpoint);
-	std::printf("tecsx double__hgt_rate_setpoint:\t %f\n", double__hgt_rate_setpoint);
-
-	// Calculate specific energy rates in units of (m**2/sec**3)
-	_SPE_rate = _vert_vel_state / _tas_state; // potential energy rate of change
-	_SKE_rate = _tas_rate_filtered / CONSTANTS_ONE_G;// kinetic energy rate of change
-	*/
-
-}
-
 void PI_X::_update_throttle_setpoint(const float throttle_cruise)
 {
 	//instead off adding up throttle cruise here, set to zero
@@ -224,6 +180,7 @@ void PI_X::_update_throttle_setpoint(const float throttle_cruise)
 		_throttle_setpoint += pid_calculate_upper_lower(&_speed_controller,  _TAS_setpoint, _tas_state, _dt);
 
 		_last_throttle_setpoint = _throttle_setpoint;
+
 	}
 
 
@@ -234,9 +191,6 @@ void PI_X::_update_pitch_setpoint()
 	float _pitch_setpoint = radians(pid_calculate_upper_lower(&_altitude_controller, _hgt_setpoint, _hgt_actual, _dt));
 
 	_last_pitch_setpoint = _pitch_setpoint;
-
-
-
 }
 
 void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_altitude, float pitch_min_climbout,
@@ -270,8 +224,6 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 					       10000.0f,  //integral limit -> not used
 					       0.0f, //output limit low
 					       1.0f); //output limit high
-		//double double__airspeed_error_gain_pi_x = double(_airspeed_error_gain_pi_x);
-		//std::printf("pi_x double__airspeed_error_gain_pi_x:\t %f\n", double__airspeed_error_gain_pi_x);
 
 		pid_init(&_altitude_controller, PID_MODE_DERIVATIV_CALC, _dt);
 		//use the overloaded set method which has lower and upper output limit
@@ -282,9 +234,6 @@ void PI_X::_initialize_states(float pitch, float throttle_cruise, float baro_alt
 					       10000.0f,  //integral limit -> not used
 					       _pitch_setpoint_min * float(180 / MATH_PI), //output limit low -> those come in RAD but the controller uses DEG
 					       _pitch_setpoint_max * float(180 / MATH_PI)); //output limit high -> those come in RAD but the controller uses DEG
-
-
-
 
 		if (_dt > DT_MAX || _dt < DT_MIN) {
 			_dt = DT_DEFAULT;
@@ -315,11 +264,10 @@ void PI_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_set
 	_hgt_setpoint  =  hgt_setpoint;
 
 	// Set class variables from inputs
-	_throttle_setpoint_max = throttle_max;
-	_throttle_setpoint_min = throttle_min;
 	_pitch_setpoint_max = pitch_limit_max;
 	_pitch_setpoint_min = pitch_limit_min;
-	_climbout_mode_active = climb_out_setpoint;
+	_hgt_setpoint = hgt_setpoint;
+	_hgt_actual = baro_altitude;
 
 	// Initialize selected states and variables as required
 	_initialize_states(pitch, throttle_cruise, baro_altitude, pitch_min_climbout, eas_to_tas);
@@ -332,48 +280,14 @@ void PI_X::update_pitch_throttle(float pitch, float baro_altitude, float hgt_set
 	// Update the true airspeed state estimate
 	_update_speed_states(EAS_setpoint, equivalent_airspeed, eas_to_tas);
 
-	// Calculate rate limits for specific total energy
-	_update_STE_rate_lim();
-
-	// Detect an underspeed condition
-	_detect_underspeed();
-
-	_update_speed_height_weights();
-
-
-	// Calculate the demanded true airspeed
-	_update_speed_setpoint();
-
-	if (PX4_ISFINITE(hgt_rate_sp)) {
-		// use the provided height rate setpoint instead of the height setpoint
-		_update_height_rate_setpoint(hgt_rate_sp);
-
-	} else {
-		// calculate heigh rate setpoint based on altitude demand
-		updateHeightRateSetpoint(hgt_setpoint, target_climbrate, target_sinkrate, baro_altitude);
-	}
-
-	// Calculate the specific energy values required by the control loop
-	_update_energy_estimates();
-
 	// Calculate the throttle demand
 	_update_throttle_setpoint(throttle_cruise);
 
 	// Calculate the pitch demand
 	_update_pitch_setpoint();
 
-
-
 	// Update time stamps
 	_pitch_update_timestamp = now;
-
-
-
-}
-
-void PI_X::_update_speed_height_weights()
-{
-
 }
 
 float PI_X::get_integrator_state_speed()
