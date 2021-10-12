@@ -58,3 +58,7 @@ param set-default COM_PREARM_MODE 0
 param set-default CBRK_IO_SAFETY 22027
 
 set MIXER AAERTFF
+
+set MAV_TYPE 1
+
+set PWM_OUT 123456
