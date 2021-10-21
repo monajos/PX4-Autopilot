@@ -2573,7 +2573,8 @@ FixedwingPositionControl::man_active(float dt)
 	/*This is the first entry of the maneuver setting and executed once.
 	Here the option to reset the experimental controller states is added*/
 
-	if ((_manual_control_setpoint.z > 0.8f) && (_man_active == false)) {
+	if ((_manual_control_setpoint.aux1 > 0.8f) && (_man_active == false)) {
+
 		//_tecs_X.reset_state(); /*comment out if the integrators from the base px4 tecs should be used*/
 
 		_man_active = true;
@@ -2581,7 +2582,8 @@ FixedwingPositionControl::man_active(float dt)
 		return true;
 
 
-	} else if ((_manual_control_setpoint.z > 0.8f) && (_man_active == true)) {
+	} else if ((_manual_control_setpoint.aux1 > 0.8f) && (_man_active == true)) {
+
 		_maneuver.update_trajectory(dt);
 		return true;
 
