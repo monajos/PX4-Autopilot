@@ -419,8 +419,47 @@ private:
 
 		(ParamFloat<px4::params::NAV_LOITER_RAD>) _param_nav_loiter_rad,
 
+<<<<<<< HEAD
 		(ParamFloat<px4::params::FW_TKO_PITCH_MIN>) _takeoff_pitch_min
 
+=======
+		(ParamFloat<px4::params::FW_TKO_PITCH_MIN>) _takeoff_pitch_min,
+
+		// test parameters
+		(ParamFloat<px4::params::FW_X_HGT_SP>) _param_fw_x_hgt_target,
+		(ParamFloat<px4::params::FW_X_SPD_SP>) _param_fw_x_spd_target,
+		(ParamFloat<px4::params::FW_X_REL_HGT_SP>) _param_fw_x_rel_hgt_target,
+		(ParamFloat<px4::params::FW_X_REL_SPD_SP>) _param_fw_x_rel_spd_target,
+		(ParamFloat<px4::params::FW_X_RISE_T_HGT>) _param_fw_x_risetime_hgt,
+		(ParamFloat<px4::params::FW_X_RISE_T_SPD>) _param_fw_x_risetime_spd,
+		(ParamInt<px4::params::FW_X_MODE>) _param_fw_x_mode,
+		(ParamInt<px4::params::FW_X_CTRL_SEL>) _param_fw_x_ctrl_sel,
+		(ParamFloat<px4::params::FW_X_INIT_T>) _param_fw_x_init_time,
+
+		// TECS X parameters
+		(ParamFloat<px4::params::FW_T_CLMB_MAX_X>) _param_fw_tx_clmb_max,
+		(ParamFloat<px4::params::FW_T_HRATE_FF_X>) _param_fw_tx_hrate_ff,
+		(ParamFloat<px4::params::FW_T_ALT_TC_X>) _param_fw_tx_h_error_tc,
+		(ParamFloat<px4::params::FW_T_I_GAIN_THRX>) _param_fw_tx_I_gain_thr,
+		(ParamFloat<px4::params::FW_T_I_GAIN_PITX>) _param_fw_tx_I_gain_pit,
+		(ParamFloat<px4::params::FW_T_PTCH_DAMP_X>) _param_fw_tx_ptch_damp,
+		(ParamFloat<px4::params::FW_T_RLL2THR_X>) _param_fw_tx_rll2thr,
+		(ParamFloat<px4::params::FW_T_SINK_MAX_X>) _param_fw_tx_sink_max,
+		(ParamFloat<px4::params::FW_T_SINK_MIN_X>) _param_fw_tx_sink_min,
+		(ParamFloat<px4::params::FW_T_SPD_OMEGAX>) _param_fw_tx_spd_omega,
+		(ParamFloat<px4::params::FW_T_SPDWEIGHTX>) _param_fw_tx_spdweight,
+		(ParamFloat<px4::params::FW_T_TAS_TC_X>) _param_fw_tx_tas_error_tc,
+		(ParamFloat<px4::params::FW_T_THR_DAMP_X>) _param_fw_tx_thr_damp,
+		(ParamFloat<px4::params::FW_T_VERT_ACC_X>) _param_fw_tx_vert_acc,
+		(ParamFloat<px4::params::FW_T_STE_R_TC_X>) _param_ste_x_rate_time_const,
+		(ParamFloat<px4::params::FW_T_TAS_R_TC_X>) _param_tas_x_rate_time_const,
+		(ParamFloat<px4::params::FW_T_SEB_R_FF_X>) _param_seb_x_rate_ff,
+		(ParamFloat<px4::params::FW_T_CLMB_R_SPX>) _param_climbrate_x_target,
+		(ParamFloat<px4::params::FW_T_SINK_R_SPX>) _param_sinkrate_x_target,
+		(ParamFloat<px4::params::FW_AIRSPD_ST_X>) _param_fw_x_stall
+
+		// PI X parameters
+>>>>>>> 64f13d8b18... MOD: new parameter in QGroundControl: FW_X_INIT_T as initialization time for the experimental controller to get stabilized before the maneuver starts
 	)
 
 };

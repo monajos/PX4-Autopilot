@@ -128,6 +128,47 @@ FixedwingPositionControl::parameters_update()
 	_tecs.set_speed_derivative_time_constant(_param_tas_rate_time_const.get());
 	_tecs.set_seb_rate_ff_gain(_param_seb_rate_ff.get());
 
+<<<<<<< HEAD
+=======
+	// TECS X parameters
+
+	_tecs_X.set_max_climb_rate(_param_fw_tx_clmb_max.get());
+	_tecs_X.set_max_sink_rate(_param_fw_tx_sink_max.get());
+	_tecs_X.set_speed_weight(_param_fw_tx_spdweight.get());
+	_tecs_X.set_min_sink_rate(_param_fw_tx_sink_min.get());
+	_tecs_X.set_throttle_damp(_param_fw_tx_thr_damp.get());
+	_tecs_X.set_integrator_gain_throttle(_param_fw_tx_I_gain_thr.get());
+	_tecs_X.set_integrator_gain_pitch(_param_fw_tx_I_gain_pit.get());
+	_tecs_X.set_vertical_accel_limit(_param_fw_tx_vert_acc.get());
+	_tecs_X.set_speed_comp_filter_omega(_param_fw_tx_spd_omega.get());
+	_tecs_X.set_roll_throttle_compensation(_param_fw_tx_rll2thr.get());
+	_tecs_X.set_pitch_damping(_param_fw_tx_ptch_damp.get());
+	_tecs_X.set_height_error_time_constant(_param_fw_tx_h_error_tc.get());
+	_tecs_X.set_heightrate_ff(_param_fw_tx_hrate_ff.get());
+	_tecs_X.set_airspeed_error_time_constant(_param_fw_tx_tas_error_tc.get());
+	_tecs_X.set_ste_rate_time_const(_param_ste_x_rate_time_const.get());
+	_tecs_X.set_seb_rate_ff_gain(_param_seb_x_rate_ff.get());
+
+	// Based on basic TECS
+	_tecs_X.set_equivalent_airspeed_cruise(_param_fw_airspd_trim.get());
+	_tecs_X.set_equivalent_airspeed_min(_param_fw_airspd_min.get());
+	_tecs_X.set_equivalent_airspeed_max(_param_fw_airspd_max.get());
+	_tecs_X.set_throttle_slewrate(_param_fw_thr_slew_max.get());
+	_tecs_X.set_speed_derivative_time_constant(_param_tas_rate_time_const.get());
+	// Maneuver
+	_maneuver.set_base_spd_sp(_param_fw_x_spd_target.get());
+	_maneuver.set_base_hgt_sp(_param_fw_x_hgt_target.get());
+	_maneuver.set_rel_spd_sp(_param_fw_x_rel_spd_target.get());
+	_maneuver.set_rel_hgt_sp(_param_fw_x_rel_hgt_target.get());
+	_maneuver.set_spd_rise_time(_param_fw_x_risetime_spd.get());
+	_maneuver.set_hgt_rise_time(_param_fw_x_risetime_hgt.get());
+	_maneuver.set_init_time(_param_fw_x_init_time.get());
+
+	// Mode and Ctrl selection parameters
+	_mode_sel = _param_fw_x_mode.get();
+	_ctrl_sel = _param_fw_x_ctrl_sel.get();
+
+>>>>>>> 64f13d8b18... MOD: new parameter in QGroundControl: FW_X_INIT_T as initialization time for the experimental controller to get stabilized before the maneuver starts
 
 	// Landing slope
 	/* check if negative value for 2/3 of flare altitude is set for throttle cut */

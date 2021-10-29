@@ -1,3 +1,36 @@
+
+Skip to content
+Pull requests
+Issues
+Marketplace
+Explore
+@NuclearHenne
+NuclearHenne /
+PX4-Autopilot
+Public
+forked from PX4/PX4-Autopilot
+
+0
+0
+
+    11.3k
+
+Code
+Pull requests
+Actions
+Projects
+Security
+Insights
+
+    Settings
+
+PX4-Autopilot/platforms/common/px4_sw_crypto/stub_keystore/stub_keystore.c
+@jlaitine
+jlaitine Add simple SW implementations for crypto_backend and keystore_backend
+Latest commit 0d4f481 on 28 May
+History
+1 contributor
+79 lines (70 sloc) 2.58 KB
 /****************************************************************************
  *
  *   Copyright (c) 2021 Technology Innovation Institute. All rights reserved.
@@ -77,3 +110,4 @@ size_t keystore_get_key(keystore_session_handle_t handle, uint8_t idx, uint8_t *
 
 	return ret;
 }
+
