@@ -191,10 +191,9 @@ private:
 	uORB::Publication<position_controller_status_s>		_pos_ctrl_status_pub{ORB_ID(position_controller_status)};			///< navigation capabilities publication
 	//uORB::Publication<position_controller_landing_status_s>	_pos_ctrl_landing_status_pub{ORB_ID(position_controller_landing_status)};	///< landing status publication
 	uORB::Publication<tecs_status_s>			_tecs_status_pub{ORB_ID(tecs_status)};						///< TECS status publication
-	uORB::Publication<tecs_status_x_s>			_tecs_status_x_pub{ORB_ID(tecs_status_x)};
-
 	uORB::Publication<testflight_tecs_status_x_s>		_testflight_tecs_status_x_pub{ORB_ID(testflight_tecs_status_x)};
 	uORB::Publication<testflight_pi_status_x_s>		_testflight_pi_status_x_pub{ORB_ID(testflight_pi_status_x)};
+
 
 	//added 20210715
 	uORB::Publication<testflight_status_x_s>		_testflight_status_x_pub{ORB_ID(testflight_status_x)};
@@ -353,16 +352,6 @@ private:
 
 	ECL_L1_Pos_Controller	_l1_control;
 	TECS			_tecs;
-	TECS			_tecs_X;
-
-	// == FLIGHT TEST IMPLEMENTATIONS ==
-	Testmaneuver		_maneuver;
-	bool			_man_active{false};
-	uint32_t 		_mode_sel{0};
-	uint32_t 		_ctrl_sel{0};
-	float 			_dt{0.0f};
-
-
 	TECS_X			_tecs_X;
 	PI_X			_pi_X;
 
@@ -372,6 +361,8 @@ private:
 	uint32_t 		_mode_sel{0};
 	uint32_t 		_ctrl_sel{0};
 	float 			_dt{0.0f};
+
+
 
 
 	uint8_t _type{0};
@@ -596,39 +587,7 @@ private:
 		(ParamFloat<px4::params::FW_PR_IMAX>) _param_fw_pr_imax,
 		(ParamFloat<px4::params::FW_PR_P>) _param_fw_pr_p
 		//(ParamFloat<px4::params::FW_PSP_OFF>) _param_fw_psp_off,
-
-		(ParamFloat<px4::params::FW_X_RISE_T>) _param_fw_x_risetime,
-		(ParamInt<px4::params::FW_X_CARD_NUM>) _param_fw_x_card_num
-
-
-		(ParamFloat<px4::params::FW_X_RISE_T_HGT>) _param_fw_x_risetime_hgt,
-		(ParamFloat<px4::params::FW_X_RISE_T_SPD>) _param_fw_x_risetime_spd,
-		(ParamInt<px4::params::FW_X_MODE>) _param_fw_x_mode,
-		(ParamInt<px4::params::FW_X_CTRL_SEL>) _param_fw_x_ctrl_sel,
-
-		// TECS X parameters
-		(ParamFloat<px4::params::FW_T_CLMB_MAX_X>) _param_fw_tx_clmb_max,
-		(ParamFloat<px4::params::FW_T_HRATE_FF_X>) _param_fw_tx_hrate_ff,
-		(ParamFloat<px4::params::FW_T_ALT_TC_X>) _param_fw_tx_h_error_tc,
-		(ParamFloat<px4::params::FW_T_I_GAIN_THRX>) _param_fw_tx_I_gain_thr,
-		(ParamFloat<px4::params::FW_T_I_GAIN_PITX>) _param_fw_tx_I_gain_pit,
-		(ParamFloat<px4::params::FW_T_PTCH_DAMP_X>) _param_fw_tx_ptch_damp,
-		(ParamFloat<px4::params::FW_T_RLL2THR_X>) _param_fw_tx_rll2thr,
-		(ParamFloat<px4::params::FW_T_SINK_MAX_X>) _param_fw_tx_sink_max,
-		(ParamFloat<px4::params::FW_T_SINK_MIN_X>) _param_fw_tx_sink_min,
-		(ParamFloat<px4::params::FW_T_SPD_OMEGAX>) _param_fw_tx_spd_omega,
-		(ParamFloat<px4::params::FW_T_SPDWEIGHTX>) _param_fw_tx_spdweight,
-		(ParamFloat<px4::params::FW_T_TAS_TC_X>) _param_fw_tx_tas_error_tc,
-		(ParamFloat<px4::params::FW_T_THR_DAMP_X>) _param_fw_tx_thr_damp,
-		(ParamFloat<px4::params::FW_T_VERT_ACC_X>) _param_fw_tx_vert_acc,
-		(ParamFloat<px4::params::FW_T_STE_R_TC_X>) _param_ste_x_rate_time_const,
-		(ParamFloat<px4::params::FW_T_TAS_R_TC_X>) _param_tas_x_rate_time_const,
-		(ParamFloat<px4::params::FW_T_SEB_R_FF_X>) _param_seb_x_rate_ff,
-		(ParamFloat<px4::params::FW_T_CLMB_R_SPX>) _param_climbrate_x_target,
-		(ParamFloat<px4::params::FW_T_SINK_R_SPX>) _param_sinkrate_x_target,
-		(ParamFloat<px4::params::FW_AIRSPD_ST_X>) _param_fw_x_stall
-
-		// PI X parameters
+	
 	)
 
 };

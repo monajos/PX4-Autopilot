@@ -55,6 +55,7 @@ public:
 	void set_rel_hgt_sp(float rel_hgt_sp) { _rel_hgt_sp = rel_hgt_sp; }
 	void set_spd_rise_time(float spd_rise_time) { _spd_rise_time = spd_rise_time; }
 	void set_hgt_rise_time(float hgt_rise_time) { _hgt_rise_time = hgt_rise_time; }
+	void set_init_time(float init_time) { _init_time = init_time; }
 
 	bool init_trajectory();
 	void update_trajectory(float dt);
@@ -88,6 +89,9 @@ private:
 
 	float _hgt_coeff_a{0.0f};
 	float _hgt_coeff_b{0.0f};
+
+	float _init_time{0.0f};
+	float _time_since_endof_init{0.0f};
 
 	float update_spd();
 	float update_hgt();

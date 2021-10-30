@@ -108,7 +108,6 @@ Testmaneuver::get_test_hgt_sp()
 float
 Testmaneuver::update_spd()
 {
-
 	if (_time > (_spd_rise_time + _init_time)) {
 		/*End of maneuver*/
 		return _rel_spd_sp;
@@ -122,7 +121,6 @@ Testmaneuver::update_spd()
 	} else {
 		/*wait for initialization*/
 		return 0.0;
-
 	}
 
 }
@@ -130,7 +128,6 @@ Testmaneuver::update_spd()
 float
 Testmaneuver::update_hgt()
 {
-
 	if (_time > (_hgt_rise_time + _init_time)) {
 		/*End of maneuver*/
 		return _rel_hgt_sp;
@@ -144,6 +141,5 @@ Testmaneuver::update_hgt()
 	} else {
 		/*wait for initialization*/
 		return 0.0;
-
 	}
 }

@@ -279,7 +279,7 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 			_throttle_integ_state = 0.0f;
 		}
 
-
+	}
 
 	if (airspeed_sensor_enabled()) {
 		// Add the integrator feedback during closed loop operation with an airspeed sensor

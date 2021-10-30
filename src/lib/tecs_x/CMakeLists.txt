@@ -43,5 +43,5 @@ add_dependencies(tecs_x git_ecl)
 #target_link_libraries(tecs_x PRIVATE ecl_geo)
 
 # add_dependencies(tecs_x git_ecl)
-target_link_libraries(tecs_x PRIVATE geo pid)
+#target_link_libraries(tecs_x PRIVATE geo pid)
 

@@ -41,5 +41,5 @@ px4_add_library(pi_x
 
 add_dependencies(pi_x git_ecl)
 
-#target_link_libraries(pi_x PRIVATE geo pid)
+target_link_libraries(pi_x PRIVATE ecl_geo)
 
