@@ -177,7 +177,7 @@ void PI_X::_update_throttle_setpoint(const float throttle_cruise)
 
 	if (airspeed_sensor_enabled()) {
 
-		_throttle_setpoint += pid_calculate_upper_lower(&_speed_controller,  _TAS_setpoint, _tas_state, _dt);
+		_throttle_setpoint = pid_calculate_upper_lower(&_speed_controller,  _TAS_setpoint, _tas_state, _dt);
 
 		_last_throttle_setpoint = _throttle_setpoint;
 
