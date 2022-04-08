@@ -227,7 +227,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 	// Calculate the total energy rate error, applying a first order IIR filter
 	// to reduce the effect of accelerometer noise
 	_STE_rate_error_filter.update(-_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint);
-	_STE_rate_error = _STE_rate_error_filter.getState();
+	_STE_rate_error = -_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint;//_STE_rate_error_filter.getState();
+
 	//double double__STE_rate_error = double(_STE_rate_error);
 	//std::printf("tecsx double__STE_rate_error:\t %f\n", double__STE_rate_error);
 
