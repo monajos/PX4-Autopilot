@@ -84,7 +84,7 @@ float ECL_PitchController::control_bodyrate(const float dt, const ECL_ControlDat
 	if (!ctl_data.lock_integrator && _k_i > 0.0f) {
 
 		/* Integral term scales with 1/IAS^2 */
-		float id = _rate_error * dt * ctl_data.scaler * ctl_data.scaler;
+		float id = _rate_error * dt * 1 * 1;
 
 		/*
 		 * anti-windup: do not allow integrator to increase if actuator is at limit
@@ -104,8 +104,8 @@ float ECL_PitchController::control_bodyrate(const float dt, const ECL_ControlDat
 
 	/* Apply PI rate controller and store non-limited output */
 	/* FF terms scales with 1/TAS and P,I with 1/IAS^2 */
-	_last_output = _bodyrate_setpoint * _k_ff * ctl_data.scaler +
-		       _rate_error * _k_p * ctl_data.scaler * ctl_data.scaler
+	_last_output = _bodyrate_setpoint * _k_ff * 1 +
+		       _rate_error * _k_p * 1 * 1
 		       + _integrator;
 
 	return math::constrain(_last_output, -1.0f, 1.0f);
