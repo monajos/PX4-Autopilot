@@ -171,11 +171,18 @@ void TECS_X::_update_speed_states(float equivalent_airspeed_setpoint, float equi
 	_tas_state = max(_tas_state, 3.0f);
 	_speed_update_timestamp = now;
 
+	//added spark
+	float Tau = 0.1;
+	float alpha = _dt/(Tau + _dt);
+
+	_tas_state_filtered = alpha*_tas_state + (1 - alpha)*_tas_state_filtered_previous;
+	_tas_state_filtered_previous =  _tas_state_filtered;
+
 }
 
 void TECS_X::_update_speed_setpoint()
 {
-	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state) * _airspeed_error_gain;
+	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state_filtered) * _airspeed_error_gain;
 	//double double__TAS_setpoint = double(_TAS_setpoint);
 	//std::printf("tecsx double__TAS_setpoint:\t %f\n", double__TAS_setpoint);
 
@@ -210,14 +217,15 @@ void TECS_X::_detect_underspeed()
 
 void TECS_X::_update_energy_estimates()
 {
+
 	// Calculate specific energy rate demands in units of (m**2/sec**3)
-	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state; // potential energy rate of change
+	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state_filtered; // potential energy rate of change
 	_SKE_rate_setpoint = _TAS_rate_setpoint / CONSTANTS_ONE_G; // kinetic energy rate of change
 	//double double__hgt_rate_setpoint = double(_hgt_rate_setpoint);
 	//printstd::printf("tecsx double__hgt_rate_setpoint:\t %f\n", double__hgt_rate_setpoint);
 
 	// Calculate specific energy rates in units of (m**2/sec**3)
-	_SPE_rate = _vert_vel_state / _tas_state; // potential energy rate of change
+	_SPE_rate = _vert_vel_state / _tas_state_filtered; // potential energy rate of change
 	_SKE_rate = _tas_rate_filtered / CONSTANTS_ONE_G;// kinetic energy rate of change
 }
 
@@ -257,10 +265,10 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 			// 	    throttle_setpoint += _throttle_integ_state * _mass * CONSTANTS_ONE_G * _tas_state / _max_power;
 			// throttle in range [0 - 1]
 			// so
-			float _max_power = 600;
-			float _throttle_integ_state_min = -_last_throttle_setpoint / (_mass * CONSTANTS_ONE_G * _tas_state /
-							  _max_power);   //and
-			float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / (_mass * CONSTANTS_ONE_G * _tas_state / _max_power);
+
+			float _max_power = 350;
+			float _throttle_integ_state_min = -_last_throttle_setpoint / (_mass * CONSTANTS_ONE_G * _tas_state_filtered /_max_power);   //and
+			float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / (_mass * CONSTANTS_ONE_G * _tas_state_filtered / _max_power);
 			float throttle_integ_input_limited = throttle_integ_input;
 
 			// only allow integrator propagation into direction which unsaturates throttle
@@ -290,8 +298,9 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 		//This throttle setpoint is the force command
 		throttle_setpoint = _throttle_integ_state * _mass * CONSTANTS_ONE_G;
 		//-> shape to range [0 1] needed : force * velocity = power
-		float _max_power = 600;
-		throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
+
+		float _max_power = 350;
+		throttle_setpoint = throttle_setpoint * _tas_state_filtered / _max_power;
 
 		//double double_throttle_setpoint = double(throttle_setpoint);
 		//std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
@@ -328,12 +337,13 @@ void TECS_X::_update_pitch_setpoint()
 		/*According to Dissertation of Lamp, Maxim (ISBN 9783863876654) all pitch commands go through the integrator
 		and the integrator input consists of the SEB rate error and a weighted derivative on Hdot/VTAS to damp the phugoid*/
 		/*calculate derivative of Hdot/VTAS*/
-		float _gamma_est = (_vert_vel_state / _tas_state);
+		//float _gamma_est = (_vert_vel_state / _tas_state);
 		//float pid_calculate(PID_t *pid, float sp, float val, float val_dot, float dt);
 		/*PID-D-error is negative, so the D-Part is negative, too*/
-		float _gamme_est_deriv = pid_calculate(&_gamma_est_derivator, 0.0f, _gamma_est, 0.0f, _dt);
+		float _gamma_est_deriv = (_SPE_rate - _SPE_rate_previous)/_dt;
+		_SPE_rate_previous = _SPE_rate;//pid_calculate(&_gamma_est_derivator, 0.0f, _gamma_est, 0.0f, _dt);
 		/*add up the input to the integrator, take a plus here to add the neagtive D-Part*/
-		float pitch_integ_input = _SEB_rate_error * _integrator_gain_pitch + _gamme_est_deriv * _SEB_rate_ff;
+		float pitch_integ_input = _SEB_rate_error * _integrator_gain_pitch + _gamma_est_deriv * _SEB_rate_ff;
 
 
 		// Update the pitch integrator state.

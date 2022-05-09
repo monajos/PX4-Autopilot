@@ -242,7 +242,9 @@ private:
 	float _tas_rate_state{0.0f};					///< complimentary filter state - true airspeed first derivative (m/sec**2)
 	float _tas_state{0.0f};						///< complimentary filter state - true airspeed (m/sec)
 	float _tas_innov{0.0f};						///< complimentary filter true airspeed innovation (m/sec)
-
+	//added
+	float _tas_state_filtered{0.0f};
+	float _tas_state_filtered_previous{0.0f};
 
 	// controller states
 	float _throttle_integ_state{0.0f};				///< throttle integrator state
@@ -283,6 +285,7 @@ private:
 	float _SPE_estimate{0.0f};					///< specific potential energy estimate (m**2/sec**2)
 	float _SKE_estimate{0.0f};					///< specific kinetic energy estimate (m**2/sec**2)
 	float _SPE_rate{0.0f};						///< specific potential energy rate estimate (m**2/sec**3)
+	float _SPE_rate_previous{0.0f};					///< specific previous potential energy rate estimate (m**2/sec**3)
 	float _SKE_rate{0.0f};						///< specific kinetic energy rate estimate (m**2/sec**3)
 
 	// specific energy error quantities
