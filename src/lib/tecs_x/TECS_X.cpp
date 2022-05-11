@@ -172,17 +172,18 @@ void TECS_X::_update_speed_states(float equivalent_airspeed_setpoint, float equi
 	_speed_update_timestamp = now;
 
 	//added spark
-	float Tau = 0.1;
-	float alpha = _dt/(Tau + _dt);
+	//float Tau = 0.1;
+	//float alpha = _dt/(Tau + _dt);
 
-	_tas_state_filtered = alpha*_tas_state + (1 - alpha)*_tas_state_filtered_previous;
-	_tas_state_filtered_previous =  _tas_state; //_tas_state_filtered;
+
+	//_tas_state_filtered = alpha*_tas_state + (1 - alpha)*_tas_state_filtered_previous;
+	//_tas_state_filtered_previous =  _tas_state;//_tas_state_filtered;
 
 }
 
 void TECS_X::_update_speed_setpoint()
 {
-	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state_filtered) * _airspeed_error_gain;
+	_TAS_rate_setpoint = (_TAS_setpoint - _tas_state) * _airspeed_error_gain;
 	//double double__TAS_setpoint = double(_TAS_setpoint);
 	//std::printf("tecsx double__TAS_setpoint:\t %f\n", double__TAS_setpoint);
 
@@ -219,13 +220,13 @@ void TECS_X::_update_energy_estimates()
 {
 
 	// Calculate specific energy rate demands in units of (m**2/sec**3)
-	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state_filtered; // potential energy rate of change
+	_SPE_rate_setpoint = _hgt_rate_setpoint / _tas_state; // potential energy rate of change
 	_SKE_rate_setpoint = _TAS_rate_setpoint / CONSTANTS_ONE_G; // kinetic energy rate of change
 	//double double__hgt_rate_setpoint = double(_hgt_rate_setpoint);
 	//printstd::printf("tecsx double__hgt_rate_setpoint:\t %f\n", double__hgt_rate_setpoint);
 
 	// Calculate specific energy rates in units of (m**2/sec**3)
-	_SPE_rate = _vert_vel_state / _tas_state_filtered; // potential energy rate of change
+	_SPE_rate = _vert_vel_state / _tas_state; // potential energy rate of change
 	_SKE_rate = _tas_rate_filtered / CONSTANTS_ONE_G;// kinetic energy rate of change
 }
 
@@ -235,8 +236,8 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 	// Calculate the total energy rate error, applying a first order IIR filter
 	// to reduce the effect of accelerometer noise
 	_STE_rate_error_filter.update(-_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint);
-	_STE_rate_error = _STE_rate_error_filter.getState();//-_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint;//_STE_rate_error_filter.getState();
 
+	_STE_rate_error = _STE_rate_error_filter.getState();//-_SPE_rate - _SKE_rate + _SPE_rate_setpoint + _SKE_rate_setpoint;//
 	//double double__STE_rate_error = double(_STE_rate_error);
 	//std::printf("tecsx double__STE_rate_error:\t %f\n", double__STE_rate_error);
 
@@ -267,8 +268,10 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 			// so
 
 			float _max_power = 350;
-			float _throttle_integ_state_min = -_last_throttle_setpoint / (_mass * CONSTANTS_ONE_G * _tas_state_filtered /_max_power);   //and
-			float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / (_mass * CONSTANTS_ONE_G * _tas_state_filtered / _max_power);
+
+			float _throttle_integ_state_min = -_last_throttle_setpoint / (_mass * CONSTANTS_ONE_G * _tas_state /
+							  _max_power);   //and
+			float _throttle_integ_state_max = (1 - _last_throttle_setpoint) / (_mass * CONSTANTS_ONE_G * _tas_state / _max_power);
 			float throttle_integ_input_limited = throttle_integ_input;
 
 			// only allow integrator propagation into direction which unsaturates throttle
@@ -300,7 +303,7 @@ void TECS_X::_update_throttle_setpoint(const float throttle_cruise)
 		//-> shape to range [0 1] needed : force * velocity = power
 
 		float _max_power = 350;
-		throttle_setpoint = throttle_setpoint * _tas_state_filtered / _max_power;
+		throttle_setpoint = throttle_setpoint * _tas_state / _max_power;
 
 		//double double_throttle_setpoint = double(throttle_setpoint);
 		//std::printf("tecsx double_double_throttle_setpoint:\t %f\n", double_throttle_setpoint);
