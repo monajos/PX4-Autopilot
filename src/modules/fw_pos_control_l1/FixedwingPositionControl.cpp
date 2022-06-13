@@ -146,6 +146,8 @@ FixedwingPositionControl::parameters_update()
 	_tecs_X.set_airspeed_error_time_constant(_param_fw_tx_tas_error_tc.get());
 	_tecs_X.set_ste_rate_time_const(_param_ste_x_rate_time_const.get());
 	_tecs_X.set_seb_rate_ff_gain(_param_seb_x_rate_ff.get());
+	_tecs_X.set_mass(_param_mass.get());
+	_tecs_X.set_max_power(_param_max_power.get());
 
 
 	// Based on basic TECS

@@ -1424,7 +1424,29 @@ PARAM_DEFINE_FLOAT(FW_GAIN_H_PI, 2.29f);
  */
 PARAM_DEFINE_FLOAT(FW_I_GAIN_H_PI, 0.749f);
 
+/**
+ * Overall aircraft mass as used in experimental TECS
+ *
+ *
+ * @min 0.0
+ * @max 1000
+ * @decimal 5
+ * @increment 0.01
+ * @group FW X TECS
+ */
+PARAM_DEFINE_FLOAT(FW_MASS_X, 3.1f);
 
+/**
+ * Effective maximum aircraft power in Watts against air mass as used in experimental TECS
+ *
+ *
+ * @min 0.0
+ * @max 1000
+ * @decimal 5
+ * @increment 0.01
+ * @group FW X TECS
+ */
+PARAM_DEFINE_FLOAT(FW_MAX_POWER_X, 350.0f);
 
 
 

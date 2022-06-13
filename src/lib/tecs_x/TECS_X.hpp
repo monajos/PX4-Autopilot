@@ -97,6 +97,15 @@ public:
 
 	void reset_state() { _states_initialized = false; }
 
+	/**
+	 * update mass estimation
+	 */
+	void set_mass(float mass) { _mass = mass; }
+	/**
+	 * update maximum power estimation
+	 */
+	void set_max_power(float max_power) { _max_power = max_power; }
+
 	enum ECL_TECS_MODE {
 		ECL_TECS_MODE_NORMAL = 0,
 		ECL_TECS_MODE_UNDERSPEED,
@@ -213,6 +222,7 @@ private:
 
 	// controller parameters
 	float _mass{3.1f}; 						///< overall ac system mass
+	float _max_power{350};						///< maximum aerodynamic effective ac total power
 	float _tas_estimate_freq{0.0f};					///< cross-over frequency of the true airspeed complementary filter (rad/sec)
 	float _max_climb_rate{2.0f};					///< climb rate produced by max allowed throttle (m/sec)
 	float _min_sink_rate{1.0f};					///< sink rate produced by min allowed throttle (m/sec)
@@ -301,6 +311,7 @@ private:
 	// time steps (non-fixed)
 	float _dt{DT_DEFAULT};						///< Time since last update of main TECS loop (sec)
 	static constexpr float DT_DEFAULT = 0.02f;			///< default value for _dt (sec)
+
 
 	// controller mode logic
 	bool _underspeed_detected{false};				///< true when an underspeed condition has been detected

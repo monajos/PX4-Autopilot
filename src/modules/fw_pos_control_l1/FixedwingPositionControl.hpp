@@ -571,6 +571,8 @@ private:
 		(ParamFloat<px4::params::FW_T_CLMB_R_SPX>) _param_climbrate_x_target,
 		(ParamFloat<px4::params::FW_T_SINK_R_SPX>) _param_sinkrate_x_target,
 		(ParamFloat<px4::params::FW_AIRSPD_ST_X>) _param_fw_x_stall,
+		(ParamFloat<px4::params::FW_MASS_X>) _param_mass,
+		(ParamFloat<px4::params::FW_MAX_POWER_X>) _param_max_power,
 
 		// PI X parameters
 		(ParamFloat<px4::params::FW_GAIN_SPD_PI>) _param_fw_pi_x_tas_gain,
@@ -587,7 +589,7 @@ private:
 		(ParamFloat<px4::params::FW_PR_IMAX>) _param_fw_pr_imax,
 		(ParamFloat<px4::params::FW_PR_P>) _param_fw_pr_p
 		//(ParamFloat<px4::params::FW_PSP_OFF>) _param_fw_psp_off,
-	
+
 	)
 
 };
