@@ -60,8 +60,20 @@ float ECL_PitchController::control_attitude(const float dt, const ECL_ControlDat
 	/*  Apply P controller: rate setpoint from current error and time constant */
 	_rate_setpoint =  pitch_error / _tc;
 
-	float integratorPitch = pitch_error * dt * _k_i;
-	_rate_setpoint = _rate_setpoint + integratorPitch;
+	float _integratorPitch = pitch_error * dt * _k_i;
+	/*
+	* anti-windup: do not allow integrator to increase if actuator is at limit
+	 */
+	if (_last_output < -1.0f) {
+		/* only allow motion to center: increase value */
+		_integratorPitch = math::max(_integratorPitch, 0.0f);
+
+	} else if (_last_output > 1.0f) {
+		/* only allow motion to center: decrease value */
+		_integratorPitch = math::min(_integratorPitch, 0.0f);
+	}
+
+	_rate_setpoint = _rate_setpoint + _integratorPitch;
 
 	return _rate_setpoint;
 }
