@@ -60,6 +60,21 @@ float ECL_PitchController::control_attitude(const float dt, const ECL_ControlDat
 	/*  Apply P controller: rate setpoint from current error and time constant */
 	_rate_setpoint =  pitch_error / _tc;
 
+	float _integratorPitch = pitch_error * dt * _k_i;
+	/*
+	* anti-windup: do not allow integrator to increase if actuator is at limit
+	 */
+	if (_last_output < -1.0f) {
+		/* only allow motion to center: increase value */
+		_integratorPitch = math::max(_integratorPitch, 0.0f);
+
+	} else if (_last_output > 1.0f) {
+		/* only allow motion to center: decrease value */
+		_integratorPitch = math::min(_integratorPitch, 0.0f);
+	}
+
+	_rate_setpoint = _rate_setpoint + _integratorPitch;
+
 	return _rate_setpoint;
 }
 
@@ -79,12 +94,14 @@ float ECL_PitchController::control_bodyrate(const float dt, const ECL_ControlDat
 	}
 
 	/* Calculate body angular rate error */
-	_rate_error = _bodyrate_setpoint - ctl_data.body_y_rate;
+	_rate_error = - ctl_data.body_y_rate; //_bodyrate_setpoint - ctl_data.body_y_rate;
 
 	if (!ctl_data.lock_integrator && _k_i > 0.0f) {
 
 		/* Integral term scales with 1/IAS^2 */
-		float id = _rate_error * dt * 1 * 1;
+		 float id = _rate_error * dt * 1 * 1;
+		//float id = _rate_error * dt * ctl_data.scaler * ctl_data.scaler;
+
 
 		/*
 		 * anti-windup: do not allow integrator to increase if actuator is at limit
@@ -104,9 +121,10 @@ float ECL_PitchController::control_bodyrate(const float dt, const ECL_ControlDat
 
 	/* Apply PI rate controller and store non-limited output */
 	/* FF terms scales with 1/TAS and P,I with 1/IAS^2 */
-	_last_output = _bodyrate_setpoint * _k_ff * 1 +
-		       _rate_error * _k_p * 1 * 1
-		       + _integrator;
+	_last_output = _bodyrate_setpoint * _k_ff * 1 + //ctl_data.scaler +
+                      _rate_error * _k_p * 1 * 1;//ctl_data.scaler * ctl_data.scaler;
+		       //+ _integrator;
+	/*_last_output = _k_p * 2.8648f;*/
 
 	return math::constrain(_last_output, -1.0f, 1.0f);
 }
