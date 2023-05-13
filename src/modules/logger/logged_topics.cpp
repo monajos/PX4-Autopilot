@@ -111,13 +111,13 @@ void LoggedTopics::add_default_topics()
 	add_topic("vehicle_acceleration", 50);
 	add_topic("vehicle_air_data", 200);
 	add_topic("vehicle_angular_velocity", 20);
-	add_topic("vehicle_attitude", 50);
+	add_topic("vehicle_attitude", 10);
 	add_topic("vehicle_attitude_setpoint", 50);
 	add_topic("vehicle_command");
 	add_topic("vehicle_constraints", 1000);
 	add_topic("vehicle_control_mode");
 	add_topic("vehicle_global_position", 200);
-	add_topic("vehicle_gps_position", 500);
+	add_topic("vehicle_gps_position", 10);
 	add_topic("vehicle_land_detected");
 	add_topic("vehicle_local_position", 100);
 	add_topic("vehicle_local_position_setpoint", 100);
@@ -129,6 +129,7 @@ void LoggedTopics::add_default_topics()
 	add_topic("vtol_vehicle_status", 200);
 	add_topic("wind", 1000);
 
+
 	// Control allocation topics
 	add_topic("vehicle_actuator_setpoint", 20);
 	add_topic("vehicle_angular_acceleration", 20);
@@ -137,7 +138,7 @@ void LoggedTopics::add_default_topics()
 	add_topic("vehicle_torque_setpoint", 20);
 
 	// multi topics
-	add_topic_multi("actuator_outputs", 100, 3);
+	add_topic_multi("actuator_outputs", 10, 3);
 	add_topic_multi("airspeed_wind", 1000);
 	add_topic_multi("logger_status", 0, 2);
 	add_topic_multi("multirotor_motor_limits", 1000, 2);
@@ -171,7 +172,7 @@ void LoggedTopics::add_default_topics()
 
 	// log all raw sensors at minimal rate (at least 1 Hz)
 	add_topic_multi("battery_status", 200, 2);
-	add_topic_multi("differential_pressure", 1000, 2);
+	add_topic_multi("differential_pressure", 10, 2);
 	add_topic_multi("distance_sensor", 1000);
 	add_topic_multi("optical_flow", 1000, 1);
 	add_topic_multi("sensor_accel", 1000, 4);
