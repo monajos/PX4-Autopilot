@@ -189,6 +189,7 @@ set(msg_files
 	yaw_estimator_status.msg
 	testflight_status_x.msg
 	testflight_control_params.msg
+	testflight_ident_control_params.msg
 	testflight_std_tecs_params.msg
 )
 

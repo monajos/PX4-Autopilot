@@ -104,6 +104,11 @@ void LoggedTopics::add_default_topics()
 	add_topic("testflight_control_params", 200); //50 Hz I suppose
 	add_topic("testflight_std_tecs_params", 200); //50 Hz I suppose
 	//end added 20210720
+
+	//added 20230513
+	add_topic("testflight_ident_control_params", 200);
+	//end added 20230513
+
 	add_topic("tecs_status", 200);
 	add_topic("test_motor", 500);
 	add_topic("trajectory_setpoint", 200);

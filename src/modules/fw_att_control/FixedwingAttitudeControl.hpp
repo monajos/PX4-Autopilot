@@ -67,6 +67,12 @@
 #include <uORB/topics/vehicle_rates_setpoint.h>
 #include <uORB/topics/vehicle_status.h>
 
+#include <uORB/uORB.h>
+#include <vtol_att_control/vtol_type.h>
+
+// == INCLUDE FLIGHTTEST CLASS ==
+#include <lib/testmaneuver_ident/testmaneuver_ident.hpp>
+
 using matrix::Eulerf;
 using matrix::Quatf;
 
@@ -111,10 +117,11 @@ private:
 
 	uORB::SubscriptionData<airspeed_validated_s> _airspeed_validated_sub{ORB_ID(airspeed_validated)};
 
-	uORB::Publication<actuator_controls_s>		_actuators_0_pub;
-	uORB::Publication<vehicle_attitude_setpoint_s>	_attitude_sp_pub;
-	uORB::Publication<vehicle_rates_setpoint_s>	_rate_sp_pub{ORB_ID(vehicle_rates_setpoint)};
-	uORB::PublicationMulti<rate_ctrl_status_s>	_rate_ctrl_status_pub{ORB_ID(rate_ctrl_status)};
+	uORB::Publication<actuator_controls_s>				_actuators_0_pub;
+	uORB::Publication<vehicle_attitude_setpoint_s>			_attitude_sp_pub;
+	uORB::Publication<vehicle_rates_setpoint_s>			_rate_sp_pub{ORB_ID(vehicle_rates_setpoint)};
+	uORB::Publication<testflight_ident_control_params_s>		_testflight_ident_control_params_pub{ORB_ID(testflight_ident_control_params)};
+	uORB::PublicationMulti<rate_ctrl_status_s>			_rate_ctrl_status_pub{ORB_ID(rate_ctrl_status)};
 
 	actuator_controls_s			_actuators {};		/**< actuator control inputs */
 	manual_control_setpoint_s		_manual_control_setpoint {};		/**< r/c channel data */
@@ -229,4 +236,11 @@ private:
 	void		vehicle_land_detected_poll();
 
 	float 		get_airspeed_and_update_scaling();
+
+	// == FLIGHT TEST IMPLEMENTATIONS ==
+	Testmaneuver_ident	_maneuver;
+	bool			_man_active{false};
+	uint32_t 		_mode_sel{0};
+	uint32_t 		_ctrl_sel{0};
+	float 			_dt{0.0f};
 };
