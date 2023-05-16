@@ -57,12 +57,16 @@ public:
 	void set_hgt_rise_time(float hgt_rise_time) { _hgt_rise_time = hgt_rise_time; }
 	void set_init_time(float init_time) { _init_time = init_time; }
 
-	bool init_trajectory();
+
 	void update_trajectory(float dt);
 	bool reset_trajectory();
 
 	float get_test_spd_sp();
 	float get_test_hgt_sp();
+
+	// added by Mona
+	bool init_time();
+	float elevator_doublet(float dt);
 
 
 private:

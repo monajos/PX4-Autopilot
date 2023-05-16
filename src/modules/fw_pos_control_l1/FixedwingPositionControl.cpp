@@ -308,6 +308,7 @@ FixedwingPositionControl::airspeed_poll()
 		_pi_X.enable_airspeed(airspeed_valid);
 		_airspeed_valid = airspeed_valid;
 	}
+
 	//spark hil tests
 	airspeed_valid = true;
 	_tecs.enable_airspeed(airspeed_valid);
@@ -2106,23 +2107,24 @@ FixedwingPositionControl::get_tecs_pitch()
 {
 	if (_is_tecs_running) {
 		//if (_man_active) {
-			if (_param_fw_x_ctrl_sel.get() == 1) {
-				return _tecs_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
+		if (_param_fw_x_ctrl_sel.get() == 1) {
+			return _tecs_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 
-			} else if (_param_fw_x_ctrl_sel.get() == 2) {
-				return _pi_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get()); // PI OUTPUT HERE
-			} else {
-				return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
-			}
+		} else if (_param_fw_x_ctrl_sel.get() == 2) {
+			return _pi_X.get_pitch_setpoint() + radians(_param_fw_psp_off.get()); // PI OUTPUT HERE
+
+		} else {
+			return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
+		}
 
 		//} else {
-			//reset the integrators to the last output
-			// _tecs_X.init_integrator_throttle(_tecs.get_throttle_setpoint());
-			// _tecs_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get()));
-			// _pi_X.init_integrator_throttle(_tecs.get_throttle_setpoint()); //FixedwingPositionControl::get_tecs_thrust()
-			// _pi_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(
-			// 				    _param_fw_psp_off.get())); //FixedwingPositionControl::get_tecs_pitch()
-			// return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
+		//reset the integrators to the last output
+		// _tecs_X.init_integrator_throttle(_tecs.get_throttle_setpoint());
+		// _tecs_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get()));
+		// _pi_X.init_integrator_throttle(_tecs.get_throttle_setpoint()); //FixedwingPositionControl::get_tecs_thrust()
+		// _pi_X.init_integrator_pitch(_tecs.get_pitch_setpoint() + radians(
+		// 				    _param_fw_psp_off.get())); //FixedwingPositionControl::get_tecs_pitch()
+		// return _tecs.get_pitch_setpoint() + radians(_param_fw_psp_off.get());
 		//}
 
 	}
@@ -2136,15 +2138,16 @@ FixedwingPositionControl::get_tecs_thrust()
 {
 	if (_is_tecs_running) {
 		//if (_man_active) {
-			if (_param_fw_x_ctrl_sel.get() == 1) {
-				return _tecs_X.get_throttle_setpoint();
+		if (_param_fw_x_ctrl_sel.get() == 1) {
+			return _tecs_X.get_throttle_setpoint();
 
-			} else if (_param_fw_x_ctrl_sel.get() == 2) {
-				return _pi_X.get_throttle_setpoint(); // PI OUTPUT HERE
+		} else if (_param_fw_x_ctrl_sel.get() == 2) {
+			return _pi_X.get_throttle_setpoint(); // PI OUTPUT HERE
 
-			} else {
-				return _tecs.get_throttle_setpoint();
-			}
+		} else {
+			return _tecs.get_throttle_setpoint();
+		}
+
 		//}
 
 

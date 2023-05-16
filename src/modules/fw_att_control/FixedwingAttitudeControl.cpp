@@ -266,6 +266,11 @@ float FixedwingAttitudeControl::get_airspeed_and_update_scaling()
 
 void FixedwingAttitudeControl::Run()
 {
+	_now = hrt_absolute_time();
+	_dt = math::constrain((_now - _control_attitude_last_called) * 1e-6f, 0.01f, 0.05f);
+	_control_attitude_last_called = _now;
+
+
 	if (should_exit()) {
 		_att_sub.unregisterCallback();
 		exit_and_cleanup();
@@ -276,6 +281,7 @@ void FixedwingAttitudeControl::Run()
 
 	// only run controller if attitude changed
 	vehicle_attitude_s att;
+
 
 	if (_att_sub.update(&att)) {
 
@@ -518,59 +524,138 @@ void FixedwingAttitudeControl::Run()
 					control_input.pitch_rate_setpoint = _pitch_ctrl.get_desired_rate();
 					control_input.yaw_rate_setpoint = _yaw_ctrl.get_desired_rate();
 
-					/* Run attitude RATE controllers which need the desired attitudes from above, add trim */
-					float roll_u = _roll_ctrl.control_euler_rate(dt, control_input);
-					_actuators.control[actuator_controls_s::INDEX_ROLL] = (PX4_ISFINITE(roll_u)) ? roll_u + trim_roll : trim_roll;
 
-					if (!PX4_ISFINITE(roll_u)) {
-						_roll_ctrl.reset_integrator();
-					}
+					uint maneuver_sel = _param_fw_man_sel.get(); 	// get and set parameter -> which maneuver to be flown
+					_man_ident_sel = maneuver_sel; 			// log parameter of currect maneuver
 
-					float pitch_u = _pitch_ctrl.control_euler_rate(dt, control_input);
-					_actuators.control[actuator_controls_s::INDEX_PITCH] = (PX4_ISFINITE(pitch_u)) ? pitch_u + trim_pitch : trim_pitch;
-
-					if (!PX4_ISFINITE(pitch_u)) {
-						_pitch_ctrl.reset_integrator();
-					}
-
-					float yaw_u = 0.0f;
-
-					if (wheel_control) {
-						yaw_u = _wheel_ctrl.control_bodyrate(dt, control_input);
-
-					} else {
-						yaw_u = _yaw_ctrl.control_euler_rate(dt, control_input);
-					}
-
-					_actuators.control[actuator_controls_s::INDEX_YAW] = (PX4_ISFINITE(yaw_u)) ? yaw_u + trim_yaw : trim_yaw;
-
-					/* add in manual rudder control in manual modes */
-					if (_vcontrol_mode.flag_control_manual_enabled) {
-						_actuators.control[actuator_controls_s::INDEX_YAW] += _manual_control_setpoint.r;
-					}
-
-					if (!PX4_ISFINITE(yaw_u)) {
-						_yaw_ctrl.reset_integrator();
-						_wheel_ctrl.reset_integrator();
-					}
-
-					/* throttle passed through if it is finite and if no engine failure was detected */
-					_actuators.control[actuator_controls_s::INDEX_THROTTLE] = (PX4_ISFINITE(_att_sp.thrust_body[0])
-							&& !_vehicle_status.engine_failure) ? _att_sp.thrust_body[0] : 0.0f;
-
-					/* scale effort by battery status */
-					if (_param_fw_bat_scale_en.get() &&
-					    _actuators.control[actuator_controls_s::INDEX_THROTTLE] > 0.1f) {
-
-						if (_battery_status_sub.updated()) {
-							battery_status_s battery_status{};
-
-							if (_battery_status_sub.copy(&battery_status) && battery_status.connected && battery_status.scale > 0.f) {
-								_battery_scale = battery_status.scale;
+					if (_manual_control_setpoint.aux1>0.8f)
+					{
+						if(maneuver_sel==1){ // Elevator doublet
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
 							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver + _maneuver.elevator_doublet(_dt);
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+
+						}else if(maneuver_sel==2){ // Elevator Multistep
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
+							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						}else if(maneuver_sel==3){ // Elevator pulse
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
+							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						}else if(maneuver_sel==4){ // Bank to bank 30
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
+							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						}else if(maneuver_sel==5){ // Bank to bank 50
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
+							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						}else if(maneuver_sel==6){ // Rudder doublet
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
+							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						}else if(maneuver_sel==7){ // Thrust variation
+							if(_man_active==0){
+								_man_active = true;
+								_maneuver.init_time();
+							}
+							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						}
+					}else {  	// no maneuver
+						/* Run attitude RATE controllers which need the desired attitudes from above, add trim */
+						float roll_u = _roll_ctrl.control_euler_rate(dt, control_input);
+						_actuators.control[actuator_controls_s::INDEX_ROLL] = (PX4_ISFINITE(roll_u)) ? roll_u + trim_roll : trim_roll;
+						_roll_before_maneuver = (PX4_ISFINITE(roll_u)) ? roll_u + trim_roll : trim_roll;
+
+						if (!PX4_ISFINITE(roll_u)) {
+							_roll_ctrl.reset_integrator();
 						}
 
-						_actuators.control[actuator_controls_s::INDEX_THROTTLE] *= _battery_scale;
+						float pitch_u = _pitch_ctrl.control_euler_rate(dt, control_input);
+						_actuators.control[actuator_controls_s::INDEX_PITCH] = (PX4_ISFINITE(pitch_u)) ? pitch_u + trim_pitch : trim_pitch;
+						_pitch_before_maneuver = (PX4_ISFINITE(pitch_u)) ? pitch_u + trim_pitch : trim_pitch;
+
+						if (!PX4_ISFINITE(pitch_u)) {
+							_pitch_ctrl.reset_integrator();
+						}
+
+						float yaw_u = 0.0f;
+
+						if (wheel_control) {
+							yaw_u = _wheel_ctrl.control_bodyrate(dt, control_input);
+
+						} else {
+							yaw_u = _yaw_ctrl.control_euler_rate(dt, control_input);
+						}
+
+						_actuators.control[actuator_controls_s::INDEX_YAW] = (PX4_ISFINITE(yaw_u)) ? yaw_u + trim_yaw : trim_yaw;
+						_yaw_before_maneuver = (PX4_ISFINITE(yaw_u)) ? yaw_u + trim_yaw : trim_yaw;
+
+						/* add in manual rudder control in manual modes */
+						if (_vcontrol_mode.flag_control_manual_enabled) {
+							_actuators.control[actuator_controls_s::INDEX_YAW] += _manual_control_setpoint.r;
+						}
+
+						if (!PX4_ISFINITE(yaw_u)) {
+							_yaw_ctrl.reset_integrator();
+							_wheel_ctrl.reset_integrator();
+						}
+
+						/* throttle passed through if it is finite and if no engine failure was detected */
+						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = (PX4_ISFINITE(_att_sp.thrust_body[0])
+								&& !_vehicle_status.engine_failure) ? _att_sp.thrust_body[0] : 0.0f;
+						_throttle_before_maneuver = (PX4_ISFINITE(_att_sp.thrust_body[0])
+								&& !_vehicle_status.engine_failure) ? _att_sp.thrust_body[0] : 0.0f;
+
+						/* scale effort by battery status */
+						if (_param_fw_bat_scale_en.get() &&
+						_actuators.control[actuator_controls_s::INDEX_THROTTLE] > 0.1f) {
+
+							if (_battery_status_sub.updated()) {
+								battery_status_s battery_status{};
+
+								if (_battery_status_sub.copy(&battery_status) && battery_status.connected && battery_status.scale > 0.f) {
+									_battery_scale = battery_status.scale;
+								}
+							}
+
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] *= _battery_scale;
+							_throttle_before_maneuver *= _battery_scale;
+						}
 					}
 				}
 

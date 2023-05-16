@@ -34,33 +34,9 @@
 #include "testmaneuver_ident.hpp"
 
 bool
-Testmaneuver_ident::init_trajectory()
+Testmaneuver_ident::init_time()
 {
-	if (_is_active) {
-		return false;
-	}
-
 	_time   = 0.0f;
-
-	// == INITIALISE COEFFICIENTS
-	if (_spd_rise_time < 0.1f) {
-		_spd_coeff_a = 0.0f;
-		_spd_coeff_b = 0.0f;
-
-	} else {
-		_spd_coeff_a = -3.0f * _rel_spd_sp / (_spd_rise_time * _spd_rise_time * _spd_rise_time * _spd_rise_time);
-		_spd_coeff_b = 4.0f * _rel_spd_sp / (_spd_rise_time * _spd_rise_time * _spd_rise_time);
-	}
-
-	if (_hgt_rise_time < 0.1f) {
-		_hgt_coeff_a = 0.0f;
-		_hgt_coeff_b = 0.0f;
-
-	} else {
-		_hgt_coeff_a = -3.0f * _rel_hgt_sp / (_hgt_rise_time * _hgt_rise_time * _hgt_rise_time * _hgt_rise_time);
-		_hgt_coeff_b = 4.0f * _rel_hgt_sp / (_hgt_rise_time * _hgt_rise_time * _hgt_rise_time);
-	}
-
 	return true;
 }
 
@@ -122,7 +98,22 @@ Testmaneuver_ident::update_spd()
 		/*wait for initialization*/
 		return 0.0;
 	}
+}
 
+float
+Testmaneuver_ident::elevator_doublet(float dt)
+{
+	if (_time > 0.0f && _time < 1.0f) {
+		/*positive deflection*/
+		return 0.2f;
+	} else if (_time >= 1.0f && _time < 2.0f) {
+		/*negative deflection*/
+		return -0.2f;
+	} else {
+		/*initial*/
+		return 0.3f;
+	}
+	_time += dt;
 }
 
 float

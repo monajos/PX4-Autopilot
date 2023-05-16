@@ -1,6 +1,6 @@
 uint64 timestamp
 #Maneuver
-uint32 man_ident		# which maneuver
+uint32 man_ident_sel		# which maneuver
 				# 0 -> none
 				# 1 -> Elevator doublet
 				# 2 -> ELevator multistep
