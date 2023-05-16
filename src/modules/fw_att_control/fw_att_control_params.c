@@ -735,3 +735,21 @@ PARAM_DEFINE_FLOAT(FW_DTRIM_R_FLPS, 0.0f);
  * @increment 0.01
  */
 PARAM_DEFINE_FLOAT(FW_DTRIM_P_FLPS, 0.0f);
+
+/**
+ * Maneuver selection for flight tests
+ *
+ * select 0 for no maneuver, 1-7 for identification maneuvers
+ *
+ * @group FW Attitude Control
+ * @value 0 none
+ * @value 1 Elevator doublet
+ * @value 2 Elevator multistep
+ * @value 3 Elevator pulse
+ * @value 4 Bank to bank 30
+ * @value 5 Bank to bank 50
+ * @value 6 Rudder doublet
+ * @value 7 Thrust variation
+
+ */
+PARAM_DEFINE_INT32(FW_MAN_SEL, 0);
