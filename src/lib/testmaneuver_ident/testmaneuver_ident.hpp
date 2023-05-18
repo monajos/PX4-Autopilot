@@ -57,8 +57,6 @@ public:
 	void set_hgt_rise_time(float hgt_rise_time) { _hgt_rise_time = hgt_rise_time; }
 	void set_init_time(float init_time) { _init_time = init_time; }
 
-
-	void update_trajectory(float dt);
 	bool reset_trajectory();
 
 	float get_test_spd_sp();
@@ -66,7 +64,16 @@ public:
 
 	// added by Mona
 	bool init_time();
+	bool ongoing_5s();
+	bool is_active();
 	float elevator_doublet(float dt);
+	float elevator_multistep(float dt);
+	float elevator_pulse(float dt);
+	float bank_to_bank_30(float dt);
+	float bank_to_bank_50(float dt);
+	float rudder_doublet(float dt);
+	float thrust_variation(float dt);
+	float rudder_pulses(float dt);
 
 
 private:
@@ -97,8 +104,6 @@ private:
 	float _init_time{0.0f};
 	float _time_since_endof_init{0.0f};
 
-	float update_spd();
-	float update_hgt();
 };
 
 

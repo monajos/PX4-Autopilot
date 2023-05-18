@@ -247,6 +247,7 @@ private:
 	Testmaneuver_ident	_maneuver;
 	uint32_t		_man_ident_sel{0};
 	bool			_man_active{false};
+	bool			maneuver_ready{false};
 	float 			_dt{0.0f};
 	hrt_abstime  		_now{0};
 	hrt_abstime		_control_attitude_last_called{0};
