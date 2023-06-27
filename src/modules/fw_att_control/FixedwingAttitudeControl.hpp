@@ -132,7 +132,7 @@ private:
 	vehicle_local_position_s		_local_pos {};		/**< local position */
 	vehicle_rates_setpoint_s		_rates_sp {};		/* attitude rates setpoint */
 	vehicle_status_s			_vehicle_status {};	/**< vehicle status */
-	testflight_ident_control_params_s 	_control_params {}; 	/**< test test  */
+	testflight_ident_control_params_s 	_testflight_params {}; 	/**< testflight params */
 
 	perf_counter_t	_loop_perf;			/**< loop performance counter */
 
@@ -220,7 +220,15 @@ private:
 		(ParamFloat<px4::params::TRIM_ROLL>) _param_trim_roll,
 		(ParamFloat<px4::params::TRIM_YAW>) _param_trim_yaw,
 
-		(ParamInt<px4::params::FW_MAN_SEL>) _param_fw_man_sel
+		(ParamInt<px4::params::FW_MAN_SEL>) _param_fw_man_sel,
+		(ParamFloat<px4::params::FW_MAN_DEFL>) _param_fw_man_defl,
+		(ParamFloat<px4::params::FW_MAN_EL_DBL_DT>) _param_fw_man_el_dblt_dt,
+		(ParamFloat<px4::params::FW_MAN_EL_MLT_DT>) _param_fw_man_el_mlts_dt,
+		(ParamFloat<px4::params::FW_MAN_EL_PLS_DT>) _param_fw_man_el_pls_dt,
+		(ParamFloat<px4::params::FW_MAN_RU_DBL_DT>) _param_fw_man_rud_dblt_dt,
+		(ParamFloat<px4::params::FW_MAN_RU_PLS_DT>) _param_fw_man_rud_pls_dt,
+		(ParamFloat<px4::params::FW_MAN_TH_VAR_DT>) _param_fw_man_thr_var_dt,
+		(ParamBool<px4::params::FW_MAN_INP_FIX>) _param_fw_man_inp_fix
 	)
 
 	ECL_RollController		_roll_ctrl;
@@ -245,7 +253,7 @@ private:
 
 	// == FLIGHT TEST IMPLEMENTATIONS ==
 	Testmaneuver_ident	_maneuver;
-	uint32_t		_man_ident_sel{0};
+	//uint32_t		_man_ident_sel{0};
 	bool			_man_active{false};
 	bool			maneuver_ready{false};
 	float 			_dt{0.0f};
@@ -257,6 +265,9 @@ private:
 	float 			_yaw_before_maneuver{0.0f};
 	float 			_throttle_before_maneuver{0.0f};
 
+	float 			delta_roll_sp{0.0f};
+	float 			delta_pitch_sp{0.0f};
+	float 			delta_yaw_sp{0.0f};
 
 	uint32_t 		_mode_sel{0};
 	uint32_t 		_ctrl_sel{0};

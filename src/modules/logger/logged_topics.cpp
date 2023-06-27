@@ -106,7 +106,7 @@ void LoggedTopics::add_default_topics()
 	//end added 20210720
 
 	//added 20230513
-	add_topic("testflight_ident_control_params", 200);
+	add_topic("testflight_ident_control_params", 10);
 	//end added 20230513
 
 	add_topic("tecs_status", 200);

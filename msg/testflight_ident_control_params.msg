@@ -9,5 +9,6 @@ uint32 man_ident_sel		# which maneuver
 				# 5 -> Bank to bank 50
 				# 6 -> Rudder doublet
 				# 7 -> Thrust variation
+bool aux1_activated		# AUX1 activated
 
 

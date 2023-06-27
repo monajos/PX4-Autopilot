@@ -99,36 +99,33 @@ Testmaneuver_ident::get_test_hgt_sp()
 
 
 float
-Testmaneuver_ident::elevator_doublet(float dt)
+Testmaneuver_ident::elevator_doublet(float dt, float scale, float man_dt)
 {
 	_time += dt;
-	if (_time > 0.0f && _time < 1.0f) {
+	if (_time > 0.0f && _time < man_dt) {
 		/*positive deflection*/
-		return 0.2f;
-	} else if (_time >= 1.0f && _time < 2.0f) {
+		return scale;
+	} else if (_time >= man_dt && _time < 2*man_dt) {
 		/*negative deflection*/
-		return -0.2f;
-	//} else if (_time < 0.000001f && _time > -0.000001f){
-	//	return 0.0f;
-	} else { //if ( _time >= 2.0f && _time < 5.0f)
-		/*initial*/
+		return -scale;
+	} else {
 		_is_active = false;
 		return 0.0f;
 	}
 }
 float
-Testmaneuver_ident::elevator_multistep(float dt)
+Testmaneuver_ident::elevator_multistep(float dt, float scale, float man_dt)
 {
 	_time += dt;
-	if (_time >= 0.0f && _time < 1.3f) {
-		return 0.1f;
-	} else if (_time >= 1.3f && _time < 2.3f) {
-		return -0.1f;
-	} else if (_time >= 2.3f && _time < 3.0f) {
-		return 0.1f;
-	} else if (_time >= 3.0f && _time < 3.7f) {
-		return -0.1f;
-	} else if (_time >= 3.7f && _time < 4.0f) {
+	if (_time >= 0.0f && _time < 3*man_dt) {
+		return scale;
+	} else if (_time >= 3*man_dt && _time < 5*man_dt) {
+		return -scale;
+	} else if (_time >= 5*man_dt && _time < 6*man_dt) {
+		return scale;
+	} else if (_time >= 6*man_dt && _time < 7*man_dt) {
+		return -scale;
+	} else if (_time >= 7*man_dt && _time < 10*man_dt) {
 		return 0.0f;
 	} else {
 		_is_active = false;
@@ -136,82 +133,82 @@ Testmaneuver_ident::elevator_multistep(float dt)
 	}
 }
 float
-Testmaneuver_ident::elevator_pulse(float dt)
+Testmaneuver_ident::elevator_pulse(float dt, float scale, float man_dt)
 {
 	_time += dt;
-	if (_time >= 0.0f && _time < 3.0f) {
-		return 0.05f;
+	if (_time >= 0.0f && _time < man_dt) {
+		return scale;
 	} else {
 		_is_active = false;
 		return 0.0f;  // Return default value for times outside defined range
 	}
 }
 float
-Testmaneuver_ident::bank_to_bank_30(float dt)
+Testmaneuver_ident::bank_to_bank_30(float dt, float scale)
 {
 	_time += dt;
 	if (_time >= 0.0f && _time < 1.0f) {
-		return 0.3f;
+		return scale;
 	} else if (_time >= 1.0f && _time < 2.8f) {
-		return -0.3f;
+		return -scale;
 	} else if (_time >= 2.8f && _time < 3.5f) {
-		return 0.3f;
+		return scale;
 	} else {
 		_is_active = false;
 		return 0.0f;  // Return default value for times outside defined range
 	}
 }
 float
-Testmaneuver_ident::bank_to_bank_50(float dt)
+Testmaneuver_ident::bank_to_bank_50(float dt, float scale)
 {
 	_time += dt;
 	if (_time >= 0.0f && _time < 1.6f) {
-		return 0.3f;
+		return scale;
 	} else if (_time >= 1.6f && _time < 3.8f) {
-		return -0.3f;
+		return -scale;
 	} else if (_time >= 3.8f && _time < 4.5f) {
-		return 0.3f;
+		return scale;
 	} else {
 		_is_active = false;
 		return 0.0f;  // Return default value for times outside defined range
 	}
 }
 float
-Testmaneuver_ident::rudder_doublet(float dt)
+Testmaneuver_ident::rudder_doublet(float dt, float scale, float man_dt)
 {
 	_time += dt;
-	if (_time >= 0.0f && _time < 1.0f) {
-		return 0.4f;
-	} else if (_time >= 1.0f && _time < 2.0f) {
-		return -0.4f;
+	if (_time >= 0.0f && _time < man_dt) {
+		return scale;
+	} else if (_time >= man_dt && _time < 2*man_dt) {
+		return -scale;
 	} else {
 		_is_active = false;
 		return 0.0f;  // Return default value for times outside defined range
 	}
 }
 float
-Testmaneuver_ident::rudder_pulses(float dt)
+Testmaneuver_ident::rudder_pulses(float dt, float scale, float man_dt)
 {
 	_time += dt;
-	if (_time >= 0.0f && _time < 5.0f) {
-		return 0.1f;
-	} else if (_time >= 5.0f && _time < 8.0f) {
+	if (_time >= 0.0f && _time < man_dt) {
+		return scale;
+	} else if (_time >= man_dt && _time < man_dt + 1.0f) {
 		return 0.0f;
-	} else if (_time >= 8.0f && _time < 13.0f) {
-		return -0.1f;
+	} else if (_time >= (man_dt+1.0f) && _time < (2*man_dt+1.0f)) {
+		return -scale;
 	} else {
 		_is_active = false;
-		return 0.0f;  // Return default value for times outside defined range
+		return 0.0f;
 	}
 }
 float
-Testmaneuver_ident::thrust_variation(float dt)
+Testmaneuver_ident::thrust_variation(float dt,float throttle_before, float man_dt)
 {
 	_time += dt;
-	if (_time >= 0.0f && _time < 5.0f) {
-		return 0.1f;
-	} else if (_time >= 5.0f && _time < 10.0f) {
-		return -0.1f;
+	if (_time >= 0.0f && _time < man_dt) {
+		return 0.8f; // throttle_before * 0.1f;
+	} else if (_time >= man_dt && _time < 2*man_dt) {
+		return throttle_before * -0.1f;
 	} else {
 		_is_active = false;
 		return 0.0f;  // Return default value for times outside defined range

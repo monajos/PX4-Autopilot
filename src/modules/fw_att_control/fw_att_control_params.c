@@ -737,6 +737,19 @@ PARAM_DEFINE_FLOAT(FW_DTRIM_R_FLPS, 0.0f);
 PARAM_DEFINE_FLOAT(FW_DTRIM_P_FLPS, 0.0f);
 
 /**
+ * Control surface deflections for maneuvers
+ *
+ * normed to [0,1] is added to previous deflection
+ *
+ * @min 0
+ * @max 1
+ * @decimal 2
+ * @increment 0.01
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_DEFL, 0.0f);
+
+/**
  * Maneuver selection for flight tests
  *
  * select 1-8 for identification maneuvers
@@ -751,4 +764,74 @@ PARAM_DEFINE_FLOAT(FW_DTRIM_P_FLPS, 0.0f);
  * @value 7 Thrust variation
  * @value 8 Rudder pulses
  */
-PARAM_DEFINE_INT32(FW_MAN_SEL, 0);
+PARAM_DEFINE_INT32(FW_MAN_SEL, 1);
+
+/**
+ * Not essential inputs fixed during maneuver
+ *
+ * default = 0 -> not fixed
+ *
+ * @boolean
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_INT32(FW_MAN_INP_FIX, 0);
+
+/**
+ * Delta t in seconds for the elevator doublet
+ *
+ * @min 0.0
+ * @decimal 1
+ * @increment 0.1
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_EL_DBL_DT, 1.0f);
+
+/**
+ * Delta t in seconds for the elevator multistep
+ *
+ * @min 0.0
+ * @decimal 1
+ * @increment 0.1
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_EL_MLT_DT, 0.7f);
+
+/**
+ * Delta t in seconds for the elevator pulse
+ *
+ * @min 0.0
+ * @decimal 1
+ * @increment 0.1
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_EL_PLS_DT, 1.5f);
+
+/**
+ * Delta t for the rudder doublet
+ *
+ * @min 0.0
+ * @decimal 1
+ * @increment 0.1
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_RU_DBL_DT, 1.0f);
+
+/**
+ * Delta t in seconds for the rudder pulse
+ *
+ * @min 0.0
+ * @decimal 1
+ * @increment 0.1
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_RU_PLS_DT, 2.0f);
+
+/**
+ * Delta t in seconds for thrust variation
+ *
+ * @min 0.0
+ * @decimal 1
+ * @increment 0.1
+ * @group FW Attitude Control
+ */
+PARAM_DEFINE_FLOAT(FW_MAN_TH_VAR_DT, 4.0f);

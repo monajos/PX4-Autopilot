@@ -66,14 +66,14 @@ public:
 	bool init_time();
 	bool ongoing_5s();
 	bool is_active();
-	float elevator_doublet(float dt);
-	float elevator_multistep(float dt);
-	float elevator_pulse(float dt);
-	float bank_to_bank_30(float dt);
-	float bank_to_bank_50(float dt);
-	float rudder_doublet(float dt);
-	float thrust_variation(float dt);
-	float rudder_pulses(float dt);
+	float elevator_doublet(float dt, float scale, float man_dt);
+	float elevator_multistep(float dt, float scale, float man_dt);
+	float elevator_pulse(float dt, float scale, float man_dt);
+	float bank_to_bank_30(float dt, float scale);
+	float bank_to_bank_50(float dt, float scale);
+	float rudder_doublet(float dt, float scale, float man_dt);
+	float thrust_variation(float dt,float throttle_before, float man_dt);
+	float rudder_pulses(float dt, float scale, float man_dt);
 
 
 private:

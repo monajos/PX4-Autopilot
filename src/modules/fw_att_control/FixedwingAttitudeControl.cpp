@@ -270,7 +270,6 @@ void FixedwingAttitudeControl::Run()
 	_dt = math::constrain((_now - _control_attitude_last_called) * 1e-6f, 0.001f, 0.05f); // multiplied by 1e-6 to convert from microseconds to seconds
 	_control_attitude_last_called = _now;
 
-
 	if (should_exit()) {
 		_att_sub.unregisterCallback();
 		exit_and_cleanup();
@@ -526,84 +525,73 @@ void FixedwingAttitudeControl::Run()
 
 
 					uint maneuver_sel = _param_fw_man_sel.get(); 	// get and set parameter -> which maneuver to be flown
-					_man_ident_sel = maneuver_sel; 			// log parameter of currect maneuver, edit: not sure if we're really logging here
+					_testflight_params.man_ident_sel = maneuver_sel; // log parameter of currect maneuver
+					bool maneuver_inputs_fixed = _param_fw_man_inp_fix.get(); // get parameter -> other inputs fixed?
+					float control_deflection = _param_fw_man_defl.get(); // get parameter -> how big control surface deflection
+					float el_dblt_dt = _param_fw_man_el_dblt_dt.get();  // the following: get dt params for maneuvers
+					float el_mlts_dt = _param_fw_man_el_mlts_dt.get();
+					float el_pls_dt = _param_fw_man_el_pls_dt.get();
+					float rud_dblt_dt = _param_fw_man_rud_dblt_dt.get();
+					float rud_pls_dt = _param_fw_man_rud_pls_dt.get();
+					float thr_var_dt = _param_fw_man_thr_var_dt.get();
 
 					if (_manual_control_setpoint.aux1>0.8f) //&& (_man_active || maneuver_ready)
 					{
-						if(maneuver_sel==1){ // Elevator doublet
-							if(_man_active==false && maneuver_ready){ 	// maneuver_ready only when aux1 is turned off and on,
-													// so that maneuvers don't repeat themselves over and over
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver + _maneuver.elevator_doublet(_dt);
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+						if(_man_active==false && maneuver_ready){ 	// maneuver_ready only when aux1 is turned off and on,
+												// so that maneuvers don't repeat themselves over and over
+							_man_active = true;
+							_maneuver.init_time();
 
+							// difference between actuator control value before maneuver activation and current manual control input
+							// to ensure there is no jump in the manually controlled inputs when activating maneuver
+							delta_roll_sp = _roll_before_maneuver - _manual_control_setpoint.y * _param_fw_man_r_sc.get();
+							delta_pitch_sp = _pitch_before_maneuver + _manual_control_setpoint.x * _param_fw_man_p_sc.get();
+							delta_yaw_sp = _yaw_before_maneuver - _manual_control_setpoint.r * _param_fw_man_y_sc.get();
+						}
+						if(maneuver_inputs_fixed == true){
+							_actuators.control[actuator_controls_s::INDEX_ROLL] =
+								_roll_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] =
+								_pitch_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] =
+								_yaw_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] =
+								math::constrain(_manual_control_setpoint.z, 0.0f, 1.0f);
+						}
+						else{
+							_actuators.control[actuator_controls_s::INDEX_ROLL] =
+								+ _manual_control_setpoint.y * _param_fw_man_r_sc.get(); // + delta_roll_sp
+							_actuators.control[actuator_controls_s::INDEX_PITCH] =
+								-_manual_control_setpoint.x * _param_fw_man_p_sc.get(); // + delta_pitch_sp
+							_actuators.control[actuator_controls_s::INDEX_YAW] =
+								_manual_control_setpoint.r * _param_fw_man_y_sc.get(); // + delta_yaw_sp
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] =
+								math::constrain(_manual_control_setpoint.z, 0.0f, 1.0f);
+						}
+						if(maneuver_sel==1){ // Elevator doublet
+							_actuators.control[actuator_controls_s::INDEX_PITCH] =
+								math::constrain(_pitch_before_maneuver + _maneuver.elevator_doublet(_dt,control_deflection,el_dblt_dt),-1.0f,1.0f);
 						}else if(maneuver_sel==2){ // Elevator Multistep
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver + _maneuver.elevator_multistep(_dt);
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] =
+								math::constrain(_pitch_before_maneuver + _maneuver.elevator_multistep(_dt,control_deflection,el_mlts_dt),-1.0f,1.0f);
 						}else if(maneuver_sel==3){ // Elevator pulse
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver + _maneuver.elevator_pulse(_dt);
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_PITCH] =
+								math::constrain(_pitch_before_maneuver + _maneuver.elevator_pulse(_dt,control_deflection,el_pls_dt),-1.0f,1.0f);
 						}else if(maneuver_sel==4){ // Bank to bank 30
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver + _maneuver.bank_to_bank_30(_dt);
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_ROLL] =
+								math::constrain(_roll_before_maneuver + _maneuver.bank_to_bank_30(_dt,control_deflection),-1.0f,1.0f);
 						}else if(maneuver_sel==5){ // Bank to bank 50
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver + _maneuver.bank_to_bank_50(_dt);
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_ROLL] =
+								math::constrain(_roll_before_maneuver + _maneuver.bank_to_bank_50(_dt,control_deflection),-1.0f,1.0f);
 						}else if(maneuver_sel==6){ // Rudder doublet
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver + _maneuver.rudder_doublet(_dt);
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] =
+								math::constrain(_yaw_before_maneuver + _maneuver.rudder_doublet(_dt,control_deflection,rud_dblt_dt),-1.0f,1.0f);
 						}else if(maneuver_sel==7){ // Thrust variation
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver + _maneuver.thrust_variation(_dt);
+							_actuators.control[actuator_controls_s::INDEX_THROTTLE] =
+								math::constrain(_throttle_before_maneuver + _maneuver.thrust_variation(_dt,_throttle_before_maneuver,thr_var_dt),0.0f,1.0f);
 						}else if(maneuver_sel==8){ // Rudder pulse
-							if(_man_active==0 && maneuver_ready){
-								_man_active = true;
-								_maneuver.init_time();
-							}
-							_actuators.control[actuator_controls_s::INDEX_ROLL] = _roll_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_PITCH] = _pitch_before_maneuver;
-							_actuators.control[actuator_controls_s::INDEX_YAW] = _yaw_before_maneuver + _maneuver.rudder_pulses(_dt);
-							_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _throttle_before_maneuver;
+							_actuators.control[actuator_controls_s::INDEX_YAW] =
+								math::constrain(_yaw_before_maneuver + _maneuver.rudder_pulses(_dt,control_deflection,rud_pls_dt),-1.0f,1.0f);
 						}
 						_man_active = _maneuver.is_active();
 						maneuver_ready = false;
@@ -735,11 +723,16 @@ void FixedwingAttitudeControl::Run()
 		_actuators.timestamp = hrt_absolute_time();
 		_actuators.timestamp_sample = att.timestamp;
 
+		_testflight_params.timestamp = hrt_absolute_time();
+		_testflight_params.aux1_activated = (_manual_control_setpoint.aux1>0.8f);
+
+
 		/* Only publish if any of the proper modes are enabled */
 		if (_vcontrol_mode.flag_control_rates_enabled ||
 		    _vcontrol_mode.flag_control_attitude_enabled ||
 		    _vcontrol_mode.flag_control_manual_enabled) {
 			_actuators_0_pub.publish(_actuators);
+			_testflight_ident_control_params_pub.publish(_testflight_params);
 		}
 	}
 
